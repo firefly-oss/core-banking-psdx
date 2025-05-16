@@ -1,0 +1,175 @@
+package com.catalis.core.banking.psdx.web.controllers;
+
+import com.catalis.core.banking.psdx.interfaces.dtos.PSDAccountDTO;
+import com.catalis.core.banking.psdx.interfaces.dtos.PSDBalanceDTO;
+import com.catalis.core.banking.psdx.interfaces.dtos.PSDTransactionDTO;
+import com.catalis.core.banking.psdx.interfaces.services.AccountInformationService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.time.LocalDate;
+import java.util.Arrays;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class AccountInformationControllerTest {
+
+    @Mock
+    private AccountInformationService accountInformationService;
+
+    @InjectMocks
+    private AccountInformationController accountInformationController;
+
+    private WebTestClient webTestClient;
+
+    private final Long CONSENT_ID = 1L;
+    private final Long PARTY_ID = 100L;
+    private final Long ACCOUNT_ID = 1000L;
+    private final Long TRANSACTION_ID = 10000L;
+
+    private PSDAccountDTO account1;
+    private PSDAccountDTO account2;
+    private PSDBalanceDTO balance1;
+    private PSDBalanceDTO balance2;
+    private PSDTransactionDTO transaction1;
+    private PSDTransactionDTO transaction2;
+
+    @BeforeEach
+    void setUp() {
+        webTestClient = WebTestClient.bindToController(accountInformationController).build();
+
+        // Setup test data
+        account1 = new PSDAccountDTO();
+        account1.setResourceId(ACCOUNT_ID);
+        account1.setIban("DE89370400440532013000");
+        account1.setOwnerPartyId(PARTY_ID);
+
+        account2 = new PSDAccountDTO();
+        account2.setResourceId(ACCOUNT_ID + 1);
+        account2.setIban("DE89370400440532013001");
+        account2.setOwnerPartyId(PARTY_ID);
+
+        balance1 = new PSDBalanceDTO();
+        balance1.setBalanceType("closingBooked");
+        balance1.setBalanceAmount(new PSDBalanceDTO.PSDAmountDTO("EUR", java.math.BigDecimal.valueOf(1000.00)));
+
+        balance2 = new PSDBalanceDTO();
+        balance2.setBalanceType("expected");
+        balance2.setBalanceAmount(new PSDBalanceDTO.PSDAmountDTO("EUR", java.math.BigDecimal.valueOf(1100.00)));
+
+        transaction1 = new PSDTransactionDTO();
+        transaction1.setTransactionId(TRANSACTION_ID);
+        transaction1.setTransactionStatus("booked");
+        transaction1.setBookingDate(LocalDate.now().minusDays(1));
+
+        transaction2 = new PSDTransactionDTO();
+        transaction2.setTransactionId(TRANSACTION_ID + 1);
+        transaction2.setTransactionStatus("booked");
+        transaction2.setBookingDate(LocalDate.now().minusDays(2));
+    }
+
+    @Test
+    void getAccounts_shouldReturnAccounts() {
+        // Given
+        when(accountInformationService.getAccounts(CONSENT_ID, PARTY_ID))
+                .thenReturn(Flux.fromIterable(Arrays.asList(account1, account2)));
+
+        // When & Then
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder.path("/api/accounts").queryParam("partyId", PARTY_ID).build())
+                .header("X-Consent-ID", CONSENT_ID.toString())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(PSDAccountDTO.class)
+                .hasSize(2)
+                .contains(account1, account2);
+    }
+
+    @Test
+    void getAccount_shouldReturnAccount() {
+        // Given
+        when(accountInformationService.getAccount(CONSENT_ID, ACCOUNT_ID))
+                .thenReturn(Mono.just(account1));
+
+        // When & Then
+        webTestClient.get()
+                .uri("/api/accounts/{accountId}", ACCOUNT_ID)
+                .header("X-Consent-ID", CONSENT_ID.toString())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(PSDAccountDTO.class)
+                .isEqualTo(account1);
+    }
+
+    @Test
+    void getBalances_shouldReturnBalances() {
+        // Given
+        when(accountInformationService.getBalances(CONSENT_ID, ACCOUNT_ID))
+                .thenReturn(Flux.fromIterable(Arrays.asList(balance1, balance2)));
+
+        // When & Then
+        webTestClient.get()
+                .uri("/api/accounts/{accountId}/balances", ACCOUNT_ID)
+                .header("X-Consent-ID", CONSENT_ID.toString())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(PSDBalanceDTO.class)
+                .hasSize(2)
+                .contains(balance1, balance2);
+    }
+
+    @Test
+    void getTransactions_shouldReturnTransactions() {
+        // Given
+        LocalDate fromDate = LocalDate.now().minusDays(7);
+        LocalDate toDate = LocalDate.now();
+        when(accountInformationService.getTransactions(anyLong(), anyLong(), any(LocalDate.class), any(LocalDate.class)))
+                .thenReturn(Flux.fromIterable(Arrays.asList(transaction1, transaction2)));
+
+        // When & Then
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/accounts/{accountId}/transactions")
+                        .queryParam("fromDate", fromDate)
+                        .queryParam("toDate", toDate)
+                        .build(ACCOUNT_ID))
+                .header("X-Consent-ID", CONSENT_ID.toString())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(PSDTransactionDTO.class)
+                .hasSize(2)
+                .contains(transaction1, transaction2);
+    }
+
+    @Test
+    void getTransaction_shouldReturnTransaction() {
+        // Given
+        when(accountInformationService.getTransaction(CONSENT_ID, ACCOUNT_ID, TRANSACTION_ID))
+                .thenReturn(Mono.just(transaction1));
+
+        // When & Then
+        webTestClient.get()
+                .uri("/api/accounts/{accountId}/transactions/{transactionId}", ACCOUNT_ID, TRANSACTION_ID)
+                .header("X-Consent-ID", CONSENT_ID.toString())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(PSDTransactionDTO.class)
+                .isEqualTo(transaction1);
+    }
+}
