@@ -1,6 +1,7 @@
 package com.catalis.core.banking.psdx.core.services;
 
 import com.catalis.core.banking.psdx.core.mappers.ThirdPartyProviderMapper;
+import com.catalis.core.banking.psdx.core.security.CertificateValidationService;
 import com.catalis.core.banking.psdx.interfaces.dtos.PSDThirdPartyProviderDTO;
 import com.catalis.core.banking.psdx.interfaces.dtos.PSDThirdPartyProviderRegistrationDTO;
 import com.catalis.core.banking.psdx.interfaces.enums.ProviderStatus;
@@ -27,22 +28,40 @@ public class ThirdPartyProviderServiceImpl implements ThirdPartyProviderService 
 
     private final ThirdPartyProviderRepository thirdPartyProviderRepository;
     private final ThirdPartyProviderMapper thirdPartyProviderMapper;
+    private final CertificateValidationService certificateValidationService;
 
     @Override
     public Mono<PSDThirdPartyProviderDTO> registerProvider(PSDThirdPartyProviderRegistrationDTO registration) {
         log.debug("Registering new third party provider: {}", registration.getName());
 
+        // Validate certificate if provided
+        if (registration.getCertificate() != null && registration.getCertificate().getContent() != null) {
+            boolean isValid = certificateValidationService.validateCertificate(registration.getCertificate().getContent());
+            if (!isValid) {
+                return Mono.error(new IllegalArgumentException("Invalid certificate"));
+            }
+
+            // Extract certificate information
+            CertificateValidationService.CertificateInfo certInfo =
+                    certificateValidationService.extractCertificateInfo(registration.getCertificate().getContent());
+            if (certInfo != null) {
+                // Update certificate fields in the registration DTO
+                registration.getCertificate().setSerialNumber(certInfo.getSerialNumber());
+                registration.getCertificate().setSubject(certInfo.getSubject());
+                registration.getCertificate().setIssuer(certInfo.getIssuer());
+                registration.getCertificate().setValidFrom(certInfo.getValidFrom());
+                registration.getCertificate().setValidUntil(certInfo.getValidUntil());
+            }
+        }
+
         // Generate a unique API key
         String apiKey = UUID.randomUUID().toString();
 
-        ThirdPartyProvider provider = ThirdPartyProvider.builder()
-                .name(registration.getName())
-                .registrationNumber(registration.getRegistrationNumber())
-                .apiKey(apiKey)
-                .redirectUri(registration.getRedirectUri())
-                .status(ProviderStatus.ACTIVE)
-                .providerType(ProviderType.valueOf(registration.getProviderType()))
-                .build();
+        // Convert registration DTO to entity using mapper
+        ThirdPartyProvider provider = thirdPartyProviderMapper.toEntity(registration);
+        provider.setApiKey(apiKey);
+        provider.setCreatedAt(LocalDateTime.now());
+        provider.setUpdatedAt(LocalDateTime.now());
 
         return thirdPartyProviderRepository.save(provider)
                 .map(thirdPartyProviderMapper::toDto)
@@ -79,10 +98,13 @@ public class ThirdPartyProviderServiceImpl implements ThirdPartyProviderService 
 
         return thirdPartyProviderRepository.findById(providerId)
                 .flatMap(provider -> {
-                    provider.setName(providerUpdate.getName());
-                    provider.setRedirectUri(providerUpdate.getRedirectUri());
-                    provider.setUpdatedAt(LocalDateTime.now());
-                    return thirdPartyProviderRepository.save(provider);
+                    // Convert DTO to entity using mapper, but preserve ID and API key
+                    ThirdPartyProvider updatedProvider = thirdPartyProviderMapper.toEntity(providerUpdate);
+                    updatedProvider.setId(provider.getId());
+                    updatedProvider.setApiKey(provider.getApiKey());
+                    updatedProvider.setCreatedAt(provider.getCreatedAt());
+                    updatedProvider.setUpdatedAt(LocalDateTime.now());
+                    return thirdPartyProviderRepository.save(updatedProvider);
                 })
                 .map(thirdPartyProviderMapper::toDto)
                 .doOnSuccess(dto -> log.info("Updated third party provider with ID: {}", providerId));

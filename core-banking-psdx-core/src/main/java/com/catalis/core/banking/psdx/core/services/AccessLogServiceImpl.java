@@ -44,6 +44,8 @@ public class AccessLogServiceImpl implements AccessLogService {
                 .userAgent(accessLogRequest.getUserAgent())
                 .status(AccessStatus.valueOf(accessLogRequest.getStatus()))
                 .errorMessage(accessLogRequest.getErrorMessage())
+                .xRequestId(accessLogRequest.getXRequestId())
+                .timestamp(LocalDateTime.now())
                 .build();
 
         return accessLogRepository.save(accessLog)
@@ -101,5 +103,13 @@ public class AccessLogServiceImpl implements AccessLogService {
         return accessLogRepository.findByThirdPartyId(thirdPartyId)
                 .map(accessLogMapper::toDto)
                 .doOnComplete(() -> log.debug("Retrieved access logs for third party ID: {}", thirdPartyId));
+    }
+
+    @Override
+    public Mono<Long> countAccessLogsForConsent(Long consentId) {
+        log.debug("Counting access logs for consent ID: {}", consentId);
+
+        return accessLogRepository.countByConsentId(consentId)
+                .doOnSuccess(count -> log.debug("Counted {} access logs for consent ID: {}", count, consentId));
     }
 }

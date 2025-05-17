@@ -61,4 +61,12 @@ public interface ConsentService {
      * @return A Mono of Boolean indicating if the consent is valid
      */
     Mono<Boolean> validateConsent(Long consentId, String resourceType, String accessType);
+
+    /**
+     * Get the status of a consent.
+     *
+     * @param consentId The ID of the consent
+     * @return A Mono of the consent status
+     */
+    Mono<PSDConsentStatusDTO> getConsentStatus(Long consentId);
 }

@@ -61,4 +61,12 @@ public interface AccessLogService {
      * @return A Flux of access logs
      */
     Flux<PSDAccessLogDTO> getAccessLogsForThirdParty(String thirdPartyId);
+
+    /**
+     * Count the number of access logs for a specific consent.
+     *
+     * @param consentId The ID of the consent
+     * @return A Mono of the count
+     */
+    Mono<Long> countAccessLogsForConsent(Long consentId);
 }

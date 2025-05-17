@@ -41,5 +41,22 @@ public interface ConsentMapper {
     @Mapping(target = "status", expression = "java(com.catalis.core.banking.psdx.interfaces.enums.ConsentStatus.valueOf(consentDTO.getConsentStatus()))")
     @Mapping(target = "accessFrequency", source = "accessFrequency")
     @Mapping(target = "accessScope", source = "accessScope")
+    @Mapping(target = "access", ignore = true)
     Consent toEntity(PSDConsentDTO consentDTO);
+
+    /**
+     * Convert a list of PSDAccessDTO to a string.
+     *
+     * @param accessList The list of PSDAccessDTO
+     * @return The string representation
+     */
+    default String map(java.util.List<PSDConsentDTO.PSDAccessDTO> accessList) {
+        if (accessList == null || accessList.isEmpty()) {
+            return null;
+        }
+        return accessList.stream()
+                .map(access -> access.getResourceId())
+                .filter(java.util.Objects::nonNull)
+                .collect(java.util.stream.Collectors.joining(","));
+    }
 }

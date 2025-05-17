@@ -24,13 +24,13 @@ public interface AccessLogMapper {
     @Mapping(target = "accessType", expression = "java(accessLog.getAccessType().name())")
     @Mapping(target = "resourceType", expression = "java(accessLog.getResourceType().name())")
     @Mapping(target = "status", expression = "java(accessLog.getStatus().name())")
-    @Mapping(target = "xRequestId", ignore = true)
-    @Mapping(target = "tppRequestId", ignore = true)
-    @Mapping(target = "psuId", ignore = true)
-    @Mapping(target = "psuIdType", ignore = true)
-    @Mapping(target = "psuCorporateId", ignore = true)
-    @Mapping(target = "psuCorporateIdType", ignore = true)
-    @Mapping(target = "tppRedirectUri", ignore = true)
+    @Mapping(target = "xRequestId", source = "XRequestId")
+    @Mapping(target = "tppRequestId", source = "tppRequestId")
+    @Mapping(target = "psuId", source = "psuId")
+    @Mapping(target = "psuIdType", source = "psuIdType")
+    @Mapping(target = "psuCorporateId", source = "psuCorporateId")
+    @Mapping(target = "psuCorporateIdType", source = "psuCorporateIdType")
+    @Mapping(target = "tppRedirectUri", source = "tppRedirectUri")
     PSDAccessLogDTO toDto(AccessLog accessLog);
 
     /**
@@ -44,6 +44,14 @@ public interface AccessLogMapper {
     @Mapping(target = "status", expression = "java(com.catalis.core.banking.psdx.interfaces.enums.AccessStatus.valueOf(accessLogDTO.getStatus()))")
     @Mapping(target = "id", source = "id")
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "timestamp", ignore = true)
+    @Mapping(target = "xRequestId", source = "XRequestId")
+    @Mapping(target = "tppRequestId", source = "tppRequestId")
+    @Mapping(target = "psuId", source = "psuId")
+    @Mapping(target = "psuIdType", source = "psuIdType")
+    @Mapping(target = "psuCorporateId", source = "psuCorporateId")
+    @Mapping(target = "psuCorporateIdType", source = "psuCorporateIdType")
+    @Mapping(target = "tppRedirectUri", source = "tppRedirectUri")
     AccessLog toEntity(PSDAccessLogDTO accessLogDTO);
 
     /**
@@ -57,5 +65,13 @@ public interface AccessLogMapper {
     @Mapping(target = "status", expression = "java(com.catalis.core.banking.psdx.interfaces.enums.AccessStatus.valueOf(request.getStatus()))")
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "timestamp", ignore = true)
+    @Mapping(target = "xRequestId", source = "XRequestId")
+    @Mapping(target = "tppRequestId", source = "tppRequestId")
+    @Mapping(target = "psuId", source = "psuId")
+    @Mapping(target = "psuIdType", source = "psuIdType")
+    @Mapping(target = "psuCorporateId", source = "psuCorporateId")
+    @Mapping(target = "psuCorporateIdType", source = "psuCorporateIdType")
+    @Mapping(target = "tppRedirectUri", source = "tppRedirectUri")
     AccessLog fromRequest(PSDAccessLogRequestDTO request);
 }

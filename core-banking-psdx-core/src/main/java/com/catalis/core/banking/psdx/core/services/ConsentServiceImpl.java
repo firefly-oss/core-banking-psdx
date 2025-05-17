@@ -117,4 +117,24 @@ public class ConsentServiceImpl implements ConsentService {
                 })
                 .defaultIfEmpty(false);
     }
+
+    @Override
+    public Mono<PSDConsentStatusDTO> getConsentStatus(Long consentId) {
+        log.debug("Getting status for consent with ID: {}", consentId);
+
+        return consentRepository.findById(consentId)
+                .map(consent -> {
+                    PSDConsentStatusDTO statusDTO = new PSDConsentStatusDTO();
+                    statusDTO.setConsentStatus(consent.getStatus().name());
+                    return statusDTO;
+                })
+                .doOnSuccess(statusDTO -> {
+                    if (statusDTO != null) {
+                        log.debug("Retrieved status for consent with ID: {}: {}", consentId, statusDTO.getConsentStatus());
+                    } else {
+                        log.debug("No consent found with ID: {}", consentId);
+                    }
+                })
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("Consent not found with ID: " + consentId)));
+    }
 }

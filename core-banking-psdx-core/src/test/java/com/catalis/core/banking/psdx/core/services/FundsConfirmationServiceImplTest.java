@@ -1,6 +1,8 @@
 package com.catalis.core.banking.psdx.core.services;
 
 import com.catalis.core.banking.psdx.core.ports.AccountServicePort;
+import com.catalis.core.banking.psdx.interfaces.dtos.PSDAccountReferenceDTO;
+import com.catalis.core.banking.psdx.interfaces.dtos.PSDAmountDTO;
 import com.catalis.core.banking.psdx.interfaces.dtos.PSDFundsConfirmationDTO;
 import com.catalis.core.banking.psdx.interfaces.services.ConsentService;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,10 +40,10 @@ class FundsConfirmationServiceImplTest {
     @BeforeEach
     void setUp() {
         // Setup test data
-        PSDFundsConfirmationDTO.PSDAccountReferenceDTO account = new PSDFundsConfirmationDTO.PSDAccountReferenceDTO();
+        PSDAccountReferenceDTO account = new PSDAccountReferenceDTO();
         account.setIban("DE89370400440532013000");
 
-        PSDFundsConfirmationDTO.PSDAmountDTO amount = new PSDFundsConfirmationDTO.PSDAmountDTO();
+        PSDAmountDTO amount = new PSDAmountDTO();
         amount.setCurrency("EUR");
         amount.setAmount(BigDecimal.valueOf(100.00));
 
