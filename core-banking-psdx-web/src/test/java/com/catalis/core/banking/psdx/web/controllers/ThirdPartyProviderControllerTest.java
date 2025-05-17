@@ -87,7 +87,7 @@ class ThirdPartyProviderControllerTest {
 
         // When & Then
         webTestClient.post()
-                .uri("/api/providers")
+                .uri("/api/v1/providers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(registrationDTO)
                 .exchange()
@@ -104,7 +104,7 @@ class ThirdPartyProviderControllerTest {
 
         // When & Then
         webTestClient.get()
-                .uri("/api/providers/{providerId}", PROVIDER_ID)
+                .uri("/api/v1/providers/{providerId}", PROVIDER_ID)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(PSDThirdPartyProviderDTO.class)
@@ -119,7 +119,7 @@ class ThirdPartyProviderControllerTest {
 
         // When & Then
         webTestClient.get()
-                .uri("/api/providers")
+                .uri("/api/v1/providers")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBodyList(PSDThirdPartyProviderDTO.class)
@@ -135,7 +135,7 @@ class ThirdPartyProviderControllerTest {
 
         // When & Then
         webTestClient.put()
-                .uri("/api/providers/{providerId}", PROVIDER_ID)
+                .uri("/api/v1/providers/{providerId}", PROVIDER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(provider1)
                 .exchange()
@@ -157,7 +157,7 @@ class ThirdPartyProviderControllerTest {
 
         // When & Then
         webTestClient.post()
-                .uri("/api/providers/{providerId}/suspend", PROVIDER_ID)
+                .uri("/api/v1/providers/{providerId}/suspend", PROVIDER_ID)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(PSDThirdPartyProviderDTO.class)
@@ -172,7 +172,7 @@ class ThirdPartyProviderControllerTest {
 
         // When & Then
         webTestClient.post()
-                .uri("/api/providers/{providerId}/activate", PROVIDER_ID)
+                .uri("/api/v1/providers/{providerId}/activate", PROVIDER_ID)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(PSDThirdPartyProviderDTO.class)
@@ -188,7 +188,7 @@ class ThirdPartyProviderControllerTest {
 
         // When & Then
         webTestClient.get()
-                .uri("/api/providers/validate")
+                .uri("/api/v1/providers/validate")
                 .header("X-API-KEY", apiKey)
                 .exchange()
                 .expectStatus().isOk()

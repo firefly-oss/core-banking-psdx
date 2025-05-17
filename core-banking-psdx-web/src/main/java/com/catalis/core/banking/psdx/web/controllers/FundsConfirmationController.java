@@ -22,7 +22,7 @@ import jakarta.validation.Valid;
  * REST controller for funds confirmation.
  */
 @RestController
-@RequestMapping("/api/funds-confirmations")
+@RequestMapping("/api/v1/funds-confirmations")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Funds Confirmation", description = "APIs for funds confirmation according to PSD2/PSD3 regulations")
@@ -32,7 +32,67 @@ public class FundsConfirmationController {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Confirm funds", description = "Confirms the availability of funds for a specific amount")
+    @Operation(
+        summary = "Confirm funds", 
+        description = """
+            ## Confirm Availability of Funds
+
+            This endpoint checks whether a specific amount of funds is available on a customer's account.
+
+            ### Description
+            This operation is part of the Funds Confirmation Service (FCS) under PSD2/PSD3 regulations.
+            It allows Third Party Providers (TPPs) to verify if a customer has sufficient funds for a 
+            transaction without initiating an actual payment.
+
+            ### Request Headers
+            * `X-Consent-ID` - The unique identifier of the consent that authorizes this funds check
+
+            ### Request Body
+            The request must include:
+            * Account reference (account identifier)
+            * Amount and currency to check
+            * Reference information for the potential transaction
+
+            ### Processing
+            The system will:
+            1. Validate the consent ID provided in the header
+            2. Check that the consent is valid, active, and covers funds confirmation
+            3. Verify that the specified account is included in the consent's scope
+            4. Check the current available balance on the account
+            5. Compare the available balance with the requested amount
+            6. Create a funds confirmation record with the result
+
+            ### Response
+            Returns a funds confirmation object containing:
+            * Confirmation identifier
+            * Result (true if funds are available, false if not)
+            * Timestamp of the confirmation
+            * Account reference
+            * Amount and currency checked
+            * Reference information
+
+            ### Important Notes
+            * A positive confirmation does not guarantee funds will be available at the time of an actual payment
+            * No funds are reserved or blocked by this operation
+            * The confirmation is a point-in-time check and may become outdated quickly
+
+            ### Use Cases
+            * Card-based payment instruments issuing funds checks before authorizing transactions
+            * Pre-validation of funds availability before initiating a payment
+            * Merchant verification of customer's ability to pay
+
+            ### Regulatory Compliance
+            * This endpoint implements the Funds Confirmation Service as defined in PSD2/PSD3
+            * Access is logged for regulatory reporting and audit purposes
+            * Explicit consent is required for funds confirmation
+
+            ### Security Considerations
+            * All requests must include a valid consent ID
+            * Consent validation includes checking expiration and revocation status
+            * Funds confirmation requests are monitored for suspicious patterns
+            * Results are considered sensitive financial information
+            """
+    )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Funds confirmation created successfully",
                     content = @Content(schema = @Schema(implementation = PSDFundsConfirmationDTO.class))),
@@ -49,7 +109,62 @@ public class FundsConfirmationController {
     }
 
     @GetMapping(value = "/{fundsConfirmationId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Get funds confirmation", description = "Gets a funds confirmation by its ID")
+    @Operation(
+        summary = "Get funds confirmation", 
+        description = """
+            ## Retrieve a Funds Confirmation Record
+
+            This endpoint retrieves a previously created funds confirmation record by its unique ID.
+
+            ### Description
+            This operation is part of the Funds Confirmation Service (FCS) under PSD2/PSD3 regulations.
+            It allows Third Party Providers (TPPs) to retrieve the details of a funds confirmation
+            check that was previously performed.
+
+            ### Request Headers
+            * `X-Consent-ID` - The unique identifier of the consent that authorizes access to this funds confirmation
+
+            ### Path Parameters
+            * `fundsConfirmationId` - The unique identifier of the funds confirmation record to retrieve
+
+            ### Processing
+            The system will:
+            1. Validate the consent ID provided in the header
+            2. Check that the consent is valid, active, and covers funds confirmation
+            3. Verify that the funds confirmation record exists and is associated with the consent
+            4. Retrieve the funds confirmation details
+
+            ### Response
+            Returns a funds confirmation object containing:
+            * Confirmation identifier
+            * Result (true if funds were available, false if not)
+            * Timestamp of the confirmation
+            * Account reference
+            * Amount and currency checked
+            * Reference information
+
+            ### Historical Context
+            * Funds confirmation records are historical point-in-time checks
+            * The result reflects the account balance at the time of the original check
+            * Current account balance may differ from the time of the check
+
+            ### Error Scenarios
+            * If the funds confirmation doesn't exist, returns a 404 Not Found response
+            * If the funds confirmation exists but is not covered by the consent, returns a 403 Forbidden response
+            * If the consent is invalid or expired, returns a 401 Unauthorized response
+
+            ### Regulatory Compliance
+            * This endpoint implements the Funds Confirmation Service as defined in PSD2/PSD3
+            * Access is logged for regulatory reporting and audit purposes
+            * Explicit consent is required for accessing funds confirmation records
+
+            ### Security Considerations
+            * All requests must include a valid consent ID
+            * Consent validation includes checking expiration and revocation status
+            * Funds confirmation results are considered sensitive financial information
+            * Access to historical records may be time-limited for security reasons
+            """
+    )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Funds confirmation found",
                     content = @Content(schema = @Schema(implementation = PSDFundsConfirmationDTO.class))),

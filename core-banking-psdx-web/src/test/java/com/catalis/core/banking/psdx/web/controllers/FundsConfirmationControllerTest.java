@@ -1,5 +1,7 @@
 package com.catalis.core.banking.psdx.web.controllers;
 
+import com.catalis.core.banking.psdx.interfaces.dtos.PSDAccountReferenceDTO;
+import com.catalis.core.banking.psdx.interfaces.dtos.PSDAmountDTO;
 import com.catalis.core.banking.psdx.interfaces.dtos.PSDFundsConfirmationDTO;
 import com.catalis.core.banking.psdx.interfaces.services.FundsConfirmationService;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,13 +50,13 @@ class FundsConfirmationControllerTest {
         fundsConfirmation.setConsentId(CONSENT_ID);
 
         // Create account reference
-        PSDFundsConfirmationDTO.PSDAccountReferenceDTO account = new PSDFundsConfirmationDTO.PSDAccountReferenceDTO();
+        PSDAccountReferenceDTO account = new PSDAccountReferenceDTO();
         account.setIban("DE89370400440532013000");
         account.setCurrency("EUR");
         fundsConfirmation.setAccount(account);
 
         // Create instructed amount
-        PSDFundsConfirmationDTO.PSDAmountDTO instructedAmount = new PSDFundsConfirmationDTO.PSDAmountDTO();
+        PSDAmountDTO instructedAmount = new PSDAmountDTO();
         instructedAmount.setCurrency("EUR");
         instructedAmount.setAmount(BigDecimal.valueOf(100.00));
         fundsConfirmation.setInstructedAmount(instructedAmount);
@@ -62,7 +64,7 @@ class FundsConfirmationControllerTest {
         fundsConfirmation.setCreditorName("John Doe");
 
         // Create creditor account
-        PSDFundsConfirmationDTO.PSDAccountReferenceDTO creditorAccount = new PSDFundsConfirmationDTO.PSDAccountReferenceDTO();
+        PSDAccountReferenceDTO creditorAccount = new PSDAccountReferenceDTO();
         creditorAccount.setIban("FR7630006000011234567890189");
         creditorAccount.setCurrency("EUR");
         fundsConfirmation.setCreditorAccount(creditorAccount);
@@ -73,13 +75,13 @@ class FundsConfirmationControllerTest {
         fundsConfirmationRequest = new PSDFundsConfirmationDTO();
 
         // Create account reference for request
-        PSDFundsConfirmationDTO.PSDAccountReferenceDTO accountRequest = new PSDFundsConfirmationDTO.PSDAccountReferenceDTO();
+        PSDAccountReferenceDTO accountRequest = new PSDAccountReferenceDTO();
         accountRequest.setIban("DE89370400440532013000");
         accountRequest.setCurrency("EUR");
         fundsConfirmationRequest.setAccount(accountRequest);
 
         // Create instructed amount for request
-        PSDFundsConfirmationDTO.PSDAmountDTO instructedAmountRequest = new PSDFundsConfirmationDTO.PSDAmountDTO();
+        PSDAmountDTO instructedAmountRequest = new PSDAmountDTO();
         instructedAmountRequest.setCurrency("EUR");
         instructedAmountRequest.setAmount(BigDecimal.valueOf(100.00));
         fundsConfirmationRequest.setInstructedAmount(instructedAmountRequest);
@@ -87,7 +89,7 @@ class FundsConfirmationControllerTest {
         fundsConfirmationRequest.setCreditorName("John Doe");
 
         // Create creditor account for request
-        PSDFundsConfirmationDTO.PSDAccountReferenceDTO creditorAccountRequest = new PSDFundsConfirmationDTO.PSDAccountReferenceDTO();
+        PSDAccountReferenceDTO creditorAccountRequest = new PSDAccountReferenceDTO();
         creditorAccountRequest.setIban("FR7630006000011234567890189");
         creditorAccountRequest.setCurrency("EUR");
         fundsConfirmationRequest.setCreditorAccount(creditorAccountRequest);
@@ -101,7 +103,7 @@ class FundsConfirmationControllerTest {
 
         // When & Then
         webTestClient.post()
-                .uri("/api/funds-confirmations")
+                .uri("/api/v1/funds-confirmations")
                 .header("X-Consent-ID", CONSENT_ID.toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(fundsConfirmationRequest)
@@ -119,7 +121,7 @@ class FundsConfirmationControllerTest {
 
         // When & Then
         webTestClient.get()
-                .uri("/api/funds-confirmations/{fundsConfirmationId}", FUNDS_CONFIRMATION_ID)
+                .uri("/api/v1/funds-confirmations/{fundsConfirmationId}", FUNDS_CONFIRMATION_ID)
                 .header("X-Consent-ID", CONSENT_ID.toString())
                 .exchange()
                 .expectStatus().isOk()

@@ -87,7 +87,7 @@ class AccountInformationControllerTest {
 
         // When & Then
         webTestClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/api/accounts").queryParam("partyId", PARTY_ID).build())
+                .uri(uriBuilder -> uriBuilder.path("/api/v1/accounts").queryParam("partyId", PARTY_ID).build())
                 .header("X-Consent-ID", CONSENT_ID.toString())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -105,7 +105,7 @@ class AccountInformationControllerTest {
 
         // When & Then
         webTestClient.get()
-                .uri("/api/accounts/{accountId}", ACCOUNT_ID)
+                .uri("/api/v1/accounts/{accountId}", ACCOUNT_ID)
                 .header("X-Consent-ID", CONSENT_ID.toString())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -122,7 +122,7 @@ class AccountInformationControllerTest {
 
         // When & Then
         webTestClient.get()
-                .uri("/api/accounts/{accountId}/balances", ACCOUNT_ID)
+                .uri("/api/v1/accounts/{accountId}/balances", ACCOUNT_ID)
                 .header("X-Consent-ID", CONSENT_ID.toString())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -143,7 +143,7 @@ class AccountInformationControllerTest {
         // When & Then
         webTestClient.get()
                 .uri(uriBuilder -> uriBuilder
-                        .path("/api/accounts/{accountId}/transactions")
+                        .path("/api/v1/accounts/{accountId}/transactions")
                         .queryParam("fromDate", fromDate)
                         .queryParam("toDate", toDate)
                         .build(ACCOUNT_ID))
@@ -164,7 +164,7 @@ class AccountInformationControllerTest {
 
         // When & Then
         webTestClient.get()
-                .uri("/api/accounts/{accountId}/transactions/{transactionId}", ACCOUNT_ID, TRANSACTION_ID)
+                .uri("/api/v1/accounts/{accountId}/transactions/{transactionId}", ACCOUNT_ID, TRANSACTION_ID)
                 .header("X-Consent-ID", CONSENT_ID.toString())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()

@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.r2dbc.config.EnableR2dbcAuditing;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 import org.springframework.web.reactive.config.EnableWebFlux;
@@ -35,6 +36,7 @@ import org.springframework.web.reactive.config.EnableWebFlux;
 )
 @EnableR2dbcAuditing
 @ConfigurationPropertiesScan
+@EnableAspectJAutoProxy
 @OpenAPIDefinition(
         info = @Info(
                 title = "${spring.application.name}",

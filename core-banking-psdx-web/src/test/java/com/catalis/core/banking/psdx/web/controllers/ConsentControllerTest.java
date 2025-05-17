@@ -110,7 +110,7 @@ class ConsentControllerTest {
 
         // When & Then
         webTestClient.post()
-                .uri("/api/consents")
+                .uri("/api/v1/consents")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(consentRequest)
                 .exchange()
@@ -127,7 +127,7 @@ class ConsentControllerTest {
 
         // When & Then
         webTestClient.get()
-                .uri("/api/consents/{consentId}", CONSENT_ID)
+                .uri("/api/v1/consents/{consentId}", CONSENT_ID)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(PSDConsentDTO.class)
@@ -142,7 +142,7 @@ class ConsentControllerTest {
 
         // When & Then
         webTestClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/api/consents")
+                .uri(uriBuilder -> uriBuilder.path("/api/v1/consents")
                         .queryParam("partyId", PARTY_ID)
                         .build())
                 .exchange()
@@ -170,7 +170,7 @@ class ConsentControllerTest {
 
         // When & Then
         webTestClient.put()
-                .uri("/api/consents/{consentId}/status", CONSENT_ID)
+                .uri("/api/v1/consents/{consentId}/status", CONSENT_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(statusUpdate)
                 .exchange()
@@ -197,7 +197,7 @@ class ConsentControllerTest {
 
         // When & Then
         webTestClient.delete()
-                .uri("/api/consents/{consentId}", CONSENT_ID)
+                .uri("/api/v1/consents/{consentId}", CONSENT_ID)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(PSDConsentDTO.class)

@@ -115,7 +115,7 @@ class PaymentInitiationControllerTest {
         // In a real test, we would need to ensure the request body is valid
         // For now, we'll just verify that the controller returns 400 for invalid request
         webTestClient.post()
-                .uri("/api/payments")
+                .uri("/api/v1/payments")
                 .header("X-Consent-ID", CONSENT_ID.toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(paymentRequest)
@@ -131,7 +131,7 @@ class PaymentInitiationControllerTest {
 
         // When & Then
         webTestClient.get()
-                .uri("/api/payments/{paymentId}", PAYMENT_ID)
+                .uri("/api/v1/payments/{paymentId}", PAYMENT_ID)
                 .header("X-Consent-ID", CONSENT_ID.toString())
                 .exchange()
                 .expectStatus().isOk()
@@ -151,7 +151,7 @@ class PaymentInitiationControllerTest {
 
         // When & Then
         webTestClient.get()
-                .uri("/api/payments/{paymentId}/status", PAYMENT_ID)
+                .uri("/api/v1/payments/{paymentId}/status", PAYMENT_ID)
                 .header("X-Consent-ID", CONSENT_ID.toString())
                 .exchange()
                 .expectStatus().isOk()
@@ -184,7 +184,7 @@ class PaymentInitiationControllerTest {
 
         // When & Then
         webTestClient.delete()
-                .uri("/api/payments/{paymentId}", PAYMENT_ID)
+                .uri("/api/v1/payments/{paymentId}", PAYMENT_ID)
                 .header("X-Consent-ID", CONSENT_ID.toString())
                 .exchange()
                 .expectStatus().isOk()
@@ -205,7 +205,7 @@ class PaymentInitiationControllerTest {
 
         // When & Then
         webTestClient.post()
-                .uri("/api/payments/{paymentId}/authorize", PAYMENT_ID)
+                .uri("/api/v1/payments/{paymentId}/authorize", PAYMENT_ID)
                 .header("X-Consent-ID", CONSENT_ID.toString())
                 .contentType(MediaType.TEXT_PLAIN)
                 .bodyValue(authCode)

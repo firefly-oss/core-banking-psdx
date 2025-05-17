@@ -103,7 +103,7 @@ class CardAccountControllerTest {
 
         // When & Then
         webTestClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/api/card-accounts")
+                .uri(uriBuilder -> uriBuilder.path("/api/v1/card-accounts")
                         .queryParam("partyId", PARTY_ID)
                         .build())
                 .header("X-Consent-ID", CONSENT_ID.toString())
@@ -123,7 +123,7 @@ class CardAccountControllerTest {
 
         // When & Then
         webTestClient.get()
-                .uri("/api/card-accounts/{cardAccountId}", CARD_ACCOUNT_ID)
+                .uri("/api/v1/card-accounts/{cardAccountId}", CARD_ACCOUNT_ID)
                 .header("X-Consent-ID", CONSENT_ID.toString())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -140,7 +140,7 @@ class CardAccountControllerTest {
 
         // When & Then
         webTestClient.get()
-                .uri("/api/card-accounts/{cardAccountId}/balances", CARD_ACCOUNT_ID)
+                .uri("/api/v1/card-accounts/{cardAccountId}/balances", CARD_ACCOUNT_ID)
                 .header("X-Consent-ID", CONSENT_ID.toString())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -161,7 +161,7 @@ class CardAccountControllerTest {
 
         // When & Then
         webTestClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/api/card-accounts/{cardAccountId}/transactions")
+                .uri(uriBuilder -> uriBuilder.path("/api/v1/card-accounts/{cardAccountId}/transactions")
                         .queryParam("fromDate", fromDate.toString())
                         .queryParam("toDate", toDate.toString())
                         .build(CARD_ACCOUNT_ID))
@@ -185,7 +185,7 @@ class CardAccountControllerTest {
 
         // When & Then
         webTestClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/api/card-accounts/{cardAccountId}/transactions")
+                .uri(uriBuilder -> uriBuilder.path("/api/v1/card-accounts/{cardAccountId}/transactions")
                         .queryParam("fromDate", fromDate.toString())
                         .queryParam("toDate", toDate.toString())
                         .build(CARD_ACCOUNT_ID))
@@ -206,7 +206,7 @@ class CardAccountControllerTest {
 
         // When & Then
         webTestClient.get()
-                .uri("/api/card-accounts/{cardAccountId}/transactions/{transactionId}", CARD_ACCOUNT_ID, TRANSACTION_ID)
+                .uri("/api/v1/card-accounts/{cardAccountId}/transactions/{transactionId}", CARD_ACCOUNT_ID, TRANSACTION_ID)
                 .header("X-Consent-ID", CONSENT_ID.toString())
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()

@@ -99,11 +99,29 @@ integration:
 
 # PSD2/PSD3 and FIDA Configuration
 psdx:
+  api:
+    base-url: ${API_BASE_URL:http://localhost:8080}
   consent:
     default-expiry-days: 90
   security:
     token-validity-seconds: 3600
     refresh-token-validity-days: 30
+    jwt:
+      secret: ${JWT_SECRET:ChangeThisToASecureSecretKeyInProduction}
+    encryption:
+      enabled: true
+      algorithm: AES/GCM/NoPadding
+      secret-key: ${ENCRYPTION_SECRET:ChangeThisToASecureSecretKeyInProduction}
+  tpp:
+    validation:
+      enabled: true
+      certificate-validation: true
+  logging:
+    retention-days: 365
+  sca:
+    required-for-all-payments: true
+    exemption-threshold-amount: 30.00
+    exemption-threshold-currency: EUR
 
 ---
 spring:

@@ -5,6 +5,7 @@ import com.catalis.core.banking.psdx.interfaces.dtos.PSDAccessLogRequestDTO;
 import com.catalis.core.banking.psdx.interfaces.services.AccessLogService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -27,7 +28,7 @@ import java.time.LocalDateTime;
  * REST controller for access logging.
  */
 @RestController
-@RequestMapping("/api/access-logs")
+@RequestMapping("/api/v1/access-logs")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Access Logging", description = "APIs for access logging according to PSD2/PSD3 and FIDA regulations")
@@ -72,7 +73,7 @@ public class AccessLogController {
     @Operation(summary = "Get access logs", description = "Gets access logs based on query parameters")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Access logs found",
-                    content = @Content(schema = @Schema(implementation = PSDAccessLogDTO.class))),
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = PSDAccessLogDTO.class)))),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })

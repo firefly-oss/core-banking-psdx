@@ -91,7 +91,7 @@ class AccessLogControllerTest {
 
         // When & Then
         webTestClient.post()
-                .uri("/api/access-logs")
+                .uri("/api/v1/access-logs")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(accessLogRequest)
                 .exchange()
@@ -108,7 +108,7 @@ class AccessLogControllerTest {
 
         // When & Then
         webTestClient.get()
-                .uri("/api/access-logs/{accessLogId}", ACCESS_LOG_ID)
+                .uri("/api/v1/access-logs/{accessLogId}", ACCESS_LOG_ID)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(PSDAccessLogDTO.class)
@@ -123,7 +123,7 @@ class AccessLogControllerTest {
 
         // When & Then
         webTestClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/api/access-logs")
+                .uri(uriBuilder -> uriBuilder.path("/api/v1/access-logs")
                         .queryParam("partyId", PARTY_ID)
                         .build())
                 .exchange()
@@ -143,7 +143,7 @@ class AccessLogControllerTest {
 
         // When & Then
         webTestClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/api/access-logs")
+                .uri(uriBuilder -> uriBuilder.path("/api/v1/access-logs")
                         .queryParam("partyId", PARTY_ID)
                         .queryParam("fromDate", fromDate.toString())
                         .queryParam("toDate", toDate.toString())
@@ -162,7 +162,7 @@ class AccessLogControllerTest {
 
         // When & Then
         webTestClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/api/access-logs")
+                .uri(uriBuilder -> uriBuilder.path("/api/v1/access-logs")
                         .queryParam("consentId", CONSENT_ID)
                         .build())
                 .exchange()
@@ -179,7 +179,7 @@ class AccessLogControllerTest {
 
         // When & Then
         webTestClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/api/access-logs")
+                .uri(uriBuilder -> uriBuilder.path("/api/v1/access-logs")
                         .queryParam("thirdPartyId", THIRD_PARTY_ID)
                         .build())
                 .exchange()
