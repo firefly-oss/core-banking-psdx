@@ -82,4 +82,7 @@ public class AccessLog {
     @Column("created_at")
     @CreatedDate
     private LocalDateTime createdAt;
+
+    @Column("timestamp")
+    private LocalDateTime timestamp;
 }
