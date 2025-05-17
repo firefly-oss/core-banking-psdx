@@ -81,6 +81,9 @@ public class PSDConsentDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class PSDAccessDTO {
+        @Schema(description = "Resource ID", example = "account-123")
+        private String resourceId;
+
         @Schema(description = "Type of access", example = "account")
         private String type;
 

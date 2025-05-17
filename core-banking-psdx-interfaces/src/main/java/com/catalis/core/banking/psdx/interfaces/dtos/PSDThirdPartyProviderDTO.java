@@ -78,6 +78,9 @@ public class PSDThirdPartyProviderDTO {
         @Schema(description = "Certificate issuer", example = "CN=PSD2 CA,O=European Banking Authority,C=EU")
         private String issuer;
 
+        @Schema(description = "Certificate content (Base64 encoded)", example = "MIIEpAIBAAKCAQEA...")
+        private String content;
+
         @Schema(description = "Certificate validity from")
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
         private LocalDateTime validFrom;

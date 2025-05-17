@@ -7,10 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -59,48 +56,5 @@ public class PSDFundsConfirmationDTO {
     @Schema(description = "Links to related resources")
     private PSDLinksDTO _links;
 
-    /**
-     * Inner class representing an account reference.
-     */
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class PSDAccountReferenceDTO {
-        @Schema(description = "IBAN of the account", example = "DE89370400440532013000")
-        private String iban;
 
-        @Schema(description = "BBAN of the account", example = "BARC12345612345678")
-        private String bban;
-
-        @Schema(description = "PAN of the card", example = "5409050000000000")
-        private String pan;
-
-        @Schema(description = "Masked PAN of the card", example = "540905******0000")
-        private String maskedPan;
-
-        @Schema(description = "MSISDN of the account", example = "+49 170 1234567")
-        private String msisdn;
-
-        @Schema(description = "Currency of the account", example = "EUR")
-        private String currency;
-    }
-
-    /**
-     * Inner class representing an amount with currency.
-     */
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class PSDAmountDTO {
-        @NotBlank(message = "Currency is required")
-        @Schema(description = "Currency of the amount", required = true, example = "EUR")
-        private String currency;
-
-        @NotNull(message = "Amount is required")
-        @Positive(message = "Amount must be positive")
-        @Schema(description = "Amount value", required = true)
-        private BigDecimal amount;
-    }
 }

@@ -70,5 +70,11 @@ public class PSDThirdPartyProviderRegistrationDTO {
 
         @Schema(description = "Certificate content (Base64 encoded)", example = "MIIEpAIBAAKCAQEA...")
         private String content;
+
+        @Schema(description = "Certificate valid from date")
+        private java.time.LocalDateTime validFrom;
+
+        @Schema(description = "Certificate valid until date")
+        private java.time.LocalDateTime validUntil;
     }
 }
