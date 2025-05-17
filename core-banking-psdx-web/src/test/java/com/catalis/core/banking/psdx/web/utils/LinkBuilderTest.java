@@ -1,0 +1,76 @@
+package com.catalis.core.banking.psdx.web.utils;
+
+import com.catalis.core.banking.psdx.interfaces.dtos.PSDLinksDTO;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Tests for the LinkBuilder.
+ */
+class LinkBuilderTest {
+
+    private static final String BASE_URL = "https://api.bank.com/v1";
+
+    @Test
+    void build_shouldCreateLinks() {
+        // When
+        PSDLinksDTO links = LinkBuilder.fromBaseUrl(BASE_URL)
+                .withSelf("/accounts/12345")
+                .withFirst("/accounts/12345/transactions?page=1")
+                .withPrev("/accounts/12345/transactions?page=2")
+                .withNext("/accounts/12345/transactions?page=4")
+                .withLast("/accounts/12345/transactions?page=10")
+                .withStatus("/accounts/12345/status")
+                .withAccount("/accounts/12345")
+                .withBalances("/accounts/12345/balances")
+                .withTransactions("/accounts/12345/transactions")
+                .withScaRedirect("/sca/redirect/12345")
+                .withScaStatus("/sca/status/12345")
+                .withConfirmation("/payments/12345/confirmation")
+                .withAuthorization("/payments/12345/authorization")
+                .withAdditionalLink("custom", "/custom/12345")
+                .build();
+
+        // Then
+        assertEquals(BASE_URL + "/accounts/12345", links.getSelf().getHref());
+        assertEquals(BASE_URL + "/accounts/12345/transactions?page=1", links.getFirst().getHref());
+        assertEquals(BASE_URL + "/accounts/12345/transactions?page=2", links.getPrev().getHref());
+        assertEquals(BASE_URL + "/accounts/12345/transactions?page=4", links.getNext().getHref());
+        assertEquals(BASE_URL + "/accounts/12345/transactions?page=10", links.getLast().getHref());
+        assertEquals(BASE_URL + "/accounts/12345/status", links.getStatus().getHref());
+        assertEquals(BASE_URL + "/accounts/12345", links.getAccount().getHref());
+        assertEquals(BASE_URL + "/accounts/12345/balances", links.getBalances().getHref());
+        assertEquals(BASE_URL + "/accounts/12345/transactions", links.getTransactions().getHref());
+        assertEquals(BASE_URL + "/sca/redirect/12345", links.getScaRedirect().getHref());
+        assertEquals(BASE_URL + "/sca/status/12345", links.getScaStatus().getHref());
+        assertEquals(BASE_URL + "/payments/12345/confirmation", links.getConfirmation().getHref());
+        assertEquals(BASE_URL + "/payments/12345/authorization", links.getAuthorization().getHref());
+        assertEquals(BASE_URL + "/custom/12345", links.getAdditionalLinks().get("custom").getHref());
+    }
+
+    @Test
+    void build_shouldCreateLinksWithOnlySomeFields() {
+        // When
+        PSDLinksDTO links = LinkBuilder.fromBaseUrl(BASE_URL)
+                .withSelf("/accounts/12345")
+                .withAccount("/accounts/12345")
+                .build();
+
+        // Then
+        assertEquals(BASE_URL + "/accounts/12345", links.getSelf().getHref());
+        assertEquals(BASE_URL + "/accounts/12345", links.getAccount().getHref());
+        assertNull(links.getFirst());
+        assertNull(links.getPrev());
+        assertNull(links.getNext());
+        assertNull(links.getLast());
+        assertNull(links.getStatus());
+        assertNull(links.getBalances());
+        assertNull(links.getTransactions());
+        assertNull(links.getScaRedirect());
+        assertNull(links.getScaStatus());
+        assertNull(links.getConfirmation());
+        assertNull(links.getAuthorization());
+        assertNull(links.getAdditionalLinks());
+    }
+}
