@@ -134,22 +134,16 @@ Get started with the Firefly Core Banking PSDX service in your Firefly Core Bank
 
 3. **Set Up Database**:
 
-   ```bash
-   # Create the database
-   firefly db create --name psdx
-
-   # Run migrations
-   firefly db migrate --service psdx
-   ```
+   Configure your database connection in the application properties file and run the application with Spring Boot.
 
 4. **Start the Service**:
 
    ```bash
-   # Start as a standalone service
-   firefly service start --name psdx
+   # Start with Maven
+   mvn spring-boot:run
 
-   # Or with the entire Firefly platform
-   firefly platform start
+   # Or using the JAR file
+   java -jar target/core-banking-psdx-web.jar
    ```
 
 5. **Verify Installation**:
