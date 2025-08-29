@@ -43,7 +43,7 @@ springdoc:
     operationsSorter: method
     docExpansion: none
     filter: true
-  packages-to-scan: com.catalis.core.banking.psdx.web.controllers
+  packages-to-scan: com.firefly.core.banking.psdx.web.controllers
   paths-to-match: /api/**
 
 management:
@@ -132,7 +132,7 @@ spring:
 logging:
   level:
     root: INFO
-    com.catalis: DEBUG
+    com.firefly: DEBUG
     org.springframework.r2dbc: DEBUG
     org.flywaydb: DEBUG
 
@@ -145,7 +145,7 @@ spring:
 logging:
   level:
     root: INFO
-    com.catalis: DEBUG
+    com.firefly: DEBUG
     org.springframework.r2dbc: INFO
 
 springdoc:
@@ -163,7 +163,7 @@ spring:
 logging:
   level:
     root: WARN
-    com.catalis: INFO
+    com.firefly: INFO
     org.springframework: WARN
 
 springdoc:
