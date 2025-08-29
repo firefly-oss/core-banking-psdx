@@ -403,7 +403,7 @@ psdx.security.jwt.expiration=86400
 ### Logging Configuration
 
 ```properties
-logging.level.com.catalis.core.banking.psdx=INFO
+logging.level.com.firefly.core.banking.psdx=INFO
 logging.level.org.springframework.web=INFO
 logging.level.org.springframework.data.r2dbc=INFO
 ```
@@ -1398,7 +1398,7 @@ This section provides solutions for common issues you might encounter when worki
 For detailed troubleshooting, enable debug logging:
 
 ```properties
-logging.level.com.catalis.core.banking.psdx=DEBUG
+logging.level.com.firefly.core.banking.psdx=DEBUG
 ```
 
 Important log files:
