@@ -15,8 +15,8 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -35,6 +35,11 @@ class ConsentValidationServiceTest {
 
     private ConsentValidationService consentValidationService;
 
+    // Test constants
+    private static final UUID CONSENT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+    private static final UUID PARTY_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440001");
+    private static final UUID ACCOUNT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440002");
+
     private Consent validConsent;
     private Consent expiredConsent;
     private Consent invalidStatusConsent;
@@ -47,32 +52,33 @@ class ConsentValidationServiceTest {
         LocalDateTime now = LocalDateTime.now();
 
         validConsent = new Consent();
-        validConsent.setId(1L);
-        validConsent.setPartyId(123L);
+        validConsent.setId(CONSENT_ID);
+        validConsent.setPartyId(PARTY_ID);
         validConsent.setConsentType(ConsentType.ACCOUNT_INFORMATION);
         validConsent.setStatus(ConsentStatus.VALID);
         validConsent.setValidFrom(now.minusDays(1));
         validConsent.setValidUntil(now.plusDays(1));
 
         expiredConsent = new Consent();
-        expiredConsent.setId(2L);
-        expiredConsent.setPartyId(123L);
+        expiredConsent.setId(CONSENT_ID);
+        expiredConsent.setPartyId(PARTY_ID);
         expiredConsent.setConsentType(ConsentType.ACCOUNT_INFORMATION);
         expiredConsent.setStatus(ConsentStatus.VALID);
         expiredConsent.setValidFrom(now.minusDays(2));
         expiredConsent.setValidUntil(now.minusDays(1));
 
         invalidStatusConsent = new Consent();
-        invalidStatusConsent.setId(3L);
-        invalidStatusConsent.setPartyId(123L);
+        invalidStatusConsent.setId(CONSENT_ID);
+        invalidStatusConsent.setPartyId(PARTY_ID);
+        invalidStatusConsent.setPartyId(UUID.fromString("550e8400-e29b-41d4-a716-446655440012"));
         invalidStatusConsent.setConsentType(ConsentType.ACCOUNT_INFORMATION);
         invalidStatusConsent.setStatus(ConsentStatus.REVOKED);
         invalidStatusConsent.setValidFrom(now.minusDays(1));
         invalidStatusConsent.setValidUntil(now.plusDays(1));
 
         limitedFrequencyConsent = new Consent();
-        limitedFrequencyConsent.setId(4L);
-        limitedFrequencyConsent.setPartyId(123L);
+        limitedFrequencyConsent.setId(CONSENT_ID);
+        limitedFrequencyConsent.setPartyId(PARTY_ID);
         limitedFrequencyConsent.setConsentType(ConsentType.ACCOUNT_INFORMATION);
         limitedFrequencyConsent.setStatus(ConsentStatus.VALID);
         limitedFrequencyConsent.setValidFrom(now.minusDays(1));
@@ -83,11 +89,11 @@ class ConsentValidationServiceTest {
     @Test
     void validateConsent_withValidConsent_shouldReturnTrue() {
         // Given
-        when(consentRepository.findById(1L)).thenReturn(Mono.just(validConsent));
+        when(consentRepository.findById(any(UUID.class))).thenReturn(Mono.just(validConsent));
         when(consentRepository.save(any(Consent.class))).thenReturn(Mono.just(validConsent));
 
         // When
-        Mono<Boolean> result = consentValidationService.validateConsent(1L, ResourceType.ACCOUNT, 123L, "tpp1");
+        Mono<Boolean> result = consentValidationService.validateConsent(CONSENT_ID, ResourceType.ACCOUNT, PARTY_ID, "tpp1");
 
         // Then
         StepVerifier.create(result)
@@ -102,10 +108,10 @@ class ConsentValidationServiceTest {
     @Test
     void validateConsent_withExpiredConsent_shouldReturnFalse() {
         // Given
-        when(consentRepository.findById(2L)).thenReturn(Mono.just(expiredConsent));
+        when(consentRepository.findById(any(UUID.class))).thenReturn(Mono.just(expiredConsent));
 
         // When
-        Mono<Boolean> result = consentValidationService.validateConsent(2L, ResourceType.ACCOUNT, 123L, "tpp1");
+        Mono<Boolean> result = consentValidationService.validateConsent(CONSENT_ID, ResourceType.ACCOUNT, PARTY_ID, "tpp1");
 
         // Then
         StepVerifier.create(result)
@@ -118,10 +124,10 @@ class ConsentValidationServiceTest {
     @Test
     void validateConsent_withInvalidStatusConsent_shouldReturnFalse() {
         // Given
-        when(consentRepository.findById(3L)).thenReturn(Mono.just(invalidStatusConsent));
+        when(consentRepository.findById(any(UUID.class))).thenReturn(Mono.just(invalidStatusConsent));
 
         // When
-        Mono<Boolean> result = consentValidationService.validateConsent(3L, ResourceType.ACCOUNT, 123L, "tpp1");
+        Mono<Boolean> result = consentValidationService.validateConsent(CONSENT_ID, ResourceType.ACCOUNT, PARTY_ID, "tpp1");
 
         // Then
         StepVerifier.create(result)
@@ -134,10 +140,10 @@ class ConsentValidationServiceTest {
     @Test
     void validateConsent_withWrongPartyId_shouldReturnFalse() {
         // Given
-        when(consentRepository.findById(1L)).thenReturn(Mono.just(validConsent));
+        when(consentRepository.findById(any(UUID.class))).thenReturn(Mono.just(validConsent));
 
         // When
-        Mono<Boolean> result = consentValidationService.validateConsent(1L, ResourceType.ACCOUNT, 456L, "tpp1");
+        Mono<Boolean> result = consentValidationService.validateConsent(CONSENT_ID, ResourceType.ACCOUNT, ACCOUNT_ID, "tpp1");
 
         // Then
         StepVerifier.create(result)
@@ -150,10 +156,10 @@ class ConsentValidationServiceTest {
     @Test
     void validateConsent_withWrongResourceType_shouldReturnFalse() {
         // Given
-        when(consentRepository.findById(1L)).thenReturn(Mono.just(validConsent));
+        when(consentRepository.findById(any(UUID.class))).thenReturn(Mono.just(validConsent));
 
         // When
-        Mono<Boolean> result = consentValidationService.validateConsent(1L, ResourceType.PAYMENT, 123L, "tpp1");
+        Mono<Boolean> result = consentValidationService.validateConsent(CONSENT_ID, ResourceType.PAYMENT, PARTY_ID, "tpp1");
 
         // Then
         StepVerifier.create(result)
@@ -166,12 +172,12 @@ class ConsentValidationServiceTest {
     @Test
     void validateConsent_withLimitedFrequencyNotExceeded_shouldReturnTrue() {
         // Given
-        when(consentRepository.findById(4L)).thenReturn(Mono.just(limitedFrequencyConsent));
-        when(accessLogService.countAccessLogsForConsent(4L)).thenReturn(Mono.just(3L));
+        when(consentRepository.findById(any(UUID.class))).thenReturn(Mono.just(limitedFrequencyConsent));
+        when(accessLogService.countAccessLogsForConsent(CONSENT_ID)).thenReturn(Mono.just(3L));
         when(consentRepository.save(any(Consent.class))).thenReturn(Mono.just(limitedFrequencyConsent));
 
         // When
-        Mono<Boolean> result = consentValidationService.validateConsent(4L, ResourceType.ACCOUNT, 123L, "tpp1");
+        Mono<Boolean> result = consentValidationService.validateConsent(CONSENT_ID, ResourceType.ACCOUNT, PARTY_ID, "tpp1");
 
         // Then
         StepVerifier.create(result)
@@ -186,11 +192,11 @@ class ConsentValidationServiceTest {
     @Test
     void validateConsent_withLimitedFrequencyExceeded_shouldReturnFalse() {
         // Given
-        when(consentRepository.findById(4L)).thenReturn(Mono.just(limitedFrequencyConsent));
-        when(accessLogService.countAccessLogsForConsent(4L)).thenReturn(Mono.just(5L));
+        when(consentRepository.findById(any(UUID.class))).thenReturn(Mono.just(limitedFrequencyConsent));
+        when(accessLogService.countAccessLogsForConsent(CONSENT_ID)).thenReturn(Mono.just(5L));
 
         // When
-        Mono<Boolean> result = consentValidationService.validateConsent(4L, ResourceType.ACCOUNT, 123L, "tpp1");
+        Mono<Boolean> result = consentValidationService.validateConsent(CONSENT_ID, ResourceType.ACCOUNT, PARTY_ID, "tpp1");
 
         // Then
         StepVerifier.create(result)

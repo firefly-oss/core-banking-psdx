@@ -16,8 +16,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-
-import com.firefly.core.banking.psdx.web.utils.TestUtils;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -34,7 +33,7 @@ class ThirdPartyProviderControllerTest {
 
     private WebTestClient webTestClient;
 
-    private final Long PROVIDER_ID = 1L;
+    private final UUID PROVIDER_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440004");
 
     private PSDThirdPartyProviderDTO provider1;
     private PSDThirdPartyProviderDTO provider2;
@@ -54,7 +53,7 @@ class ThirdPartyProviderControllerTest {
         provider1.setCreatedAt(LocalDateTime.now().withNano(0));
 
         provider2 = new PSDThirdPartyProviderDTO();
-        provider2.setId(PROVIDER_ID + 1);
+        provider2.setId(UUID.fromString("550e8400-e29b-41d4-a716-446655440010"));
         provider2.setName("Test Provider 2");
         provider2.setStatus("ACTIVE");
         provider2.setProviderType("PISP");
@@ -68,7 +67,7 @@ class ThirdPartyProviderControllerTest {
         registrationDTO.setNationalCompetentAuthority("DE-BAFIN");
         registrationDTO.setNationalCompetentAuthorityCountry("DE");
         registrationDTO.setProviderType("AISP");
-        registrationDTO.setRoles(Arrays.asList("AISP", "PISP"));
+        registrationDTO.setRoles(Arrays.asList("PSP_AI", "PSP_PI"));
 
         PSDThirdPartyProviderRegistrationDTO.PSDCertificateDTO certificate =
                 new PSDThirdPartyProviderRegistrationDTO.PSDCertificateDTO();

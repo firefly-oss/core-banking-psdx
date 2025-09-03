@@ -16,7 +16,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -36,6 +36,9 @@ public class ThirdPartyProviderIntegrationTest {
     @InjectMocks
     private ThirdPartyProviderController thirdPartyProviderController;
 
+    // Test constants
+    private static final UUID PROVIDER_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440010");
+
     private PSDThirdPartyProviderDTO providerDTO;
     private PSDThirdPartyProviderRegistrationDTO registrationDTO;
 
@@ -46,7 +49,7 @@ public class ThirdPartyProviderIntegrationTest {
 
         // Setup provider DTO
         providerDTO = new PSDThirdPartyProviderDTO();
-        providerDTO.setId(1L);
+        providerDTO.setId(PROVIDER_ID);
         providerDTO.setName("Test TPP");
         providerDTO.setRegistrationNumber("TPP123456");
         providerDTO.setRedirectUri("https://test-tpp.com/callback");
@@ -62,7 +65,7 @@ public class ThirdPartyProviderIntegrationTest {
         registrationDTO.setRegistrationNumber("TPP123456");
         registrationDTO.setRedirectUri("https://test-tpp.com/callback");
         registrationDTO.setProviderType("AISP");
-        registrationDTO.setRoles(Arrays.asList("AISP"));
+        registrationDTO.setRoles(Arrays.asList("PSP_AI"));
         registrationDTO.setNationalCompetentAuthority("DE-BAFIN");
         registrationDTO.setNationalCompetentAuthorityCountry("DE");
     }
@@ -88,11 +91,11 @@ public class ThirdPartyProviderIntegrationTest {
     @Test
     void getProvider_shouldReturnProvider() {
         // Given
-        when(thirdPartyProviderService.getProvider(1L)).thenReturn(Mono.just(providerDTO));
+        when(thirdPartyProviderService.getProvider(PROVIDER_ID)).thenReturn(Mono.just(providerDTO));
 
         // When & Then
         webTestClient.get()
-                .uri("/api/v1/providers/1")
+                .uri("/api/v1/providers/" + PROVIDER_ID)
                 .header("X-Request-ID", "test-request-id")
                 .exchange()
                 .expectStatus().isOk()
@@ -119,12 +122,12 @@ public class ThirdPartyProviderIntegrationTest {
     @Test
     void updateProvider_shouldReturnUpdatedProvider() {
         // Given
-        when(thirdPartyProviderService.updateProvider(eq(1L), any(PSDThirdPartyProviderDTO.class)))
+        when(thirdPartyProviderService.updateProvider(eq(PROVIDER_ID), any(PSDThirdPartyProviderDTO.class)))
                 .thenReturn(Mono.just(providerDTO));
 
         // When & Then
         webTestClient.put()
-                .uri("/api/v1/providers/1")
+                .uri("/api/v1/providers/" + PROVIDER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(providerDTO)
                 .header("X-Request-ID", "test-request-id")
@@ -138,14 +141,14 @@ public class ThirdPartyProviderIntegrationTest {
     void suspendProvider_shouldReturnSuspendedProvider() {
         // Given
         PSDThirdPartyProviderDTO suspendedProvider = new PSDThirdPartyProviderDTO();
-        suspendedProvider.setId(1L);
+        suspendedProvider.setId(UUID.fromString("550e8400-e29b-41d4-a716-446655440010"));
         suspendedProvider.setStatus("SUSPENDED");
 
-        when(thirdPartyProviderService.suspendProvider(1L)).thenReturn(Mono.just(suspendedProvider));
+        when(thirdPartyProviderService.suspendProvider(PROVIDER_ID)).thenReturn(Mono.just(suspendedProvider));
 
         // When & Then
         webTestClient.post()
-                .uri("/api/v1/providers/1/suspend")
+                .uri("/api/v1/providers/" + PROVIDER_ID + "/suspend")
                 .header("X-Request-ID", "test-request-id")
                 .exchange()
                 .expectStatus().isOk()
@@ -156,11 +159,11 @@ public class ThirdPartyProviderIntegrationTest {
     @Test
     void activateProvider_shouldReturnActivatedProvider() {
         // Given
-        when(thirdPartyProviderService.activateProvider(1L)).thenReturn(Mono.just(providerDTO));
+        when(thirdPartyProviderService.activateProvider(PROVIDER_ID)).thenReturn(Mono.just(providerDTO));
 
         // When & Then
         webTestClient.post()
-                .uri("/api/v1/providers/1/activate")
+                .uri("/api/v1/providers/" + PROVIDER_ID + "/activate")
                 .header("X-Request-ID", "test-request-id")
                 .exchange()
                 .expectStatus().isOk()
@@ -171,11 +174,11 @@ public class ThirdPartyProviderIntegrationTest {
     @Test
     void revokeProvider_shouldReturnOk() {
         // Given
-        when(thirdPartyProviderService.revokeProvider(1L)).thenReturn(Mono.just(true));
+        when(thirdPartyProviderService.revokeProvider(PROVIDER_ID)).thenReturn(Mono.just(true));
 
         // When & Then
         webTestClient.delete()
-                .uri("/api/v1/providers/1")
+                .uri("/api/v1/providers/" + PROVIDER_ID)
                 .header("X-Request-ID", "test-request-id")
                 .exchange()
                 .expectStatus().isOk()

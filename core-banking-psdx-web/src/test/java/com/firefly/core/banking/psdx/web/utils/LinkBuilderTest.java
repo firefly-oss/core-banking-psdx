@@ -3,7 +3,8 @@ package com.firefly.core.banking.psdx.web.utils;
 import com.firefly.core.banking.psdx.interfaces.dtos.PSDLinksDTO;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Tests for the LinkBuilder.

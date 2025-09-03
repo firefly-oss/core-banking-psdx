@@ -16,8 +16,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-
-import com.firefly.core.banking.psdx.web.utils.TestUtils;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -34,9 +33,9 @@ class AccessLogControllerTest {
 
     private WebTestClient webTestClient;
 
-    private final Long ACCESS_LOG_ID = 1L;
-    private final Long CONSENT_ID = 10L;
-    private final Long PARTY_ID = 100L;
+    private final UUID ACCESS_LOG_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440008");
+    private final UUID CONSENT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+    private final UUID PARTY_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440001");
     private final String THIRD_PARTY_ID = "TPP123456";
 
     private PSDAccessLogDTO accessLog1;
@@ -61,7 +60,7 @@ class AccessLogControllerTest {
         accessLog1.setCreatedAt(LocalDateTime.now().withNano(0));
 
         accessLog2 = new PSDAccessLogDTO();
-        accessLog2.setId(ACCESS_LOG_ID + 1);
+        accessLog2.setId(UUID.fromString("550e8400-e29b-41d4-a716-446655440010"));
         accessLog2.setConsentId(CONSENT_ID);
         accessLog2.setPartyId(PARTY_ID);
         accessLog2.setThirdPartyId(THIRD_PARTY_ID);

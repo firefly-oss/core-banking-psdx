@@ -17,9 +17,9 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,10 +33,10 @@ class AccountInformationControllerTest {
 
     private WebTestClient webTestClient;
 
-    private final Long CONSENT_ID = 1L;
-    private final Long PARTY_ID = 100L;
-    private final Long ACCOUNT_ID = 1000L;
-    private final Long TRANSACTION_ID = 10000L;
+    private final UUID CONSENT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+    private final UUID PARTY_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440001");
+    private final UUID ACCOUNT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440002");
+    private final UUID TRANSACTION_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440006");
 
     private PSDAccountDTO account1;
     private PSDAccountDTO account2;
@@ -56,7 +56,7 @@ class AccountInformationControllerTest {
         account1.setOwnerPartyId(PARTY_ID);
 
         account2 = new PSDAccountDTO();
-        account2.setResourceId(ACCOUNT_ID + 1);
+        account2.setResourceId(UUID.fromString("550e8400-e29b-41d4-a716-446655440014"));
         account2.setIban("DE89370400440532013001");
         account2.setOwnerPartyId(PARTY_ID);
 
@@ -74,7 +74,7 @@ class AccountInformationControllerTest {
         transaction1.setBookingDate(LocalDate.now().minusDays(1));
 
         transaction2 = new PSDTransactionDTO();
-        transaction2.setTransactionId(TRANSACTION_ID + 1);
+        transaction2.setTransactionId(UUID.fromString("550e8400-e29b-41d4-a716-446655440015"));
         transaction2.setTransactionStatus("booked");
         transaction2.setBookingDate(LocalDate.now().minusDays(2));
     }
@@ -137,7 +137,7 @@ class AccountInformationControllerTest {
         // Given
         LocalDate fromDate = LocalDate.now().minusDays(7);
         LocalDate toDate = LocalDate.now();
-        when(accountInformationService.getTransactions(anyLong(), anyLong(), any(LocalDate.class), any(LocalDate.class)))
+        when(accountInformationService.getTransactions(any(UUID.class), any(UUID.class), any(LocalDate.class), any(LocalDate.class)))
                 .thenReturn(Flux.fromIterable(Arrays.asList(transaction1, transaction2)));
 
         // When & Then

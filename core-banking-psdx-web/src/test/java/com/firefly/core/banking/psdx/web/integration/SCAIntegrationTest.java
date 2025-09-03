@@ -16,6 +16,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -33,6 +35,9 @@ public class SCAIntegrationTest {
     @InjectMocks
     private SCAController scaController;
 
+    // Test constants
+    private static final UUID PARTY_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440001");
+
     private PSDSCAAuthenticationRequestDTO authRequest;
     private PSDSCAAuthenticationResponseDTO authResponse;
     private PSDSCAValidationRequestDTO validationRequest;
@@ -45,7 +50,7 @@ public class SCAIntegrationTest {
 
         // Setup authentication request
         authRequest = new PSDSCAAuthenticationRequestDTO();
-        authRequest.setPartyId(123L);
+        authRequest.setPartyId(PARTY_ID);
         authRequest.setResourceId("payment-123456");
         authRequest.setResourceType("PAYMENT");
         authRequest.setAmount(100.00);

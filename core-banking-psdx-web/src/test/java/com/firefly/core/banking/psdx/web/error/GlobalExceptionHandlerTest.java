@@ -1,6 +1,5 @@
 package com.firefly.core.banking.psdx.web.error;
 
-import com.firefly.core.banking.psdx.interfaces.dtos.PSDErrorResponseDTO;
 import com.firefly.core.banking.psdx.interfaces.dtos.PSDLinksDTO;
 import com.firefly.core.banking.psdx.web.utils.LinkBuilder;
 import com.firefly.core.banking.psdx.web.utils.LinkBuilderFactory;
@@ -12,7 +11,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;
-import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.http.HttpStatus;
@@ -26,11 +24,8 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 /**

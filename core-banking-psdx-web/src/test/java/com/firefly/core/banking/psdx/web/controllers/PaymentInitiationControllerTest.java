@@ -17,13 +17,11 @@ import reactor.core.publisher.Mono;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
-import com.firefly.core.banking.psdx.web.utils.TestUtils;
-
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentInitiationControllerTest {
@@ -36,8 +34,8 @@ class PaymentInitiationControllerTest {
 
     private WebTestClient webTestClient;
 
-    private final Long CONSENT_ID = 1L;
-    private final Long PAYMENT_ID = 1000L;
+    private final UUID CONSENT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+    private final UUID PAYMENT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440005");
 
     private PSDPaymentDTO payment;
     private PSDPaymentInitiationRequestDTO paymentRequest;

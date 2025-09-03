@@ -3,7 +3,6 @@ package com.firefly.core.banking.psdx.web.controllers;
 import com.firefly.core.banking.psdx.interfaces.dtos.PSDConsentDTO;
 import com.firefly.core.banking.psdx.interfaces.dtos.PSDConsentRequestDTO;
 import com.firefly.core.banking.psdx.interfaces.dtos.PSDConsentStatusDTO;
-import com.firefly.core.banking.psdx.interfaces.dtos.PSDLinksDTO;
 import com.firefly.core.banking.psdx.interfaces.services.ConsentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,8 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import com.firefly.core.banking.psdx.web.utils.TestUtils;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -38,8 +36,8 @@ class ConsentControllerTest {
 
     private WebTestClient webTestClient;
 
-    private final Long CONSENT_ID = 1L;
-    private final Long PARTY_ID = 100L;
+    private final UUID CONSENT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+    private final UUID PARTY_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440001");
 
     private PSDConsentDTO consent1;
     private PSDConsentDTO consent2;
@@ -54,7 +52,7 @@ class ConsentControllerTest {
         consent1 = new PSDConsentDTO();
         consent1.setId(CONSENT_ID);
         consent1.setPartyId(PARTY_ID);
-        consent1.setConsentType("ACCOUNT_INFORMATION");
+        consent1.setConsentType("account");
         consent1.setConsentStatus("VALID");
         consent1.setValidFrom(LocalDateTime.now().withNano(0));
         consent1.setValidUntil(LocalDateTime.now().plusDays(90).withNano(0));
@@ -62,9 +60,9 @@ class ConsentControllerTest {
         consent1.setCreatedAt(LocalDateTime.now().withNano(0));
 
         consent2 = new PSDConsentDTO();
-        consent2.setId(CONSENT_ID + 1);
+        consent2.setId(UUID.fromString("550e8400-e29b-41d4-a716-446655440010"));
         consent2.setPartyId(PARTY_ID);
-        consent2.setConsentType("PAYMENT_INITIATION");
+        consent2.setConsentType("payment");
         consent2.setConsentStatus("VALID");
         consent2.setValidFrom(LocalDateTime.now().withNano(0));
         consent2.setValidUntil(LocalDateTime.now().plusDays(90).withNano(0));
@@ -72,8 +70,8 @@ class ConsentControllerTest {
         consent2.setCreatedAt(LocalDateTime.now().withNano(0));
 
         consentRequest = new PSDConsentRequestDTO();
-        consentRequest.setPartyId(PARTY_ID);
-        consentRequest.setConsentType("ACCOUNT_INFORMATION");
+        consentRequest.setPartyId(PARTY_ID.toString());
+        consentRequest.setConsentType("account");
         consentRequest.setValidUntil(LocalDateTime.now().plusDays(90).withNano(0));
         consentRequest.setValidFrom(LocalDateTime.now().withNano(0));
         consentRequest.setFrequencyPerDay(4);
@@ -97,8 +95,8 @@ class ConsentControllerTest {
         consentRequest.setAccess(accessList);
 
         statusUpdate = new PSDConsentStatusDTO();
-        statusUpdate.setConsentStatus("REVOKED");
-        statusUpdate.setStatus("REVOKED");
+        statusUpdate.setConsentStatus("revoked");
+        statusUpdate.setStatus("revoked");
         statusUpdate.setStatusUpdateDateTime(LocalDateTime.now().withNano(0));
     }
 
@@ -159,7 +157,7 @@ class ConsentControllerTest {
         updatedConsent.setId(CONSENT_ID);
         updatedConsent.setPartyId(PARTY_ID);
         updatedConsent.setConsentType("ACCOUNT_INFORMATION");
-        updatedConsent.setConsentStatus("REVOKED");
+        updatedConsent.setConsentStatus("revoked");
         updatedConsent.setValidFrom(LocalDateTime.now().withNano(0));
         updatedConsent.setValidUntil(LocalDateTime.now().plusDays(90).withNano(0));
         updatedConsent.setFrequencyPerDay(4);

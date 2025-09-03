@@ -1,11 +1,11 @@
 package com.firefly.core.banking.psdx.web.integration;
 
-import com.firefly.core.banking.psdx.interfaces.services.ConsentService;
 import com.firefly.core.banking.psdx.interfaces.dtos.PSDConsentDTO;
 import com.firefly.core.banking.psdx.interfaces.dtos.PSDConsentRequestDTO;
 import com.firefly.core.banking.psdx.interfaces.dtos.PSDConsentStatusDTO;
 import com.firefly.core.banking.psdx.interfaces.enums.ConsentStatus;
 import com.firefly.core.banking.psdx.interfaces.enums.ConsentType;
+import com.firefly.core.banking.psdx.interfaces.services.ConsentService;
 import com.firefly.core.banking.psdx.web.controllers.ConsentController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +20,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -39,6 +40,9 @@ public class ConsentIntegrationTest {
     @InjectMocks
     private ConsentController consentController;
 
+    // Test constants
+    private static final UUID CONSENT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+
     private PSDConsentDTO consentDTO;
     private PSDConsentRequestDTO consentRequestDTO;
 
@@ -49,18 +53,18 @@ public class ConsentIntegrationTest {
 
         // Setup test data
         consentDTO = new PSDConsentDTO();
-        consentDTO.setId(1L);
-        consentDTO.setPartyId(123L);
-        consentDTO.setConsentType(ConsentType.ACCOUNT_INFORMATION.name());
-        consentDTO.setConsentStatus(ConsentStatus.VALID.name());
+        consentDTO.setId(CONSENT_ID);
+        consentDTO.setPartyId(UUID.fromString("550e8400-e29b-41d4-a716-446655440001"));
+        consentDTO.setConsentType("account");
+        consentDTO.setConsentStatus("valid");
         consentDTO.setValidFrom(LocalDateTime.now().minusDays(1));
         consentDTO.setValidUntil(LocalDateTime.now().plusDays(90));
         consentDTO.setFrequencyPerDay(4);
         consentDTO.setRecurringIndicator(true);
 
         consentRequestDTO = new PSDConsentRequestDTO();
-        consentRequestDTO.setPartyId(123L);
-        consentRequestDTO.setConsentType(ConsentType.ACCOUNT_INFORMATION.name());
+        consentRequestDTO.setPartyId(UUID.fromString("550e8400-e29b-41d4-a716-446655440017").toString());
+        consentRequestDTO.setConsentType("account");
         consentRequestDTO.setValidFrom(LocalDateTime.now().minusDays(1));
         consentRequestDTO.setValidUntil(LocalDateTime.now().plusDays(90));
         consentRequestDTO.setFrequencyPerDay(4);
@@ -83,42 +87,42 @@ public class ConsentIntegrationTest {
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody()
-                .jsonPath("$.id").isEqualTo(1)
-                .jsonPath("$.partyId").isEqualTo(123)
-                .jsonPath("$.consentType").isEqualTo("ACCOUNT_INFORMATION")
-                .jsonPath("$.consentStatus").isEqualTo("VALID")
+                .jsonPath("$.id").isEqualTo(CONSENT_ID.toString())
+                .jsonPath("$.partyId").isEqualTo("550e8400-e29b-41d4-a716-446655440001")
+                .jsonPath("$.consentType").isEqualTo("account")
+                .jsonPath("$.consentStatus").isEqualTo("valid")
                 .jsonPath("$.recurringIndicator").isEqualTo(true);
     }
 
     @Test
     void getConsent_shouldReturnConsent() {
         // Given
-        when(consentService.getConsent(1L)).thenReturn(Mono.just(consentDTO));
+        when(consentService.getConsent(CONSENT_ID)).thenReturn(Mono.just(consentDTO));
 
         // When & Then
         webTestClient.get()
-                .uri("/api/v1/consents/1")
+                .uri("/api/v1/consents/" + CONSENT_ID)
                 .header("X-Request-ID", "test-request-id")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.id").isEqualTo(1)
-                .jsonPath("$.partyId").isEqualTo(123)
-                .jsonPath("$.consentType").isEqualTo("ACCOUNT_INFORMATION")
-                .jsonPath("$.consentStatus").isEqualTo("VALID")
+                .jsonPath("$.id").isEqualTo(CONSENT_ID.toString())
+                .jsonPath("$.partyId").isEqualTo("550e8400-e29b-41d4-a716-446655440001")
+                .jsonPath("$.consentType").isEqualTo("account")
+                .jsonPath("$.consentStatus").isEqualTo("valid")
                 .jsonPath("$.recurringIndicator").isEqualTo(true);
     }
 
     @Test
     void getConsents_shouldReturnConsents() {
         // Given
-        when(consentService.getConsentsForCustomer(123L)).thenReturn(Flux.just(consentDTO));
+        when(consentService.getConsentsForCustomer(any(UUID.class))).thenReturn(Flux.just(consentDTO));
 
         // When & Then
         webTestClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/api/v1/consents")
-                        .queryParam("partyId", "123")
+                        .queryParam("partyId", "550e8400-e29b-41d4-a716-446655440001")
                         .build())
                 .header("X-Request-ID", "test-request-id")
                 .exchange()
@@ -126,44 +130,44 @@ public class ConsentIntegrationTest {
                 .expectBody()
                 .jsonPath("$").isArray()
                 .jsonPath("$.length()").isEqualTo(1)
-                .jsonPath("$[0].id").isEqualTo(1)
-                .jsonPath("$[0].partyId").isEqualTo(123)
-                .jsonPath("$[0].consentType").isEqualTo("ACCOUNT_INFORMATION")
-                .jsonPath("$[0].consentStatus").isEqualTo("VALID");
+                .jsonPath("$[0].id").isEqualTo(CONSENT_ID.toString())
+                .jsonPath("$[0].partyId").isEqualTo("550e8400-e29b-41d4-a716-446655440001")
+                .jsonPath("$[0].consentType").isEqualTo("account")
+                .jsonPath("$[0].consentStatus").isEqualTo("valid");
     }
 
     @Test
     void updateConsentStatus_shouldReturnUpdatedConsent() {
         // Given
         PSDConsentStatusDTO statusDTO = new PSDConsentStatusDTO();
-        statusDTO.setConsentStatus(ConsentStatus.VALID.name());
+        statusDTO.setConsentStatus("valid");
 
         // The controller returns a PSDConsentDTO, not a PSDConsentStatusDTO
-        when(consentService.updateConsentStatus(eq(1L), any(PSDConsentStatusDTO.class))).thenReturn(Mono.just(consentDTO));
+        when(consentService.updateConsentStatus(eq(CONSENT_ID), any(PSDConsentStatusDTO.class))).thenReturn(Mono.just(consentDTO));
 
         // When & Then
         webTestClient.put()
-                .uri("/api/v1/consents/1/status")
+                .uri("/api/v1/consents/" + CONSENT_ID + "/status")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(statusDTO)
                 .header("X-Request-ID", "test-request-id")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.id").isEqualTo(1)
-                .jsonPath("$.partyId").isEqualTo(123)
-                .jsonPath("$.consentType").isEqualTo("ACCOUNT_INFORMATION")
-                .jsonPath("$.consentStatus").isEqualTo("VALID");
+                .jsonPath("$.id").isEqualTo(CONSENT_ID.toString())
+                .jsonPath("$.partyId").isEqualTo("550e8400-e29b-41d4-a716-446655440001")
+                .jsonPath("$.consentType").isEqualTo("account")
+                .jsonPath("$.consentStatus").isEqualTo("valid");
     }
 
     @Test
     void revokeConsent_shouldReturnNoContent() {
         // Given
-        when(consentService.revokeConsent(1L)).thenReturn(Mono.empty());
+        when(consentService.revokeConsent(CONSENT_ID)).thenReturn(Mono.empty());
 
         // When & Then
         webTestClient.delete()
-                .uri("/api/v1/consents/1")
+                .uri("/api/v1/consents/" + CONSENT_ID)
                 .header("X-Request-ID", "test-request-id")
                 .exchange()
                 .expectStatus().isOk();

@@ -16,8 +16,7 @@ import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-
-import com.firefly.core.banking.psdx.web.utils.TestUtils;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -34,8 +33,8 @@ class FundsConfirmationControllerTest {
 
     private WebTestClient webTestClient;
 
-    private final Long CONSENT_ID = 1L;
-    private final Long FUNDS_CONFIRMATION_ID = 1000L;
+    private final UUID CONSENT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+    private final UUID FUNDS_CONFIRMATION_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440007");
 
     private PSDFundsConfirmationDTO fundsConfirmation;
     private PSDFundsConfirmationDTO fundsConfirmationRequest;
@@ -104,6 +103,7 @@ class FundsConfirmationControllerTest {
         // When & Then
         webTestClient.post()
                 .uri("/api/v1/funds-confirmations")
+                .header("X-Request-ID", "test-request-id")
                 .header("X-Consent-ID", CONSENT_ID.toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(fundsConfirmationRequest)

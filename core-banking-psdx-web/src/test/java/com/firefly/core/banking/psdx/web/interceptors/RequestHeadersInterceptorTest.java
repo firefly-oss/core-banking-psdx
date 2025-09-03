@@ -1,21 +1,19 @@
 package com.firefly.core.banking.psdx.web.interceptors;
 
+import com.firefly.core.banking.psdx.interfaces.exceptions.PSDFormatException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
-import com.firefly.core.banking.psdx.interfaces.exceptions.PSDFormatException;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for the RequestHeadersInterceptor.
@@ -39,6 +37,38 @@ class RequestHeadersInterceptorTest {
         // Given
         MockServerHttpRequest request = MockServerHttpRequest
                 .get("/api/v1/auth/token")
+                .build();
+        MockServerWebExchange exchange = MockServerWebExchange.from(request);
+
+        // When
+        Mono<Void> result = interceptor.filter(exchange, chain);
+
+        // Then
+        StepVerifier.create(result)
+                .verifyComplete();
+    }
+
+    @Test
+    void filter_shouldPassRequest_whenPathIsSwaggerUI() {
+        // Given
+        MockServerHttpRequest request = MockServerHttpRequest
+                .get("/webjars/swagger-ui/index.html")
+                .build();
+        MockServerWebExchange exchange = MockServerWebExchange.from(request);
+
+        // When
+        Mono<Void> result = interceptor.filter(exchange, chain);
+
+        // Then
+        StepVerifier.create(result)
+                .verifyComplete();
+    }
+
+    @Test
+    void filter_shouldPassRequest_whenPathIsSwaggerUIResource() {
+        // Given
+        MockServerHttpRequest request = MockServerHttpRequest
+                .get("/swagger-ui.html")
                 .build();
         MockServerWebExchange exchange = MockServerWebExchange.from(request);
 

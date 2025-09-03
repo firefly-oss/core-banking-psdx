@@ -1,34 +1,59 @@
 package com.firefly.core.banking.psdx.web.aspects;
 
 import com.firefly.core.banking.psdx.core.services.AccessLogService;
-import com.firefly.core.banking.psdx.interfaces.dtos.PSDAccessLogDTO;
+import static org.mockito.ArgumentMatchers.any;
 import com.firefly.core.banking.psdx.interfaces.enums.AccessStatus;
+import static org.mockito.ArgumentMatchers.any;
 import com.firefly.core.banking.psdx.interfaces.enums.AccessType;
+import static org.mockito.ArgumentMatchers.any;
 import com.firefly.core.banking.psdx.interfaces.enums.ResourceType;
+import static org.mockito.ArgumentMatchers.any;
 import org.aspectj.lang.ProceedingJoinPoint;
+import static org.mockito.ArgumentMatchers.any;
 import org.aspectj.lang.reflect.MethodSignature;
+import static org.mockito.ArgumentMatchers.any;
 import org.junit.jupiter.api.BeforeEach;
+import static org.mockito.ArgumentMatchers.any;
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.Mock;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.junit.jupiter.MockitoExtension;
+import static org.mockito.ArgumentMatchers.any;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import static org.mockito.ArgumentMatchers.any;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import static org.mockito.ArgumentMatchers.any;
 import org.springframework.web.bind.annotation.GetMapping;
+import static org.mockito.ArgumentMatchers.any;
 import org.springframework.web.bind.annotation.RequestMapping;
+import static org.mockito.ArgumentMatchers.any;
 import org.springframework.web.server.ServerWebExchange;
+import static org.mockito.ArgumentMatchers.any;
 import reactor.core.publisher.Mono;
+import static org.mockito.ArgumentMatchers.any;
 
 import java.lang.reflect.Method;
+import static org.mockito.ArgumentMatchers.any;
 import java.net.InetAddress;
+import static org.mockito.ArgumentMatchers.any;
 import java.net.InetSocketAddress;
+import static org.mockito.ArgumentMatchers.any;
 import java.net.UnknownHostException;
-import java.util.Collections;
+import static org.mockito.ArgumentMatchers.any;
+import java.util.UUID;
+import static org.mockito.ArgumentMatchers.any;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
 
 /**
  * Tests for the AccessLoggingAspect.
@@ -56,6 +81,10 @@ class AccessLoggingAspectTest {
 
     private AccessLoggingAspect aspect;
 
+    // Test constants
+    private static final String VALID_CONSENT_ID = "550e8400-e29b-41d4-a716-446655440000";
+    private static final String VALID_PARTY_ID = "550e8400-e29b-41d4-a716-446655440001";
+
     @BeforeEach
     void setUp() throws UnknownHostException {
         aspect = new AccessLoggingAspect(accessLogService);
@@ -79,12 +108,12 @@ class AccessLoggingAspectTest {
         when(joinPoint.getArgs()).thenReturn(new Object[]{exchange});
         when(joinPoint.proceed()).thenReturn("success");
 
-        when(request.getHeaders().getFirst("X-Consent-ID")).thenReturn("123");
+        when(request.getHeaders().getFirst("X-Consent-ID")).thenReturn(VALID_CONSENT_ID);
         when(request.getHeaders().getFirst("X-API-KEY")).thenReturn("api-key-123");
-        when(request.getQueryParams().getFirst("partyId")).thenReturn("456");
+        when(request.getQueryParams().getFirst("partyId")).thenReturn(VALID_PARTY_ID);
 
         when(accessLogService.logAccess(
-                eq(123L), eq(456L), eq("api-key-123"), eq(AccessType.READ), any(ResourceType.class),
+                any(UUID.class), any(UUID.class), eq("api-key-123"), eq(AccessType.READ), any(ResourceType.class),
                 anyString(), anyString(), anyString(), eq(AccessStatus.SUCCESS), isNull(), isNull(), isNull()
         )).thenReturn(Mono.empty());
 
@@ -94,7 +123,7 @@ class AccessLoggingAspectTest {
         // Then
         assertEquals("success", result);
         verify(accessLogService).logAccess(
-                eq(123L), eq(456L), eq("api-key-123"), eq(AccessType.READ), any(ResourceType.class),
+                any(UUID.class), any(UUID.class), eq("api-key-123"), eq(AccessType.READ), any(ResourceType.class),
                 anyString(), anyString(), anyString(), eq(AccessStatus.SUCCESS), isNull(), isNull(), isNull()
         );
     }
@@ -108,13 +137,13 @@ class AccessLoggingAspectTest {
         RuntimeException testException = new RuntimeException("test exception");
         when(joinPoint.proceed()).thenThrow(testException);
 
-        when(request.getHeaders().getFirst("X-Consent-ID")).thenReturn("123");
+        when(request.getHeaders().getFirst("X-Consent-ID")).thenReturn(VALID_CONSENT_ID);
         when(request.getHeaders().getFirst("X-API-KEY")).thenReturn("api-key-123");
-        when(request.getQueryParams().getFirst("partyId")).thenReturn("456");
+        when(request.getQueryParams().getFirst("partyId")).thenReturn(VALID_PARTY_ID);
 
         // Use lenient() to avoid strict stubbing issues
         lenient().when(accessLogService.logAccess(
-                anyLong(), anyLong(), anyString(), any(AccessType.class), any(ResourceType.class),
+                any(UUID.class), any(UUID.class), anyString(), any(AccessType.class), any(ResourceType.class),
                 anyString(), anyString(), anyString(), eq(AccessStatus.ERROR), isNull(), isNull(), isNull()
         )).thenReturn(Mono.empty());
 
@@ -134,7 +163,7 @@ class AccessLoggingAspectTest {
         }
 
         verify(accessLogService).logAccess(
-                anyLong(), anyLong(), anyString(), any(AccessType.class), any(ResourceType.class),
+                any(UUID.class), any(UUID.class), anyString(), any(AccessType.class), any(ResourceType.class),
                 anyString(), anyString(), anyString(), eq(AccessStatus.ERROR), isNull(), isNull(), isNull()
         );
     }
@@ -152,7 +181,7 @@ class AccessLoggingAspectTest {
         // Then
         assertEquals("success", result);
         verify(accessLogService, never()).logAccess(
-                anyLong(), anyLong(), anyString(), any(AccessType.class), any(ResourceType.class),
+                any(UUID.class), any(UUID.class), anyString(), any(AccessType.class), any(ResourceType.class),
                 anyString(), anyString(), anyString(), any(AccessStatus.class), anyString(), anyString(), anyString()
         );
     }
@@ -168,7 +197,7 @@ class AccessLoggingAspectTest {
         // Missing X-Consent-ID
         when(request.getHeaders().getFirst("X-Consent-ID")).thenReturn(null);
         when(request.getHeaders().getFirst("X-API-KEY")).thenReturn("api-key-123");
-        when(request.getQueryParams().getFirst("partyId")).thenReturn("456");
+        when(request.getQueryParams().getFirst("partyId")).thenReturn(VALID_PARTY_ID);
 
         // When
         Object result = aspect.logAccess(joinPoint);
@@ -176,7 +205,7 @@ class AccessLoggingAspectTest {
         // Then
         assertEquals("success", result);
         verify(accessLogService, never()).logAccess(
-                anyLong(), anyLong(), anyString(), any(AccessType.class), any(ResourceType.class),
+                any(UUID.class), any(UUID.class), anyString(), any(AccessType.class), any(ResourceType.class),
                 anyString(), anyString(), anyString(), any(AccessStatus.class), anyString(), anyString(), anyString()
         );
     }

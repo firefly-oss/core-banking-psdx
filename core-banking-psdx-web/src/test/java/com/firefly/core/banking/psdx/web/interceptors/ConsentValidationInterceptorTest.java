@@ -2,27 +2,23 @@ package com.firefly.core.banking.psdx.web.interceptors;
 
 import com.firefly.core.banking.psdx.core.services.ConsentValidationService;
 import com.firefly.core.banking.psdx.interfaces.enums.ResourceType;
-import com.firefly.core.banking.psdx.interfaces.exceptions.PSDFormatException;
 import com.firefly.core.banking.psdx.interfaces.exceptions.PSDConsentInvalidException;
+import com.firefly.core.banking.psdx.interfaces.exceptions.PSDFormatException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.net.URI;
+import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
@@ -39,6 +35,10 @@ class ConsentValidationInterceptorTest {
     private WebFilterChain chain;
 
     private ConsentValidationInterceptor interceptor;
+
+    // Test constants
+    private static final String VALID_CONSENT_ID = "550e8400-e29b-41d4-a716-446655440000";
+    private static final String VALID_PARTY_ID = "550e8400-e29b-41d4-a716-446655440001";
 
     @BeforeEach
     void setUp() {
@@ -122,7 +122,7 @@ class ConsentValidationInterceptorTest {
         // Given
         MockServerHttpRequest request = MockServerHttpRequest
                 .get("/api/v1/accounts")
-                .header("X-Consent-ID", "123")
+                .header("X-Consent-ID", VALID_CONSENT_ID)
                 .header("X-API-KEY", "api-key-123")
                 .build();
         MockServerWebExchange exchange = MockServerWebExchange.from(request);
@@ -143,8 +143,8 @@ class ConsentValidationInterceptorTest {
         // Given
         MockServerHttpRequest request = MockServerHttpRequest
                 .get("/api/v1/accounts")
-                .header("X-Consent-ID", "123")
-                .queryParam("partyId", "456")
+                .header("X-Consent-ID", VALID_CONSENT_ID)
+                .queryParam("partyId", VALID_PARTY_ID)
                 .build();
         MockServerWebExchange exchange = MockServerWebExchange.from(request);
 
@@ -164,13 +164,13 @@ class ConsentValidationInterceptorTest {
         // Given
         MockServerHttpRequest request = MockServerHttpRequest
                 .get("/api/v1/accounts")
-                .header("X-Consent-ID", "123")
+                .header("X-Consent-ID", VALID_CONSENT_ID)
                 .header("X-API-KEY", "api-key-123")
-                .queryParam("partyId", "456")
+                .queryParam("partyId", VALID_PARTY_ID)
                 .build();
         MockServerWebExchange exchange = MockServerWebExchange.from(request);
 
-        when(consentValidationService.validateConsent(eq(123L), any(ResourceType.class), eq(456L), eq("api-key-123")))
+        when(consentValidationService.validateConsent(any(UUID.class), any(ResourceType.class), any(UUID.class), eq("api-key-123")))
                 .thenReturn(Mono.just(true));
 
         // When
@@ -186,13 +186,13 @@ class ConsentValidationInterceptorTest {
         // Given
         MockServerHttpRequest request = MockServerHttpRequest
                 .get("/api/v1/accounts")
-                .header("X-Consent-ID", "123")
+                .header("X-Consent-ID", VALID_CONSENT_ID)
                 .header("X-API-KEY", "api-key-123")
-                .queryParam("partyId", "456")
+                .queryParam("partyId", VALID_PARTY_ID)
                 .build();
         MockServerWebExchange exchange = MockServerWebExchange.from(request);
 
-        when(consentValidationService.validateConsent(eq(123L), any(ResourceType.class), eq(456L), eq("api-key-123")))
+        when(consentValidationService.validateConsent(any(UUID.class), any(ResourceType.class), any(UUID.class), eq("api-key-123")))
                 .thenReturn(Mono.just(false));
 
         // When

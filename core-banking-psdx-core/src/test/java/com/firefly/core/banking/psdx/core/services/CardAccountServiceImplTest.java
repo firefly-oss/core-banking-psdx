@@ -17,9 +17,8 @@ import reactor.test.StepVerifier;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,10 +33,10 @@ class CardAccountServiceImplTest {
     @InjectMocks
     private CardAccountServiceImpl cardAccountService;
 
-    private final Long CONSENT_ID = 1L;
-    private final Long PARTY_ID = 100L;
-    private final Long CARD_ID = 1000L;
-    private final Long TRANSACTION_ID = 10000L;
+    private final UUID CONSENT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+    private final UUID PARTY_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440001");
+    private final UUID CARD_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440003");
+    private final UUID TRANSACTION_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440006");
 
     private PSDCardAccountDTO card1;
     private PSDCardAccountDTO card2;
@@ -55,7 +54,7 @@ class CardAccountServiceImplTest {
         card1.setOwnerPartyId(PARTY_ID);
 
         card2 = new PSDCardAccountDTO();
-        card2.setResourceId(CARD_ID + 1);
+        card2.setResourceId(UUID.fromString("550e8400-e29b-41d4-a716-446655440014"));
         card2.setMaskedPan("540905******0001");
         card2.setOwnerPartyId(PARTY_ID);
 
@@ -73,7 +72,7 @@ class CardAccountServiceImplTest {
         transaction1.setBookingDate(LocalDate.now().minusDays(1));
 
         transaction2 = new PSDTransactionDTO();
-        transaction2.setTransactionId(TRANSACTION_ID + 1);
+        transaction2.setTransactionId(UUID.fromString("550e8400-e29b-41d4-a716-446655440015"));
         transaction2.setTransactionStatus("booked");
         transaction2.setBookingDate(LocalDate.now().minusDays(2));
     }

@@ -15,10 +15,8 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,8 +31,8 @@ class PaymentInitiationServiceImplTest {
     @InjectMocks
     private PaymentInitiationServiceImpl paymentInitiationService;
 
-    private final Long CONSENT_ID = 1L;
-    private final Long PAYMENT_ID = 1000L;
+    private final UUID CONSENT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+    private final UUID PAYMENT_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440005");
     private final String AUTHORIZATION_CODE = "123456";
 
     private PSDPaymentInitiationRequestDTO paymentRequest;

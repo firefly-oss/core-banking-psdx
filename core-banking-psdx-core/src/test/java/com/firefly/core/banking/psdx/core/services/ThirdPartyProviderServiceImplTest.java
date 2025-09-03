@@ -20,9 +20,9 @@ import reactor.test.StepVerifier;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -43,6 +43,9 @@ class ThirdPartyProviderServiceImplTest {
 
     private ThirdPartyProviderServiceImpl thirdPartyProviderService;
 
+    // Test constants
+    private static final UUID PROVIDER_ID = UUID.fromString("550e8400-e29b-41d4-a716-446655440010");
+
     private ThirdPartyProvider provider;
     private PSDThirdPartyProviderDTO providerDTO;
     private PSDThirdPartyProviderRegistrationDTO registrationDTO;
@@ -53,7 +56,7 @@ class ThirdPartyProviderServiceImplTest {
                 thirdPartyProviderRepository, thirdPartyProviderMapper, certificateValidationService);
 
         provider = new ThirdPartyProvider();
-        provider.setId(1L);
+        provider.setId(PROVIDER_ID);
         provider.setName("Test Provider");
         provider.setRegistrationNumber("TPP123456");
         provider.setApiKey("test-api-key");
@@ -64,7 +67,7 @@ class ThirdPartyProviderServiceImplTest {
         provider.setUpdatedAt(LocalDateTime.now());
 
         providerDTO = new PSDThirdPartyProviderDTO();
-        providerDTO.setId(1L);
+        providerDTO.setId(PROVIDER_ID);
         providerDTO.setName("Test Provider");
         providerDTO.setRegistrationNumber("TPP123456");
         providerDTO.setRedirectUri("https://test.com/callback");
@@ -105,18 +108,18 @@ class ThirdPartyProviderServiceImplTest {
     @Test
     void getProvider_shouldReturnProvider() {
         // Given
-        when(thirdPartyProviderRepository.findById(1L)).thenReturn(Mono.just(provider));
+        when(thirdPartyProviderRepository.findById(any(UUID.class))).thenReturn(Mono.just(provider));
         when(thirdPartyProviderMapper.toDto(provider)).thenReturn(providerDTO);
 
         // When
-        Mono<PSDThirdPartyProviderDTO> result = thirdPartyProviderService.getProvider(1L);
+        Mono<PSDThirdPartyProviderDTO> result = thirdPartyProviderService.getProvider(PROVIDER_ID);
 
         // Then
         StepVerifier.create(result)
                 .expectNext(providerDTO)
                 .verifyComplete();
 
-        verify(thirdPartyProviderRepository).findById(1L);
+        verify(thirdPartyProviderRepository).findById(PROVIDER_ID);
         verify(thirdPartyProviderMapper).toDto(provider);
     }
 
@@ -141,20 +144,20 @@ class ThirdPartyProviderServiceImplTest {
     @Test
     void updateProvider_shouldUpdateProvider() {
         // Given
-        when(thirdPartyProviderRepository.findById(1L)).thenReturn(Mono.just(provider));
+        when(thirdPartyProviderRepository.findById(any(UUID.class))).thenReturn(Mono.just(provider));
         when(thirdPartyProviderMapper.toEntity(providerDTO)).thenReturn(provider);
         when(thirdPartyProviderRepository.save(any(ThirdPartyProvider.class))).thenReturn(Mono.just(provider));
         when(thirdPartyProviderMapper.toDto(provider)).thenReturn(providerDTO);
 
         // When
-        Mono<PSDThirdPartyProviderDTO> result = thirdPartyProviderService.updateProvider(1L, providerDTO);
+        Mono<PSDThirdPartyProviderDTO> result = thirdPartyProviderService.updateProvider(PROVIDER_ID, providerDTO);
 
         // Then
         StepVerifier.create(result)
                 .expectNext(providerDTO)
                 .verifyComplete();
 
-        verify(thirdPartyProviderRepository).findById(1L);
+        verify(thirdPartyProviderRepository).findById(PROVIDER_ID);
         verify(thirdPartyProviderMapper).toEntity(providerDTO);
         verify(thirdPartyProviderRepository).save(any(ThirdPartyProvider.class));
         verify(thirdPartyProviderMapper).toDto(provider);
@@ -163,12 +166,12 @@ class ThirdPartyProviderServiceImplTest {
     @Test
     void suspendProvider_shouldSuspendProvider() {
         // Given
-        when(thirdPartyProviderRepository.findById(1L)).thenReturn(Mono.just(provider));
+        when(thirdPartyProviderRepository.findById(any(UUID.class))).thenReturn(Mono.just(provider));
         when(thirdPartyProviderRepository.save(any(ThirdPartyProvider.class))).thenReturn(Mono.just(provider));
         when(thirdPartyProviderMapper.toDto(provider)).thenReturn(providerDTO);
 
         // When
-        Mono<PSDThirdPartyProviderDTO> result = thirdPartyProviderService.suspendProvider(1L);
+        Mono<PSDThirdPartyProviderDTO> result = thirdPartyProviderService.suspendProvider(UUID.randomUUID());
 
         // Then
         StepVerifier.create(result)
@@ -184,12 +187,12 @@ class ThirdPartyProviderServiceImplTest {
     void activateProvider_shouldActivateProvider() {
         // Given
         provider.setStatus(ProviderStatus.SUSPENDED);
-        when(thirdPartyProviderRepository.findById(1L)).thenReturn(Mono.just(provider));
+        when(thirdPartyProviderRepository.findById(any(UUID.class))).thenReturn(Mono.just(provider));
         when(thirdPartyProviderRepository.save(any(ThirdPartyProvider.class))).thenReturn(Mono.just(provider));
         when(thirdPartyProviderMapper.toDto(provider)).thenReturn(providerDTO);
 
         // When
-        Mono<PSDThirdPartyProviderDTO> result = thirdPartyProviderService.activateProvider(1L);
+        Mono<PSDThirdPartyProviderDTO> result = thirdPartyProviderService.activateProvider(UUID.randomUUID());
 
         // Then
         StepVerifier.create(result)
@@ -204,11 +207,11 @@ class ThirdPartyProviderServiceImplTest {
     @Test
     void revokeProvider_shouldRevokeProvider() {
         // Given
-        when(thirdPartyProviderRepository.findById(1L)).thenReturn(Mono.just(provider));
+        when(thirdPartyProviderRepository.findById(any(UUID.class))).thenReturn(Mono.just(provider));
         when(thirdPartyProviderRepository.save(any(ThirdPartyProvider.class))).thenReturn(Mono.just(provider));
 
         // When
-        Mono<Boolean> result = thirdPartyProviderService.revokeProvider(1L);
+        Mono<Boolean> result = thirdPartyProviderService.revokeProvider(UUID.randomUUID());
 
         // Then
         StepVerifier.create(result)
