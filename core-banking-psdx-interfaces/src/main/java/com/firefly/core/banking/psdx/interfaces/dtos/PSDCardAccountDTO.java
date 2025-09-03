@@ -1,7 +1,12 @@
 package com.firefly.core.banking.psdx.interfaces.dtos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.firefly.annotations.ValidCurrencyCode;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +15,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * DTO representing a card account according to PSD2/PSD3 standards.
@@ -21,39 +27,54 @@ import java.util.List;
 @Schema(description = "PSD Card Account information")
 public class PSDCardAccountDTO {
 
-    @Schema(description = "Unique identifier of the card account (resource ID)")
-    private Long resourceId;
+    @NotNull(message = "Resource ID is required")
+    @Schema(description = "Unique identifier of the card account (resource ID)", required = true)
+    private UUID resourceId;
 
+    @Pattern(regexp = "^[0-9*]{12,19}$", message = "Masked PAN must be 12-19 characters with digits and asterisks")
     @Schema(description = "Masked PAN of the card", example = "540905******0000")
     private String maskedPan;
 
+    @ValidCurrencyCode(message = "Currency must be a valid ISO 4217 currency code")
     @Schema(description = "Currency of the card account", example = "EUR")
     private String currency;
 
+    @Size(max = 100, message = "Card account name must not exceed 100 characters")
     @Schema(description = "Name of the card account as defined by the PSU", example = "Main Card")
     private String name;
 
+    @Size(max = 100, message = "Product name must not exceed 100 characters")
     @Schema(description = "Product name of the bank for this card account", example = "Premium Card")
     private String product;
 
+    @Pattern(regexp = "^(enabled|disabled|deleted|blocked)$",
+             message = "Card account status must be one of: enabled, disabled, deleted, blocked")
     @Schema(description = "Status of the card account", example = "enabled")
     private String status;
 
+    @Pattern(regexp = "^[0-9]+(\\.[0-9]{1,2})?$", message = "Credit limit must be a valid monetary amount")
     @Schema(description = "Credit limit of the card", example = "5000.00")
     private String creditLimit;
 
-    @Schema(description = "ID of the card holder (PSU)")
-    private Long ownerPartyId;
+    @NotNull(message = "Owner party ID is required")
+    @Schema(description = "ID of the card holder (PSU)", required = true)
+    private UUID ownerPartyId;
 
+    @Pattern(regexp = "^(debit|credit|prepaid)$",
+             message = "Card type must be one of: debit, credit, prepaid")
     @Schema(description = "Card type", example = "debit")
     private String cardType;
 
+    @Pattern(regexp = "^(visa|mastercard|amex|discover|jcb|diners|unionpay)$",
+             message = "Card network must be a valid card network")
     @Schema(description = "Card network", example = "visa")
     private String cardNetwork;
 
+    @Size(max = 100, message = "Card issuer name must not exceed 100 characters")
     @Schema(description = "Card issuer name", example = "Example Bank")
     private String cardIssuerName;
 
+    @Size(max = 50, message = "Card issuer ID must not exceed 50 characters")
     @Schema(description = "Card issuer ID", example = "EXAMPLEBANK")
     private String cardIssuerId;
 

@@ -2,15 +2,19 @@ package com.firefly.core.banking.psdx.interfaces.dtos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,10 +29,14 @@ import java.util.List;
 public class PSDConsentRequestDTO {
 
     @NotNull(message = "Party ID is required")
+    @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+             message = "Party ID must be a valid UUID")
     @Schema(description = "ID of the customer who gives the consent", required = true)
-    private Long partyId;
+    private String partyId;
 
     @NotBlank(message = "Consent type is required")
+    @Pattern(regexp = "^(account|payment|funds-confirmation)$",
+             message = "Consent type must be one of: account, payment, funds-confirmation")
     @Schema(description = "Type of consent", required = true, example = "account")
     private String consentType;
 
@@ -43,12 +51,18 @@ public class PSDConsentRequestDTO {
     private LocalDateTime validUntil;
 
     @Positive(message = "Frequency per day must be positive")
+    @Max(value = 1000, message = "Frequency per day cannot exceed 1000")
     @Schema(description = "Frequency of access per day", example = "4")
     private Integer frequencyPerDay;
 
+    @Positive(message = "Access frequency must be positive")
+    @Max(value = 1000, message = "Access frequency cannot exceed 1000")
     @Schema(description = "Access frequency (alias for frequencyPerDay)", example = "4")
     private Integer accessFrequency;
 
+    @Size(max = 100, message = "Access scope must not exceed 100 characters")
+    @Pattern(regexp = "^(all-accounts|specific-accounts|balances|transactions)$",
+             message = "Access scope must be one of: all-accounts, specific-accounts, balances, transactions")
     @Schema(description = "Access scope", example = "all-accounts")
     private String accessScope;
 

@@ -1,6 +1,7 @@
 package com.firefly.core.banking.psdx.interfaces.dtos;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -69,6 +70,8 @@ public class PSDLinksDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class PSDLinkDTO {
+        @Pattern(regexp = "^https?://[\\w\\-._~:/?#\\[\\]@!$&'()*+,;=%]+$",
+                 message = "URL must be a valid HTTP or HTTPS URL")
         @Schema(description = "URL of the link", example = "https://api.bank.com/v1/accounts/12345")
         private String href;
     }

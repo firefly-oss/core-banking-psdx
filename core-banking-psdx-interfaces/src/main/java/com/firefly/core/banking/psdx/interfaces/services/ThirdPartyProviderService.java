@@ -5,6 +5,8 @@ import com.firefly.core.banking.psdx.interfaces.dtos.PSDThirdPartyProviderRegist
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 /**
  * Service interface for managing Third Party Providers (TPPs) according to PSD2/PSD3 regulations.
  */
@@ -24,7 +26,7 @@ public interface ThirdPartyProviderService {
      * @param providerId The ID of the TPP
      * @return A Mono of the TPP
      */
-    Mono<PSDThirdPartyProviderDTO> getProvider(Long providerId);
+    Mono<PSDThirdPartyProviderDTO> getProvider(UUID providerId);
 
     /**
      * Get all Third Party Providers.
@@ -40,7 +42,7 @@ public interface ThirdPartyProviderService {
      * @param providerUpdate The updated details
      * @return A Mono of the updated TPP
      */
-    Mono<PSDThirdPartyProviderDTO> updateProvider(Long providerId, PSDThirdPartyProviderDTO providerUpdate);
+    Mono<PSDThirdPartyProviderDTO> updateProvider(UUID providerId, PSDThirdPartyProviderDTO providerUpdate);
 
     /**
      * Suspend a Third Party Provider.
@@ -48,7 +50,7 @@ public interface ThirdPartyProviderService {
      * @param providerId The ID of the TPP
      * @return A Mono of the suspended TPP
      */
-    Mono<PSDThirdPartyProviderDTO> suspendProvider(Long providerId);
+    Mono<PSDThirdPartyProviderDTO> suspendProvider(UUID providerId);
 
     /**
      * Activate a Third Party Provider.
@@ -56,7 +58,7 @@ public interface ThirdPartyProviderService {
      * @param providerId The ID of the TPP
      * @return A Mono of the activated TPP
      */
-    Mono<PSDThirdPartyProviderDTO> activateProvider(Long providerId);
+    Mono<PSDThirdPartyProviderDTO> activateProvider(UUID providerId);
 
     /**
      * Revoke a Third Party Provider.
@@ -64,7 +66,7 @@ public interface ThirdPartyProviderService {
      * @param providerId The ID of the TPP
      * @return A Mono of Boolean indicating if the TPP was revoked
      */
-    Mono<Boolean> revokeProvider(Long providerId);
+    Mono<Boolean> revokeProvider(UUID providerId);
 
     /**
      * Validate a Third Party Provider's API key.

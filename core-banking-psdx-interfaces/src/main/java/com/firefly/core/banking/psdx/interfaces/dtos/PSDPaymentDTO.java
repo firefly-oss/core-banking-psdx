@@ -1,7 +1,13 @@
 package com.firefly.core.banking.psdx.interfaces.dtos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.firefly.annotations.ValidAmount;
+import com.firefly.annotations.ValidCurrencyCode;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +16,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * DTO representing a payment according to PSD2/PSD3 standards.
@@ -21,34 +28,48 @@ import java.time.LocalDateTime;
 @Schema(description = "PSD Payment information")
 public class PSDPaymentDTO {
 
-    @Schema(description = "Unique identifier of the payment")
-    private Long paymentId;
+    @NotNull(message = "Payment ID is required")
+    @Schema(description = "Unique identifier of the payment", required = true)
+    private UUID paymentId;
 
+    @Size(max = 35, message = "End-to-end identifier must not exceed 35 characters")
+    @Pattern(regexp = "^[A-Za-z0-9/\\-?:().,'+\\s]*$", message = "End-to-end identifier contains invalid characters")
     @Schema(description = "End-to-end identifier", example = "E2E-ID-123")
     private String endToEndIdentification;
 
-    @Schema(description = "ID of the consent used for the payment")
-    private Long consentId;
+    @NotNull(message = "Consent ID is required")
+    @Schema(description = "ID of the consent used for the payment", required = true)
+    private UUID consentId;
 
+    @Pattern(regexp = "^(sepa-credit-transfers|instant-sepa-credit-transfers|target-2-payments|cross-border-credit-transfers)$",
+             message = "Payment type must be a valid PSD2 payment type")
     @Schema(description = "Type of the payment", example = "sepa-credit-transfers")
     private String paymentType;
 
+    @Pattern(regexp = "^(ACCP|ACSC|ACSP|ACTC|ACWC|ACWP|PDNG|RJCT|CANC)$",
+             message = "Transaction status must be a valid ISO 20022 payment status")
     @Schema(description = "Status of the payment", example = "ACCP")
     private String transactionStatus;
 
+    @Valid
     @Schema(description = "Debtor account")
     private PSDAccountReferenceDTO debtorAccount;
 
+    @Size(max = 70, message = "Creditor name must not exceed 70 characters")
     @Schema(description = "Creditor name", example = "John Doe")
     private String creditorName;
 
+    @Valid
     @Schema(description = "Creditor account")
     private PSDAccountReferenceDTO creditorAccount;
 
+    @Valid
     @Schema(description = "Creditor address")
     private PSDAddressDTO creditorAddress;
 
-    @Schema(description = "Payment amount information")
+    @NotNull(message = "Instructed amount is required")
+    @Valid
+    @Schema(description = "Payment amount information", required = true)
     private PSDAmountDTO instructedAmount;
 
     @Schema(description = "Remittance information unstructured", example = "Invoice 123")
@@ -80,10 +101,14 @@ public class PSDPaymentDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class PSDAmountDTO {
-        @Schema(description = "Currency of the amount", example = "EUR")
+        @NotNull(message = "Currency is required")
+        @ValidCurrencyCode(message = "Currency must be a valid ISO 4217 currency code")
+        @Schema(description = "Currency of the amount", example = "EUR", required = true)
         private String currency;
 
-        @Schema(description = "Amount value")
+        @NotNull(message = "Amount is required")
+        @ValidAmount(message = "Amount must be a valid monetary amount")
+        @Schema(description = "Amount value", required = true)
         private BigDecimal amount;
     }
 

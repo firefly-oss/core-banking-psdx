@@ -7,6 +7,8 @@ import com.firefly.core.banking.psdx.interfaces.enums.ResourceType;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 /**
  * Interface for the access log service.
  */
@@ -30,8 +32,8 @@ public interface AccessLogServiceInterface {
      * @return A Mono of the created access log
      */
     Mono<PSDAccessLogDTO> logAccess(
-            Long consentId,
-            Long partyId,
+            UUID consentId,
+            UUID partyId,
             String thirdPartyId,
             AccessType accessType,
             ResourceType resourceType,
@@ -49,7 +51,7 @@ public interface AccessLogServiceInterface {
      * @param partyId The ID of the party (customer)
      * @return A Flux of access logs
      */
-    Flux<PSDAccessLogDTO> getAccessLogsForParty(Long partyId);
+    Flux<PSDAccessLogDTO> getAccessLogsForParty(UUID partyId);
 
     /**
      * Get access logs for a consent.
@@ -57,7 +59,7 @@ public interface AccessLogServiceInterface {
      * @param consentId The ID of the consent
      * @return A Flux of access logs
      */
-    Flux<PSDAccessLogDTO> getAccessLogsForConsent(Long consentId);
+    Flux<PSDAccessLogDTO> getAccessLogsForConsent(UUID consentId);
 
     /**
      * Get access logs for a third party provider.

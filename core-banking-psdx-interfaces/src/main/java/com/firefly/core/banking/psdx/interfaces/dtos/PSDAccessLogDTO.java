@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * DTO representing an access log according to PSD2/PSD3 standards.
@@ -20,13 +21,13 @@ import java.time.LocalDateTime;
 public class PSDAccessLogDTO {
 
     @Schema(description = "Unique identifier of the access log")
-    private Long id;
+    private UUID id;
 
     @Schema(description = "ID of the consent used for the access")
-    private Long consentId;
+    private UUID consentId;
 
     @Schema(description = "ID of the customer")
-    private Long partyId;
+    private UUID partyId;
 
     @Schema(description = "ID of the third party provider")
     private String thirdPartyId;

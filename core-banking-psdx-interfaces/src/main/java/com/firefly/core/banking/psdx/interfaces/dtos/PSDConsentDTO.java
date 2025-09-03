@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * DTO representing a consent according to PSD2/PSD3 standards.
@@ -21,10 +22,10 @@ import java.util.List;
 public class PSDConsentDTO {
 
     @Schema(description = "Unique identifier of the consent")
-    private Long id;
+    private UUID id;
 
     @Schema(description = "ID of the customer who gave the consent")
-    private Long partyId;
+    private UUID partyId;
 
     @Schema(description = "Type of consent", example = "account")
     private String consentType;

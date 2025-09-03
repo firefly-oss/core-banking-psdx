@@ -7,6 +7,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 /**
  * Service interface for Card Account Services according to PSD2/PSD3 regulations.
@@ -20,7 +21,7 @@ public interface CardAccountService {
      * @param partyId The ID of the customer
      * @return A Flux of card accounts
      */
-    Flux<PSDCardAccountDTO> getCardAccounts(Long consentId, Long partyId);
+    Flux<PSDCardAccountDTO> getCardAccounts(UUID consentId, UUID partyId);
 
     /**
      * Get a specific card account for a customer.
@@ -29,7 +30,7 @@ public interface CardAccountService {
      * @param cardId The ID of the card
      * @return A Mono of the card account
      */
-    Mono<PSDCardAccountDTO> getCardAccount(Long consentId, Long cardId);
+    Mono<PSDCardAccountDTO> getCardAccount(UUID consentId, UUID cardId);
 
     /**
      * Get the balances for a specific card account.
@@ -38,7 +39,7 @@ public interface CardAccountService {
      * @param cardId The ID of the card
      * @return A Flux of balances
      */
-    Flux<PSDBalanceDTO> getCardBalances(Long consentId, Long cardId);
+    Flux<PSDBalanceDTO> getCardBalances(UUID consentId, UUID cardId);
 
     /**
      * Get the transactions for a specific card account within a date range.
@@ -49,7 +50,7 @@ public interface CardAccountService {
      * @param toDate The end date of the range
      * @return A Flux of transactions
      */
-    Flux<PSDTransactionDTO> getCardTransactions(Long consentId, Long cardId, LocalDate fromDate, LocalDate toDate);
+    Flux<PSDTransactionDTO> getCardTransactions(UUID consentId, UUID cardId, LocalDate fromDate, LocalDate toDate);
 
     /**
      * Get a specific transaction for a card account.
@@ -59,5 +60,5 @@ public interface CardAccountService {
      * @param transactionId The ID of the transaction
      * @return A Mono of the transaction
      */
-    Mono<PSDTransactionDTO> getCardTransaction(Long consentId, Long cardId, Long transactionId);
+    Mono<PSDTransactionDTO> getCardTransaction(UUID consentId, UUID cardId, UUID transactionId);
 }

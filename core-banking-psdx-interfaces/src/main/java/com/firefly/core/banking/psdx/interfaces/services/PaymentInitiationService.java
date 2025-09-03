@@ -5,6 +5,8 @@ import com.firefly.core.banking.psdx.interfaces.dtos.PSDPaymentInitiationRequest
 import com.firefly.core.banking.psdx.interfaces.dtos.PSDPaymentStatusDTO;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 /**
  * Service interface for Payment Initiation Services (PIS) according to PSD2/PSD3 regulations.
  */
@@ -17,7 +19,7 @@ public interface PaymentInitiationService {
      * @param paymentRequest The payment initiation request
      * @return A Mono of the initiated payment
      */
-    Mono<PSDPaymentDTO> initiatePayment(Long consentId, PSDPaymentInitiationRequestDTO paymentRequest);
+    Mono<PSDPaymentDTO> initiatePayment(UUID consentId, PSDPaymentInitiationRequestDTO paymentRequest);
 
     /**
      * Get the status of a payment.
@@ -26,7 +28,7 @@ public interface PaymentInitiationService {
      * @param paymentId The ID of the payment
      * @return A Mono of the payment status
      */
-    Mono<PSDPaymentStatusDTO> getPaymentStatus(Long consentId, Long paymentId);
+    Mono<PSDPaymentStatusDTO> getPaymentStatus(UUID consentId, UUID paymentId);
 
     /**
      * Get the details of a payment.
@@ -35,7 +37,7 @@ public interface PaymentInitiationService {
      * @param paymentId The ID of the payment
      * @return A Mono of the payment
      */
-    Mono<PSDPaymentDTO> getPayment(Long consentId, Long paymentId);
+    Mono<PSDPaymentDTO> getPayment(UUID consentId, UUID paymentId);
 
     /**
      * Cancel a payment.
@@ -44,7 +46,7 @@ public interface PaymentInitiationService {
      * @param paymentId The ID of the payment
      * @return A Mono of the cancelled payment
      */
-    Mono<PSDPaymentDTO> cancelPayment(Long consentId, Long paymentId);
+    Mono<PSDPaymentDTO> cancelPayment(UUID consentId, UUID paymentId);
 
     /**
      * Authorize a payment using Strong Customer Authentication (SCA).
@@ -54,5 +56,5 @@ public interface PaymentInitiationService {
      * @param authorizationCode The authorization code from SCA
      * @return A Mono of the payment
      */
-    Mono<PSDPaymentDTO> authorizePayment(Long consentId, Long paymentId, String authorizationCode);
+    Mono<PSDPaymentDTO> authorizePayment(UUID consentId, UUID paymentId, String authorizationCode);
 }

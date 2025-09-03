@@ -1,16 +1,21 @@
 package com.firefly.core.banking.psdx.interfaces.dtos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.firefly.annotations.ValidAmount;
+import com.firefly.annotations.ValidCurrencyCode;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -25,21 +30,28 @@ import java.time.LocalDate;
 public class PSDPaymentInitiationRequestDTO {
 
     @NotBlank(message = "Payment type is required")
+    @Pattern(regexp = "^(sepa-credit-transfers|instant-sepa-credit-transfers|target-2-payments|cross-border-credit-transfers)$",
+             message = "Payment type must be a valid PSD2 payment type")
     @Schema(description = "Type of the payment", required = true, example = "sepa-credit-transfers")
     private String paymentType;
 
+    @Size(max = 35, message = "End-to-end identifier must not exceed 35 characters")
+    @Pattern(regexp = "^[A-Za-z0-9/\\-?:().,'+\\s]*$", message = "End-to-end identifier contains invalid characters")
     @Schema(description = "End-to-end identifier", example = "E2E-ID-123")
     private String endToEndIdentification;
 
     @NotNull(message = "Debtor account is required")
+    @Valid
     @Schema(description = "Debtor account", required = true)
     private PSDAccountReferenceDTO debtorAccount;
 
     @NotBlank(message = "Creditor name is required")
+    @Size(max = 70, message = "Creditor name must not exceed 70 characters")
     @Schema(description = "Creditor name", required = true, example = "John Doe")
     private String creditorName;
 
     @NotNull(message = "Creditor account is required")
+    @Valid
     @Schema(description = "Creditor account", required = true)
     private PSDAccountReferenceDTO creditorAccount;
 
@@ -70,11 +82,13 @@ public class PSDPaymentInitiationRequestDTO {
     @AllArgsConstructor
     public static class PSDAmountDTO {
         @NotBlank(message = "Currency is required")
+        @ValidCurrencyCode(message = "Currency must be a valid ISO 4217 currency code")
         @Schema(description = "Currency of the amount", required = true, example = "EUR")
         private String currency;
 
         @NotNull(message = "Amount is required")
         @Positive(message = "Amount must be positive")
+        @ValidAmount(message = "Amount must be a valid monetary amount")
         @Schema(description = "Amount value", required = true)
         private BigDecimal amount;
     }

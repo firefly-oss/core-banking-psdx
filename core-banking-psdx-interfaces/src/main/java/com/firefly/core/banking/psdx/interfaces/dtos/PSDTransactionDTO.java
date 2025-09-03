@@ -1,7 +1,14 @@
 package com.firefly.core.banking.psdx.interfaces.dtos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.firefly.annotations.ValidAmount;
+import com.firefly.annotations.ValidBic;
+import com.firefly.annotations.ValidCurrencyCode;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +16,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * DTO representing an account transaction according to PSD2/PSD3 standards.
@@ -21,18 +28,27 @@ import java.time.LocalDateTime;
 @Schema(description = "PSD Transaction information")
 public class PSDTransactionDTO {
 
-    @Schema(description = "Unique identifier of the transaction")
-    private Long transactionId;
+    @NotNull(message = "Transaction ID is required")
+    @Schema(description = "Unique identifier of the transaction", required = true)
+    private UUID transactionId;
 
+    @Size(max = 35, message = "End-to-end identifier must not exceed 35 characters")
+    @Pattern(regexp = "^[A-Za-z0-9/\\-?:().,'+\\s]*$", message = "End-to-end identifier contains invalid characters")
     @Schema(description = "End-to-end identifier", example = "E2E-ID-123")
     private String endToEndId;
 
+    @Size(max = 35, message = "Mandate identifier must not exceed 35 characters")
+    @Pattern(regexp = "^[A-Za-z0-9/\\-?:().,'+\\s]*$", message = "Mandate identifier contains invalid characters")
     @Schema(description = "Mandate identifier", example = "MANDATE-2023-10-01")
     private String mandateId;
 
+    @Size(max = 35, message = "Creditor reference must not exceed 35 characters")
+    @Pattern(regexp = "^[A-Za-z0-9/\\-?:().,'+\\s]*$", message = "Creditor reference contains invalid characters")
     @Schema(description = "Creditor reference", example = "RF18539007547034")
     private String creditorReference;
 
+    @Pattern(regexp = "^(booked|pending|rejected|cancelled)$",
+             message = "Transaction status must be one of: booked, pending, rejected, cancelled")
     @Schema(description = "Status of the transaction", example = "booked")
     private String transactionStatus;
 
@@ -44,18 +60,23 @@ public class PSDTransactionDTO {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate valueDate;
 
+    @Valid
     @Schema(description = "Transaction amount information")
     private PSDAmountDTO transactionAmount;
 
+    @Pattern(regexp = "^[0-9]+(\\.[0-9]+)?$", message = "Exchange rate must be a valid decimal number")
     @Schema(description = "Exchange rate if applicable")
     private String exchangeRate;
 
+    @Size(max = 70, message = "Creditor name must not exceed 70 characters")
     @Schema(description = "Creditor name", example = "John Doe")
     private String creditorName;
 
+    @Valid
     @Schema(description = "Creditor account")
     private PSDAccountReferenceDTO creditorAccount;
 
+    @ValidBic(message = "Creditor agent must be a valid BIC code")
     @Schema(description = "Creditor agent (BIC)", example = "DEUTDEFF")
     private String creditorAgent;
 
@@ -94,10 +115,14 @@ public class PSDTransactionDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class PSDAmountDTO {
-        @Schema(description = "Currency of the amount", example = "EUR")
+        @NotNull(message = "Currency is required")
+        @ValidCurrencyCode(message = "Currency must be a valid ISO 4217 currency code")
+        @Schema(description = "Currency of the amount", example = "EUR", required = true)
         private String currency;
 
-        @Schema(description = "Amount value")
+        @NotNull(message = "Amount is required")
+        @ValidAmount(message = "Amount must be a valid monetary amount")
+        @Schema(description = "Amount value", required = true)
         private BigDecimal amount;
     }
 

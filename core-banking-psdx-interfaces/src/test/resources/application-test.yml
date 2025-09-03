@@ -1,0 +1,14 @@
+spring:
+  profiles:
+    active: test
+
+logging:
+  level:
+    root: WARN
+    com.firefly: DEBUG
+    org.hibernate.validator: DEBUG
+
+# Test configuration for validation
+validation:
+  enabled: true
+  fail-fast: false

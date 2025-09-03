@@ -6,6 +6,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Service interface for managing access logs according to PSD2/PSD3 and FIDA regulations.
@@ -26,7 +27,7 @@ public interface AccessLogService {
      * @param logId The ID of the access log
      * @return A Mono of the access log
      */
-    Mono<PSDAccessLogDTO> getAccessLog(Long logId);
+    Mono<PSDAccessLogDTO> getAccessLog(UUID logId);
 
     /**
      * Get all access logs for a customer.
@@ -34,7 +35,7 @@ public interface AccessLogService {
      * @param partyId The ID of the customer
      * @return A Flux of access logs
      */
-    Flux<PSDAccessLogDTO> getAccessLogsForCustomer(Long partyId);
+    Flux<PSDAccessLogDTO> getAccessLogsForCustomer(UUID partyId);
 
     /**
      * Get all access logs for a customer within a date range.
@@ -44,7 +45,7 @@ public interface AccessLogService {
      * @param toDate The end date of the range
      * @return A Flux of access logs
      */
-    Flux<PSDAccessLogDTO> getAccessLogsForCustomerInDateRange(Long partyId, LocalDateTime fromDate, LocalDateTime toDate);
+    Flux<PSDAccessLogDTO> getAccessLogsForCustomerInDateRange(UUID partyId, LocalDateTime fromDate, LocalDateTime toDate);
 
     /**
      * Get all access logs for a specific consent.
@@ -52,7 +53,7 @@ public interface AccessLogService {
      * @param consentId The ID of the consent
      * @return A Flux of access logs
      */
-    Flux<PSDAccessLogDTO> getAccessLogsForConsent(Long consentId);
+    Flux<PSDAccessLogDTO> getAccessLogsForConsent(UUID consentId);
 
     /**
      * Get all access logs for a specific Third Party Provider.
@@ -68,5 +69,5 @@ public interface AccessLogService {
      * @param consentId The ID of the consent
      * @return A Mono of the count
      */
-    Mono<Long> countAccessLogsForConsent(Long consentId);
+    Mono<Long> countAccessLogsForConsent(UUID consentId);
 }

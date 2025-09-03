@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * DTO representing a Third Party Provider (TPP) according to PSD2/PSD3 standards.
@@ -21,7 +22,7 @@ import java.util.List;
 public class PSDThirdPartyProviderDTO {
 
     @Schema(description = "Unique identifier of the TPP")
-    private Long id;
+    private UUID id;
 
     @Schema(description = "Name of the TPP", example = "FinTech Solutions Ltd")
     private String name;
