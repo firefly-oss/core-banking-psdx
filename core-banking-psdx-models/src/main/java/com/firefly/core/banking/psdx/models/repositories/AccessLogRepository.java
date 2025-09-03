@@ -9,12 +9,13 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Repository for managing AccessLog entities.
  */
 @Repository
-public interface AccessLogRepository extends ReactiveCrudRepository<AccessLog, Long> {
+public interface AccessLogRepository extends ReactiveCrudRepository<AccessLog, UUID> {
 
     /**
      * Find all access logs for a specific party.
@@ -22,7 +23,7 @@ public interface AccessLogRepository extends ReactiveCrudRepository<AccessLog, L
      * @param partyId The ID of the party
      * @return A Flux of access logs
      */
-    Flux<AccessLog> findByPartyId(Long partyId);
+    Flux<AccessLog> findByPartyId(UUID partyId);
 
     /**
      * Find all access logs for a specific consent.
@@ -30,7 +31,7 @@ public interface AccessLogRepository extends ReactiveCrudRepository<AccessLog, L
      * @param consentId The ID of the consent
      * @return A Flux of access logs
      */
-    Flux<AccessLog> findByConsentId(Long consentId);
+    Flux<AccessLog> findByConsentId(UUID consentId);
 
     /**
      * Find all access logs for a specific third party provider.
@@ -49,7 +50,7 @@ public interface AccessLogRepository extends ReactiveCrudRepository<AccessLog, L
      * @return A Flux of access logs
      */
     @Query("SELECT * FROM access_logs WHERE party_id = :partyId AND created_at BETWEEN :startDate AND :endDate ORDER BY created_at DESC")
-    Flux<AccessLog> findByPartyIdAndDateRange(Long partyId, LocalDateTime startDate, LocalDateTime endDate);
+    Flux<AccessLog> findByPartyIdAndDateRange(UUID partyId, LocalDateTime startDate, LocalDateTime endDate);
 
     /**
      * Find all access logs for a specific resource type and resource ID.
@@ -66,7 +67,7 @@ public interface AccessLogRepository extends ReactiveCrudRepository<AccessLog, L
      * @param partyId The ID of the party
      * @return A Flux of access logs
      */
-    Flux<AccessLog> findByPartyIdOrderByTimestampDesc(Long partyId);
+    Flux<AccessLog> findByPartyIdOrderByTimestampDesc(UUID partyId);
 
     /**
      * Find all access logs for a specific consent ordered by timestamp descending.
@@ -74,7 +75,7 @@ public interface AccessLogRepository extends ReactiveCrudRepository<AccessLog, L
      * @param consentId The ID of the consent
      * @return A Flux of access logs
      */
-    Flux<AccessLog> findByConsentIdOrderByTimestampDesc(Long consentId);
+    Flux<AccessLog> findByConsentIdOrderByTimestampDesc(UUID consentId);
 
     /**
      * Find all access logs for a specific third party provider ordered by timestamp descending.
@@ -90,5 +91,5 @@ public interface AccessLogRepository extends ReactiveCrudRepository<AccessLog, L
      * @param consentId The ID of the consent
      * @return A Mono of the count
      */
-    Mono<Long> countByConsentId(Long consentId);
+    Mono<Long> countByConsentId(UUID consentId);
 }

@@ -10,12 +10,13 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Repository for managing Consent entities.
  */
 @Repository
-public interface ConsentRepository extends ReactiveCrudRepository<Consent, Long> {
+public interface ConsentRepository extends ReactiveCrudRepository<Consent, UUID> {
 
     /**
      * Find all consents for a specific party.
@@ -23,7 +24,7 @@ public interface ConsentRepository extends ReactiveCrudRepository<Consent, Long>
      * @param partyId The ID of the party
      * @return A Flux of consents
      */
-    Flux<Consent> findByPartyId(Long partyId);
+    Flux<Consent> findByPartyId(UUID partyId);
 
     /**
      * Find all valid consents for a specific party.

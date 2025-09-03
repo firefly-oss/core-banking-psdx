@@ -13,6 +13,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Entity representing a log of access to customer data or operations
@@ -26,13 +27,13 @@ import java.time.LocalDateTime;
 public class AccessLog {
 
     @Id
-    private Long id;
+    private UUID id;
 
     @Column("consent_id")
-    private Long consentId;
+    private UUID consentId;
 
     @Column("party_id")
-    private Long partyId;
+    private UUID partyId;
 
     @Column("third_party_id")
     private String thirdPartyId;

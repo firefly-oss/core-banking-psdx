@@ -13,6 +13,7 @@ import org.springframework.data.relational.core.mapping.Table;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Entity representing a payment according to PSD2/PSD3 standards.
@@ -25,13 +26,13 @@ import java.time.LocalDateTime;
 public class Payment {
 
     @Id
-    private Long id;
+    private UUID id;
 
     @Column("end_to_end_identification")
     private String endToEndIdentification;
 
     @Column("consent_id")
-    private Long consentId;
+    private UUID consentId;
 
     @Column("payment_type")
     private String paymentType;

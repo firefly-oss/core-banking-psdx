@@ -8,11 +8,13 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 /**
  * Repository for managing ThirdPartyProvider entities.
  */
 @Repository
-public interface ThirdPartyProviderRepository extends ReactiveCrudRepository<ThirdPartyProvider, Long> {
+public interface ThirdPartyProviderRepository extends ReactiveCrudRepository<ThirdPartyProvider, UUID> {
 
     /**
      * Find a third party provider by its API key.

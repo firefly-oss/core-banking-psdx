@@ -13,7 +13,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.UUID;
 
 /**
  * Entity representing a Third Party Provider (TPP) that can access
@@ -27,7 +27,7 @@ import java.util.List;
 public class ThirdPartyProvider {
 
     @Id
-    private Long id;
+    private UUID id;
 
     @Column("name")
     private String name;

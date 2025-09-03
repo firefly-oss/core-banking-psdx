@@ -11,6 +11,7 @@ import org.springframework.data.relational.core.mapping.Table;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Entity representing a funds confirmation request/response according to PSD2/PSD3 standards.
@@ -23,10 +24,10 @@ import java.time.LocalDateTime;
 public class FundsConfirmation {
 
     @Id
-    private Long id;
+    private UUID id;
 
     @Column("consent_id")
-    private Long consentId;
+    private UUID consentId;
 
     @Column("account_reference")
     private String accountReference;

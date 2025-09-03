@@ -8,12 +8,13 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Repository for managing FundsConfirmation entities.
  */
 @Repository
-public interface FundsConfirmationRepository extends ReactiveCrudRepository<FundsConfirmation, Long> {
+public interface FundsConfirmationRepository extends ReactiveCrudRepository<FundsConfirmation, UUID> {
 
     /**
      * Find all funds confirmations for a specific consent.
@@ -21,7 +22,7 @@ public interface FundsConfirmationRepository extends ReactiveCrudRepository<Fund
      * @param consentId The ID of the consent
      * @return A Flux of funds confirmations
      */
-    Flux<FundsConfirmation> findByConsentId(Long consentId);
+    Flux<FundsConfirmation> findByConsentId(UUID consentId);
 
     /**
      * Find all funds confirmations for a specific account reference.

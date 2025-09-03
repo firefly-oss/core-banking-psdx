@@ -9,12 +9,13 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Repository for managing Payment entities.
  */
 @Repository
-public interface PaymentRepository extends ReactiveCrudRepository<Payment, Long> {
+public interface PaymentRepository extends ReactiveCrudRepository<Payment, UUID> {
 
     /**
      * Find all payments for a specific consent.
@@ -22,7 +23,7 @@ public interface PaymentRepository extends ReactiveCrudRepository<Payment, Long>
      * @param consentId The ID of the consent
      * @return A Flux of payments
      */
-    Flux<Payment> findByConsentId(Long consentId);
+    Flux<Payment> findByConsentId(UUID consentId);
 
     /**
      * Find a payment by its end-to-end identification.
