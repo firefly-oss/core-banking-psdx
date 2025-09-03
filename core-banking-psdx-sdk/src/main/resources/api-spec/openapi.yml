@@ -1,0 +1,5101 @@
+openapi: 3.0.1
+info:
+  title: core-banking-psdx
+  description: PSD2/PSD3 and FIDA Regulatory Compliance Service
+  contact:
+    name: Firefly Software Solutions Inc
+    email: dev@getfirefly.io
+  version: 1.0.0
+servers:
+  - url: http://core.catalis.vc/psdx
+    description: Development Environment
+  - url: /
+    description: Local Development Environment
+security:
+  - apiKey: []
+  - bearer: []
+tags:
+  - name: Third Party Provider Management
+    description: APIs for managing Third Party Providers according to PSD2/PSD3 regulations
+  - name: Card Account Information
+    description: APIs for card account information according to PSD2/PSD3 regulations
+  - name: Funds Confirmation
+    description: APIs for funds confirmation according to PSD2/PSD3 regulations
+  - name: Authentication
+    description: APIs for authentication
+  - name: Strong Customer Authentication
+    description: APIs for Strong Customer Authentication according to PSD2/PSD3 regulations
+  - name: Consent Management
+    description: APIs for managing consents according to PSD2/PSD3 regulations
+  - name: Payment Initiation Services
+    description: APIs for payment initiation services according to PSD2/PSD3 regulations
+  - name: Account Information Services
+    description: APIs for account information services according to PSD2/PSD3 regulations
+  - name: Access Logging
+    description: APIs for access logging according to PSD2/PSD3 and FIDA regulations
+paths:
+  /api/v1/providers/{providerId}:
+    get:
+      tags:
+        - Third Party Provider Management
+      summary: Get provider
+      description: |
+        ## Retrieve a Third Party Provider
+
+        This endpoint retrieves detailed information about a specific Third Party Provider (TPP) by its unique identifier.
+
+        ### Description
+        This operation allows authorized users to access the complete profile of a registered TPP.
+
+        ### Path Parameters
+        * `providerId` - The unique identifier of the TPP to retrieve
+
+        ### Processing
+        The system will:
+        1. Validate the provided TPP ID
+        2. Check if the TPP exists in the system
+        3. Verify that the requester has permission to view the TPP information
+
+        ### Response
+        Returns the complete TPP profile including:
+        * Basic information (name, ID, status)
+        * Contact details
+        * Regulatory information
+        * Registration date
+        * Current status (active, suspended, etc.)
+
+        ### Security Considerations
+        Access to this endpoint should be restricted to authorized personnel only.
+      operationId: getProvider
+      parameters:
+        - name: providerId
+          in: path
+          description: ID of the provider
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent for the operation
+          schema:
+            type: string
+          example: '12345'
+      responses:
+        '200':
+          description: Provider found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+        '404':
+          description: Provider not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+    put:
+      tags:
+        - Third Party Provider Management
+      summary: Update provider
+      description: |
+        ## Update a Third Party Provider
+
+        This endpoint allows for updating the information of an existing Third Party Provider (TPP).
+
+        ### Description
+        This operation enables authorized users to modify the details of a registered TPP.
+        It's used when TPP information changes or needs correction.
+
+        ### Path Parameters
+        * `providerId` - The unique identifier of the TPP to update
+
+        ### Request Body
+        The request must include the updated TPP information:
+        * TPP name and identification details
+        * Contact information
+        * Regulatory information
+        * Any other fields that need updating
+
+        ### Processing
+        The system will:
+        1. Validate the provided TPP ID
+        2. Check if the TPP exists in the system
+        3. Verify that the requester has permission to update the TPP
+        4. Validate the updated information
+        5. Apply the changes to the TPP record
+
+        ### Response
+        Returns the updated TPP profile with all changes applied.
+
+        ### Validation Rules
+        * The TPP must exist in the system
+        * Required fields cannot be empty
+        * Regulatory information must be valid
+
+        ### Security Considerations
+        * Only authorized administrators should be able to update TPP information
+        * All changes are logged for audit purposes
+      operationId: updateProvider
+      parameters:
+        - name: providerId
+          in: path
+          description: ID of the provider
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent for the operation
+          schema:
+            type: string
+          example: '12345'
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+        required: true
+      responses:
+        '200':
+          description: Provider updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+        '404':
+          description: Provider not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+    delete:
+      tags:
+        - Third Party Provider Management
+      summary: Revoke provider
+      description: |
+        ## Revoke a Third Party Provider
+
+        This endpoint permanently revokes a Third Party Provider's (TPP) access to the system.
+
+        ### Description
+        This operation allows authorized administrators to permanently disable a TPP's ability
+        to access the APIs. This is typically used when a TPP is no longer authorized to provide
+        services, has violated terms of service, or has ceased operations.
+
+        ### Path Parameters
+        * `providerId` - The unique identifier of the TPP to revoke
+
+        ### Processing
+        The system will:
+        1. Validate the provided TPP ID
+        2. Check if the TPP exists in the system
+        3. Verify that the requester has permission to revoke TPPs
+        4. Permanently revoke the TPP's access
+        5. Invalidate all tokens and credentials
+        6. Mark the TPP record as "REVOKED" in the database
+
+        ### Response
+        Returns a boolean value indicating successful revocation (true).
+
+        ### Business Rules
+        * A revoked TPP cannot access any APIs
+        * All existing tokens and credentials for the TPP are permanently invalidated
+        * Revocation is a permanent action and cannot be easily reversed
+        * A revoked TPP would need to re-register to regain access
+
+        ### Security Considerations
+        * Only authorized administrators should be able to revoke TPPs
+        * The action is logged for audit purposes
+        * Notification should be sent to the TPP and relevant regulatory authorities
+        * All customer consents associated with the TPP should be reviewed
+      operationId: revokeProvider
+      parameters:
+        - name: providerId
+          in: path
+          description: ID of the provider
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent for the operation
+          schema:
+            type: string
+          example: '12345'
+      responses:
+        '200':
+          description: Provider revoked successfully
+          content:
+            application/json:
+              schema:
+                type: boolean
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: boolean
+        '404':
+          description: Provider not found
+          content:
+            application/json:
+              schema:
+                type: boolean
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: boolean
+  /api/v1/consents/{consentId}/status:
+    put:
+      tags:
+        - Consent Management
+      summary: Update consent status
+      description: |
+        ## Update the Status of a Consent
+
+        This endpoint changes the status of an existing consent.
+
+        ### Description
+        This operation allows for updating the status of a consent throughout its lifecycle.
+        Consent status transitions are strictly controlled according to PSD2/PSD3 regulations
+        and business rules.
+
+        ### Path Parameters
+        * `consentId` - The unique identifier of the consent to update
+
+        ### Request Body
+        The request must include:
+        * New status value (e.g., "RECEIVED", "VALID", "REJECTED", "EXPIRED", "REVOKED")
+        * Optional status reason or additional information
+
+        ### Processing
+        The system will:
+        1. Validate the provided consent ID
+        2. Check if the consent exists in the system
+        3. Verify that the requester has permission to update the consent status
+        4. Validate that the requested status transition is allowed
+        5. Update the consent status
+        6. Record the status change in the audit log
+
+        ### Response
+        Returns the updated consent record with the new status.
+
+        ### Status Transition Rules
+        * Only certain status transitions are allowed (e.g., "RECEIVED" → "VALID", "VALID" → "REVOKED")
+        * Some status changes require specific authentication or authorization
+        * Certain status changes may be irreversible (e.g., "REVOKED" cannot be changed)
+        * Status changes may trigger notifications to the customer and/or TPP
+
+        ### Regulatory Implications
+        * Status changes must comply with PSD2/PSD3 requirements
+        * All status changes must be properly documented and auditable
+        * Certain status changes may require reporting to regulatory authorities
+
+        ### Security Considerations
+        * Status changes should be strictly controlled
+        * All status changes must be logged for audit purposes
+        * Status change authorization should be verified
+      operationId: updateConsentStatus
+      parameters:
+        - name: consentId
+          in: path
+          description: ID of the consent
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent for the operation
+          schema:
+            type: string
+          example: '12345'
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PSDConsentStatusDTO'
+        required: true
+      responses:
+        '200':
+          description: Consent status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDConsentDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDConsentDTO'
+        '404':
+          description: Consent not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDConsentDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDConsentDTO'
+  /api/v1/sca/validate:
+    post:
+      tags:
+        - Strong Customer Authentication
+      summary: Validate SCA
+      description: Validates Strong Customer Authentication for a customer
+      operationId: validateSCA
+      parameters:
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent for the operation
+          schema:
+            type: string
+          example: '12345'
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PSDSCAValidationRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: SCA validated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDSCAValidationResponseDTO'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDSCAValidationResponseDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDSCAValidationResponseDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDSCAValidationResponseDTO'
+  /api/v1/sca/authenticate:
+    post:
+      tags:
+        - Strong Customer Authentication
+      summary: Initiate SCA
+      description: Initiates Strong Customer Authentication for a customer
+      operationId: initiateSCA
+      parameters:
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent for the operation
+          schema:
+            type: string
+          example: '12345'
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PSDSCAAuthenticationRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: SCA initiated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDSCAAuthenticationResponseDTO'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDSCAAuthenticationResponseDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDSCAAuthenticationResponseDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDSCAAuthenticationResponseDTO'
+  /api/v1/providers/{providerId}/suspend:
+    post:
+      tags:
+        - Third Party Provider Management
+      summary: Suspend provider
+      description: |
+        ## Suspend a Third Party Provider
+
+        This endpoint temporarily suspends a Third Party Provider's (TPP) access to the system.
+
+        ### Description
+        This operation allows authorized administrators to temporarily disable a TPP's ability
+        to access the APIs. This is typically used when there are security concerns, regulatory
+        issues, or at the request of the TPP itself.
+
+        ### Path Parameters
+        * `providerId` - The unique identifier of the TPP to suspend
+
+        ### Processing
+        The system will:
+        1. Validate the provided TPP ID
+        2. Check if the TPP exists in the system
+        3. Verify that the requester has permission to suspend TPPs
+        4. Change the TPP's status to "SUSPENDED"
+        5. Invalidate any active sessions for the TPP
+
+        ### Response
+        Returns the updated TPP profile with status changed to "SUSPENDED".
+
+        ### Business Rules
+        * A suspended TPP cannot access any APIs
+        * All existing tokens for the TPP are invalidated
+        * The suspension can be reversed using the activate endpoint
+
+        ### Security Considerations
+        * Only authorized administrators should be able to suspend TPPs
+        * The action is logged for audit purposes
+        * Notification may be sent to the TPP and relevant regulatory authorities
+      operationId: suspendProvider
+      parameters:
+        - name: providerId
+          in: path
+          description: ID of the provider
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent for the operation
+          schema:
+            type: string
+          example: '12345'
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Provider suspended successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+        '404':
+          description: Provider not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+  /api/v1/providers/{providerId}/activate:
+    post:
+      tags:
+        - Third Party Provider Management
+      summary: Activate provider
+      description: |
+        ## Activate a Third Party Provider
+
+        This endpoint activates or reactivates a Third Party Provider's (TPP) access to the system.
+
+        ### Description
+        This operation allows authorized administrators to enable a TPP's ability to access the APIs.
+        This is typically used when onboarding a new TPP, or reactivating a previously suspended TPP
+        after resolving any issues that led to the suspension.
+
+        ### Path Parameters
+        * `providerId` - The unique identifier of the TPP to activate
+
+        ### Processing
+        The system will:
+        1. Validate the provided TPP ID
+        2. Check if the TPP exists in the system
+        3. Verify that the requester has permission to activate TPPs
+        4. Change the TPP's status to "ACTIVE"
+        5. Enable API access for the TPP
+
+        ### Response
+        Returns the updated TPP profile with status changed to "ACTIVE".
+
+        ### Business Rules
+        * An activated TPP can access APIs according to their permissions
+        * The TPP must have valid certificates and regulatory approvals
+        * If the TPP was previously suspended, a review process may be required before activation
+
+        ### Security Considerations
+        * Only authorized administrators should be able to activate TPPs
+        * The action is logged for audit purposes
+        * Activation should only proceed after all security and regulatory requirements are met
+      operationId: activateProvider
+      parameters:
+        - name: providerId
+          in: path
+          description: ID of the provider
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent for the operation
+          schema:
+            type: string
+          example: '12345'
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Provider activated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+        '404':
+          description: Provider not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+  /api/v1/providers:
+    get:
+      tags:
+        - Third Party Provider Management
+      summary: Get all providers
+      description: |
+        ## Retrieve All Third Party Providers
+
+        This endpoint retrieves a list of all registered Third Party Providers (TPPs) in the system.
+
+        ### Description
+        This operation allows authorized users to access a comprehensive list of all TPPs registered
+        with the system. This is useful for administrative purposes, reporting, and monitoring.
+
+        ### Query Parameters
+        No specific query parameters are required for this endpoint.
+
+        ### Processing
+        The system will:
+        1. Verify that the requester has permission to view TPP information
+        2. Retrieve all TPP records from the database
+        3. Format the response as a collection of TPP objects
+
+        ### Response
+        Returns an array of TPP profiles, each containing:
+        * Basic information (name, ID, status)
+        * Contact details
+        * Regulatory information
+        * Registration date
+        * Current status (active, suspended, etc.)
+
+        ### Performance Considerations
+        This endpoint may return a large amount of data if many TPPs are registered.
+        Consider implementing pagination if the number of TPPs grows significantly.
+
+        ### Security Considerations
+        Access to this endpoint should be restricted to authorized personnel only.
+      operationId: getAllProviders
+      parameters:
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent for the operation
+          schema:
+            type: string
+          example: '12345'
+      responses:
+        '200':
+          description: Providers found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+    post:
+      tags:
+        - Third Party Provider Management
+      summary: Register provider
+      description: |
+        ## Register a new Third Party Provider
+
+        This endpoint allows for the registration of a new Third Party Provider (TPP) in the system.
+
+        ### Description
+        TPPs are entities that provide payment initiation or account information services to customers.
+        Registration is required before a TPP can access any PSD2/PSD3 APIs.
+
+        ### Request Details
+        The request must include:
+        * TPP name and identification details
+        * Contact information
+        * Regulatory information including authorization number
+        * Certificate details for secure communication
+
+        ### Processing
+        The system will:
+        1. Validate the TPP's registration information
+        2. Check for existing registrations to prevent duplicates
+        3. Generate a unique API key for the TPP
+        4. Store the TPP's information securely
+
+        ### Response
+        Returns the registered TPP information including the generated API key.
+      operationId: registerProvider
+      parameters:
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PSDThirdPartyProviderRegistrationDTO'
+        required: true
+      responses:
+        '201':
+          description: Provider registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+  /api/v1/payments/{paymentId}/authorize:
+    post:
+      tags:
+        - Payment Initiation Services
+      summary: Authorize payment
+      description: |
+        ## Authorize a Payment
+
+        This endpoint authorizes a payment using Strong Customer Authentication (SCA).
+
+        ### Description
+        This operation is part of the Payment Initiation Service (PIS) under PSD2/PSD3 regulations.
+        It completes the authorization process for a payment by applying the authentication code
+        obtained through the Strong Customer Authentication (SCA) process.
+
+        ### Request Headers
+        * `X-Consent-ID` - The unique identifier of the consent that authorizes access to this payment
+
+        ### Path Parameters
+        * `paymentId` - The unique identifier of the payment to authorize
+
+        ### Request Body
+        * `authorizationCode` - The authorization code obtained from the SCA process
+
+        ### Processing
+        The system will:
+        1. Validate the consent ID provided in the header
+        2. Check that the consent is valid, active, and covers the specified payment
+        3. Verify that the payment exists and is associated with the consent
+        4. Check if the payment is in a state that allows authorization
+        5. Validate the authorization code against the SCA challenge
+        6. Update the payment status to "AUTHORIZED"
+        7. Initiate the payment execution process
+
+        ### Response
+        Returns the updated payment object with status changed to "AUTHORIZED".
+
+        ### Authorization Flow
+        1. Payment is initiated (status: RECEIVED)
+        2. SCA is triggered (status: PENDING)
+        3. Customer completes authentication and receives an authorization code
+        4. TPP submits the authorization code to this endpoint
+        5. Payment is authorized (status: AUTHORIZED)
+        6. Payment is executed (status will change to EXECUTED asynchronously)
+
+        ### SCA Requirements
+        * Strong Customer Authentication is mandatory for payment authorization under PSD2/PSD3
+        * SCA typically involves two-factor authentication (2FA)
+        * The authorization code has a limited validity period
+        * Multiple failed authorization attempts may lock the payment
+
+        ### Error Scenarios
+        * If the payment doesn't exist, returns a 404 Not Found response
+        * If the payment exists but is not covered by the consent, returns a 403 Forbidden response
+        * If the consent is invalid or expired, returns a 401 Unauthorized response
+        * If the authorization code is invalid or expired, returns a 401 Unauthorized response
+        * If the payment cannot be authorized (e.g., already executed), returns a 400 Bad Request response
+
+        ### Regulatory Compliance
+        * This endpoint implements the Payment Authorization Service as defined in PSD2/PSD3
+        * Strong Customer Authentication is a regulatory requirement
+        * Access is logged for regulatory reporting and audit purposes
+
+        ### Security Considerations
+        * All requests must include a valid consent ID
+        * Authorization codes are single-use and time-limited
+        * Failed authorization attempts are monitored for fraud prevention
+        * All authorization attempts are logged for audit purposes
+      operationId: authorizePayment
+      parameters:
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: paymentId
+          in: path
+          description: ID of the payment
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: PSU-ID
+          in: header
+          description: ID of the customer
+          schema:
+            type: string
+          example: user@example.com
+        - name: PSU-IP-Address
+          in: header
+          description: IP address of the customer
+          schema:
+            type: string
+          example: 192.168.1.1
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              description: Authorization code from SCA
+        required: true
+      responses:
+        '200':
+          description: Payment authorized successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDPaymentDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDPaymentDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDPaymentDTO'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDPaymentDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDPaymentDTO'
+  /api/v1/payments:
+    post:
+      tags:
+        - Payment Initiation Services
+      summary: Initiate payment
+      description: |
+        ## Initiate a New Payment
+
+        This endpoint initiates a new payment transaction based on the provided payment details.
+
+        ### Description
+        This operation is a core Payment Initiation Service (PIS) under PSD2/PSD3 regulations.
+        It allows Third Party Providers (TPPs) to initiate payments on behalf of customers
+        after obtaining explicit consent.
+
+        ### Request Headers
+        * `X-Consent-ID` - The unique identifier of the consent that authorizes this payment initiation
+
+        ### Request Body
+        The request must include payment details:
+        * Debtor account information
+        * Creditor account information
+        * Payment amount and currency
+        * Payment type (e.g., single, recurring, bulk)
+        * Execution date
+        * Remittance information
+        * End-to-end identifier (if applicable)
+
+        ### Processing
+        The system will:
+        1. Validate the consent ID provided in the header
+        2. Check that the consent is valid, active, and covers payment initiation
+        3. Verify that the payment details are valid and complete
+        4. Check for sufficient funds (preliminary check)
+        5. Create a payment record with status "RECEIVED"
+        6. Initiate the Strong Customer Authentication (SCA) process if required
+
+        ### Response
+        Returns a payment object containing:
+        * Payment identifier
+        * Current status (initially "RECEIVED")
+        * Creation timestamp
+        * All payment details as provided in the request
+        * Links to related resources (e.g., status check, authorization)
+
+        ### Payment Lifecycle
+        1. **RECEIVED** - Initial state after payment is created
+        2. **PENDING** - Payment is pending authorization
+        3. **AUTHORIZED** - Payment has been authorized but not yet executed
+        4. **EXECUTED** - Payment has been successfully executed
+        5. **REJECTED** - Payment has been rejected
+        6. **CANCELLED** - Payment has been cancelled
+
+        ### Regulatory Compliance
+        * This endpoint implements the Payment Initiation Service as defined in PSD2/PSD3
+        * Strong Customer Authentication (SCA) is required for payment authorization
+        * Access is logged for regulatory reporting and audit purposes
+
+        ### Security Considerations
+        * All requests must include a valid consent ID
+        * Consent validation includes checking expiration and revocation status
+        * Payment details are validated for security and compliance
+        * Anti-fraud checks may be performed
+      operationId: initiatePayment
+      parameters:
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: PSU-ID
+          in: header
+          description: ID of the customer
+          schema:
+            type: string
+          example: user@example.com
+        - name: PSU-IP-Address
+          in: header
+          description: IP address of the customer
+          schema:
+            type: string
+          example: 192.168.1.1
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PSDPaymentInitiationRequestDTO'
+        required: true
+      responses:
+        '201':
+          description: Payment initiated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDPaymentDTO'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDPaymentDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDPaymentDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDPaymentDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDPaymentDTO'
+  /api/v1/funds-confirmations:
+    post:
+      tags:
+        - Funds Confirmation
+      summary: Confirm funds
+      description: |
+        ## Confirm Availability of Funds
+
+        This endpoint checks whether a specific amount of funds is available on a customer's account.
+
+        ### Description
+        This operation is part of the Funds Confirmation Service (FCS) under PSD2/PSD3 regulations.
+        It allows Third Party Providers (TPPs) to verify if a customer has sufficient funds for a
+        transaction without initiating an actual payment.
+
+        ### Request Headers
+        * `X-Consent-ID` - The unique identifier of the consent that authorizes this funds check
+
+        ### Request Body
+        The request must include:
+        * Account reference (account identifier)
+        * Amount and currency to check
+        * Reference information for the potential transaction
+
+        ### Processing
+        The system will:
+        1. Validate the consent ID provided in the header
+        2. Check that the consent is valid, active, and covers funds confirmation
+        3. Verify that the specified account is included in the consent's scope
+        4. Check the current available balance on the account
+        5. Compare the available balance with the requested amount
+        6. Create a funds confirmation record with the result
+
+        ### Response
+        Returns a funds confirmation object containing:
+        * Confirmation identifier
+        * Result (true if funds are available, false if not)
+        * Timestamp of the confirmation
+        * Account reference
+        * Amount and currency checked
+        * Reference information
+
+        ### Important Notes
+        * A positive confirmation does not guarantee funds will be available at the time of an actual payment
+        * No funds are reserved or blocked by this operation
+        * The confirmation is a point-in-time check and may become outdated quickly
+
+        ### Use Cases
+        * Card-based payment instruments issuing funds checks before authorizing transactions
+        * Pre-validation of funds availability before initiating a payment
+        * Merchant verification of customer's ability to pay
+
+        ### Regulatory Compliance
+        * This endpoint implements the Funds Confirmation Service as defined in PSD2/PSD3
+        * Access is logged for regulatory reporting and audit purposes
+        * Explicit consent is required for funds confirmation
+
+        ### Security Considerations
+        * All requests must include a valid consent ID
+        * Consent validation includes checking expiration and revocation status
+        * Funds confirmation requests are monitored for suspicious patterns
+        * Results are considered sensitive financial information
+      operationId: confirmFunds
+      parameters:
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PSDFundsConfirmationDTO'
+        required: true
+      responses:
+        '201':
+          description: Funds confirmation created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDFundsConfirmationDTO'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDFundsConfirmationDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDFundsConfirmationDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDFundsConfirmationDTO'
+  /api/v1/consents:
+    get:
+      tags:
+        - Consent Management
+      summary: Get consents for a customer
+      description: |
+        ## Retrieve All Consents for a Customer
+
+        This endpoint retrieves all consent records associated with a specific customer.
+
+        ### Description
+        This operation allows authorized users to view all consents that a customer has granted
+        to various TPPs. This is useful for customer support, consent management, and regulatory
+        reporting purposes.
+
+        ### Query Parameters
+        * `partyId` - The unique identifier of the customer whose consents are being retrieved
+
+        ### Processing
+        The system will:
+        1. Validate the provided party ID
+        2. Verify that the requester has permission to view the customer's consents
+        3. Retrieve all consent records associated with the customer
+        4. Filter the results based on the requester's access rights
+
+        ### Response
+        Returns an array of consent records, each containing:
+        * Consent ID and status
+        * TPP information
+        * Scope of access granted
+        * Validity period
+        * Creation and last updated timestamps
+        * Authentication status
+
+        ### Access Control
+        * TPPs can only access consents they created for the specified customer
+        * Customers can access all their own consents
+        * Administrators can access all consents for any customer
+
+        ### Performance Considerations
+        * For customers with many consents, consider implementing pagination
+        * Results may be filtered based on consent status or TPP if needed
+
+        ### Security Considerations
+        * Access to customer consent information should be strictly controlled
+        * All access attempts should be logged for audit purposes
+        * Consider implementing additional filtering options to limit data exposure
+      operationId: getConsentsForCustomer
+      parameters:
+        - name: partyId
+          in: query
+          description: ID of the customer
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent for the operation
+          schema:
+            type: string
+          example: '12345'
+      responses:
+        '200':
+          description: Consents found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDConsentDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDConsentDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDConsentDTO'
+    post:
+      tags:
+        - Consent Management
+      summary: Create a new consent
+      description: |
+        ## Create a New Consent
+
+        This endpoint creates a new consent record for a customer, allowing a Third Party Provider (TPP) to access their data.
+
+        ### Description
+        Consent is a fundamental concept in PSD2/PSD3 regulations, representing the customer's explicit permission
+        for a TPP to access their account information or initiate payments. This endpoint creates a new consent
+        record based on the customer's authorization.
+
+        ### Request Body
+        The request must include:
+        * Customer identification (party ID)
+        * TPP identification
+        * Type of consent (account information, payment initiation, etc.)
+        * Scope of access (which accounts, what information)
+        * Validity period (start and end dates)
+
+        ### Processing
+        The system will:
+        1. Validate the request data
+        2. Verify that the TPP is authorized and active
+        3. Check that the customer exists
+        4. Create a new consent record with status "RECEIVED"
+        5. Generate a unique consent identifier
+
+        ### Response
+        Returns the created consent object with:
+        * Unique consent ID
+        * Current status (initially "RECEIVED")
+        * Creation timestamp
+        * All consent details as provided in the request
+
+        ### Business Rules
+        * A consent is initially created with status "RECEIVED"
+        * The consent requires customer authentication before becoming active
+        * Consents have a limited validity period as specified in the request
+        * Different consent types may have different validation rules
+
+        ### Security Considerations
+        * Consent creation should be logged for audit purposes
+        * The TPP must be authenticated and authorized to create consents
+        * Customer verification will be required in a subsequent step
+      operationId: createConsent
+      parameters:
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent for the operation
+          schema:
+            type: string
+          example: '12345'
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PSDConsentRequestDTO'
+        required: true
+      responses:
+        '201':
+          description: Consent created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDConsentDTO'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDConsentDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDConsentDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDConsentDTO'
+  /api/v1/access-logs:
+    get:
+      tags:
+        - Access Logging
+      summary: Get access logs
+      description: Gets access logs based on query parameters
+      operationId: getAccessLogs
+      parameters:
+        - name: partyId
+          in: query
+          description: ID of the customer
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: consentId
+          in: query
+          description: ID of the consent
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: thirdPartyId
+          in: query
+          description: ID of the third party provider
+          required: false
+          schema:
+            type: string
+        - name: fromDate
+          in: query
+          description: Start date of the range
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: toDate
+          in: query
+          description: End date of the range
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent for the operation
+          schema:
+            type: string
+          example: '12345'
+      responses:
+        '200':
+          description: Access logs found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDAccessLogDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDAccessLogDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDAccessLogDTO'
+    post:
+      tags:
+        - Access Logging
+      summary: Log access
+      description: Logs an access to customer data or an operation performed on their behalf
+      operationId: logAccess
+      parameters:
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent for the operation
+          schema:
+            type: string
+          example: '12345'
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PSDAccessLogRequestDTO'
+        required: true
+      responses:
+        '201':
+          description: Access logged successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDAccessLogDTO'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDAccessLogDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDAccessLogDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDAccessLogDTO'
+  /api/auth/token:
+    post:
+      tags:
+        - Authentication
+      summary: Authenticate
+      description: Authenticate a user and generate JWT tokens
+      operationId: authenticate
+      parameters:
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PSDAuthenticationRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDAuthenticationResponseDTO'
+        '401':
+          description: Authentication failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDAuthenticationResponseDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDAuthenticationResponseDTO'
+  /api/auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh token
+      description: Refresh a JWT token
+      operationId: refreshToken
+      parameters:
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent for the operation
+          schema:
+            type: string
+          example: '12345'
+        - name: X-Idempotency-Key
+          in: header
+          description: Unique key for idempotent requests. If provided, ensures that identical requests with the same key will only be processed once.
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PSDRefreshTokenRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDAuthenticationResponseDTO'
+        '401':
+          description: Invalid refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDAuthenticationResponseDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDAuthenticationResponseDTO'
+  /api/v1/sca/required:
+    get:
+      tags:
+        - Strong Customer Authentication
+      summary: Check if SCA is required
+      description: Checks if Strong Customer Authentication is required for a payment
+      operationId: isSCARequired
+      parameters:
+        - name: amount
+          in: query
+          description: Payment amount
+          required: true
+          schema:
+            type: number
+            format: double
+        - name: currency
+          in: query
+          description: Payment currency
+          required: true
+          schema:
+            type: string
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent for the operation
+          schema:
+            type: string
+          example: '12345'
+      responses:
+        '200':
+          description: Check completed successfully
+          content:
+            application/json:
+              schema:
+                type: boolean
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: boolean
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: boolean
+  /api/v1/providers/validate:
+    get:
+      tags:
+        - Third Party Provider Management
+      summary: Validate API key
+      description: |
+        ## Validate a Third Party Provider's API Key
+
+        This endpoint validates the authenticity and status of a Third Party Provider's (TPP) API key.
+
+        ### Description
+        This operation verifies that an API key belongs to a registered TPP and that the TPP
+        is currently active in the system. This endpoint is typically used by API gateways and
+        authentication services to validate incoming requests from TPPs.
+
+        ### Request Headers
+        * `X-API-KEY` - The API key to validate
+
+        ### Processing
+        The system will:
+        1. Extract the API key from the request header
+        2. Look up the TPP associated with the API key
+        3. Verify that the TPP exists and is in an active state
+        4. Check that the API key has not expired or been revoked
+
+        ### Response
+        Returns the TPP profile associated with the API key if validation is successful.
+
+        ### Error Scenarios
+        * If the API key is not found, returns a 401 Unauthorized response
+        * If the TPP is suspended or revoked, returns a 401 Unauthorized response
+        * If the API key has expired, returns a 401 Unauthorized response
+
+        ### Security Considerations
+        * This endpoint should be rate-limited to prevent brute force attacks
+        * Failed validation attempts should be logged for security monitoring
+        * Consider implementing additional security measures like IP whitelisting
+
+        ### Performance Considerations
+        * Results of validation should be cached for a short period to improve performance
+        * The validation process should be optimized for low latency
+      operationId: validateApiKey
+      parameters:
+        - name: X-API-KEY
+          in: header
+          description: API key to validate
+          required: true
+          schema:
+            type: string
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+      responses:
+        '200':
+          description: API key validated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+        '401':
+          description: Invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDThirdPartyProviderDTO'
+  /api/v1/payments/{paymentId}/status:
+    get:
+      tags:
+        - Payment Initiation Services
+      summary: Get payment status
+      description: |
+        ## Retrieve Payment Status
+
+        This endpoint retrieves the current status of a specific payment.
+
+        ### Description
+        This operation is part of the Payment Initiation Service (PIS) under PSD2/PSD3 regulations.
+        It allows Third Party Providers (TPPs) to check the status of a payment that was previously
+        initiated through the API.
+
+        ### Request Headers
+        * `X-Consent-ID` - The unique identifier of the consent that authorizes access to this payment
+
+        ### Path Parameters
+        * `paymentId` - The unique identifier of the payment whose status is being retrieved
+
+        ### Processing
+        The system will:
+        1. Validate the consent ID provided in the header
+        2. Check that the consent is valid, active, and covers the specified payment
+        3. Verify that the payment exists and is associated with the consent
+        4. Retrieve the current status of the payment
+
+        ### Response
+        Returns a payment status object containing:
+        * Payment identifier
+        * Current status (e.g., "RECEIVED", "PENDING", "AUTHORIZED", "EXECUTED", "REJECTED", "CANCELLED")
+        * Status timestamp (when the status was last updated)
+        * Status reason (if applicable, especially for rejected payments)
+        * Additional status details (if available)
+
+        ### Status Definitions
+        * **RECEIVED** - Payment has been received but not yet processed
+        * **PENDING** - Payment is awaiting authorization or processing
+        * **AUTHORIZED** - Payment has been authorized but not yet executed
+        * **EXECUTED** - Payment has been successfully executed
+        * **REJECTED** - Payment has been rejected (with reason)
+        * **CANCELLED** - Payment has been cancelled by the user or system
+
+        ### Error Scenarios
+        * If the payment doesn't exist, returns a 404 Not Found response
+        * If the payment exists but is not covered by the consent, returns a 403 Forbidden response
+        * If the consent is invalid or expired, returns a 401 Unauthorized response
+
+        ### Regulatory Compliance
+        * This endpoint implements the Payment Status Check as defined in PSD2/PSD3
+        * Access is logged for regulatory reporting and audit purposes
+
+        ### Security Considerations
+        * All requests must include a valid consent ID
+        * Consent validation includes checking expiration and revocation status
+        * Status checks may be rate-limited to prevent excessive polling
+      operationId: getPaymentStatus
+      parameters:
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: paymentId
+          in: path
+          description: ID of the payment
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: PSU-ID
+          in: header
+          description: ID of the customer
+          schema:
+            type: string
+          example: user@example.com
+        - name: PSU-IP-Address
+          in: header
+          description: IP address of the customer
+          schema:
+            type: string
+          example: 192.168.1.1
+      responses:
+        '200':
+          description: Payment status found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDPaymentStatusDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDPaymentStatusDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDPaymentStatusDTO'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDPaymentStatusDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDPaymentStatusDTO'
+  /api/v1/payments/{paymentId}:
+    get:
+      tags:
+        - Payment Initiation Services
+      summary: Get payment
+      description: |
+        ## Retrieve Payment Details
+
+        This endpoint retrieves detailed information about a specific payment.
+
+        ### Description
+        This operation is part of the Payment Initiation Service (PIS) under PSD2/PSD3 regulations.
+        It allows Third Party Providers (TPPs) to retrieve complete details of a payment that was
+        previously initiated through the API.
+
+        ### Request Headers
+        * `X-Consent-ID` - The unique identifier of the consent that authorizes access to this payment
+
+        ### Path Parameters
+        * `paymentId` - The unique identifier of the payment to retrieve
+
+        ### Processing
+        The system will:
+        1. Validate the consent ID provided in the header
+        2. Check that the consent is valid, active, and covers the specified payment
+        3. Verify that the payment exists and is associated with the consent
+        4. Retrieve the complete payment information
+
+        ### Response
+        Returns a payment object containing:
+        * Payment identifier
+        * Current status
+        * Creation and last updated timestamps
+        * Debtor account information
+        * Creditor account information
+        * Payment amount and currency
+        * Payment type (e.g., single, recurring, bulk)
+        * Execution date
+        * Remittance information
+        * End-to-end identifier (if applicable)
+        * Status history (if available)
+        * Links to related resources (e.g., status check, authorization)
+
+        ### Error Scenarios
+        * If the payment doesn't exist, returns a 404 Not Found response
+        * If the payment exists but is not covered by the consent, returns a 403 Forbidden response
+        * If the consent is invalid or expired, returns a 401 Unauthorized response
+
+        ### Data Sensitivity
+        * Certain payment details may be masked or filtered based on the consent scope
+        * Account numbers may be partially masked for security
+        * Sensitive authentication data is never returned
+
+        ### Regulatory Compliance
+        * This endpoint implements the Payment Information Service as defined in PSD2/PSD3
+        * Access is logged for regulatory reporting and audit purposes
+
+        ### Security Considerations
+        * All requests must include a valid consent ID
+        * Consent validation includes checking expiration and revocation status
+        * Access to payment details is strictly controlled based on consent
+      operationId: getPayment
+      parameters:
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: paymentId
+          in: path
+          description: ID of the payment
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: PSU-ID
+          in: header
+          description: ID of the customer
+          schema:
+            type: string
+          example: user@example.com
+        - name: PSU-IP-Address
+          in: header
+          description: IP address of the customer
+          schema:
+            type: string
+          example: 192.168.1.1
+      responses:
+        '200':
+          description: Payment found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDPaymentDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDPaymentDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDPaymentDTO'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDPaymentDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDPaymentDTO'
+    delete:
+      tags:
+        - Payment Initiation Services
+      summary: Cancel payment
+      description: |
+        ## Cancel a Payment
+
+        This endpoint cancels a payment that has not yet been executed.
+
+        ### Description
+        This operation is part of the Payment Initiation Service (PIS) under PSD2/PSD3 regulations.
+        It allows Third Party Providers (TPPs) to cancel a payment that was previously initiated
+        but has not yet been fully processed or executed.
+
+        ### Request Headers
+        * `X-Consent-ID` - The unique identifier of the consent that authorizes access to this payment
+
+        ### Path Parameters
+        * `paymentId` - The unique identifier of the payment to cancel
+
+        ### Processing
+        The system will:
+        1. Validate the consent ID provided in the header
+        2. Check that the consent is valid, active, and covers the specified payment
+        3. Verify that the payment exists and is associated with the consent
+        4. Check if the payment is in a state that allows cancellation
+        5. Update the payment status to "CANCELLED"
+        6. Record the cancellation details
+
+        ### Response
+        Returns the updated payment object with status changed to "CANCELLED".
+
+        ### Cancellation Rules
+        * Only payments in certain states can be cancelled:
+          * RECEIVED - Can be cancelled
+          * PENDING - Can be cancelled
+          * AUTHORIZED - May be cancellable depending on the payment system
+          * EXECUTED - Cannot be cancelled (returns an error)
+          * REJECTED - Already terminated (returns an error)
+          * CANCELLED - Already cancelled (returns an error)
+        * Cancellation may require customer authentication depending on the payment type and status
+        * Some payment types may have time limitations for cancellation
+
+        ### Error Scenarios
+        * If the payment doesn't exist, returns a 404 Not Found response
+        * If the payment exists but is not covered by the consent, returns a 403 Forbidden response
+        * If the consent is invalid or expired, returns a 401 Unauthorized response
+        * If the payment cannot be cancelled (e.g., already executed), returns a 400 Bad Request response
+
+        ### Regulatory Compliance
+        * This endpoint implements the Payment Cancellation Service as defined in PSD2/PSD3
+        * Access is logged for regulatory reporting and audit purposes
+        * Cancellation may be subject to specific regulatory requirements
+
+        ### Security Considerations
+        * All requests must include a valid consent ID
+        * Consent validation includes checking expiration and revocation status
+        * Cancellation may require additional authentication for security
+        * All cancellation attempts are logged for audit purposes
+      operationId: cancelPayment
+      parameters:
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: paymentId
+          in: path
+          description: ID of the payment
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: PSU-ID
+          in: header
+          description: ID of the customer
+          schema:
+            type: string
+          example: user@example.com
+        - name: PSU-IP-Address
+          in: header
+          description: IP address of the customer
+          schema:
+            type: string
+          example: 192.168.1.1
+      responses:
+        '200':
+          description: Payment cancelled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDPaymentDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDPaymentDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDPaymentDTO'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDPaymentDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDPaymentDTO'
+  /api/v1/funds-confirmations/{fundsConfirmationId}:
+    get:
+      tags:
+        - Funds Confirmation
+      summary: Get funds confirmation
+      description: |
+        ## Retrieve a Funds Confirmation Record
+
+        This endpoint retrieves a previously created funds confirmation record by its unique ID.
+
+        ### Description
+        This operation is part of the Funds Confirmation Service (FCS) under PSD2/PSD3 regulations.
+        It allows Third Party Providers (TPPs) to retrieve the details of a funds confirmation
+        check that was previously performed.
+
+        ### Request Headers
+        * `X-Consent-ID` - The unique identifier of the consent that authorizes access to this funds confirmation
+
+        ### Path Parameters
+        * `fundsConfirmationId` - The unique identifier of the funds confirmation record to retrieve
+
+        ### Processing
+        The system will:
+        1. Validate the consent ID provided in the header
+        2. Check that the consent is valid, active, and covers funds confirmation
+        3. Verify that the funds confirmation record exists and is associated with the consent
+        4. Retrieve the funds confirmation details
+
+        ### Response
+        Returns a funds confirmation object containing:
+        * Confirmation identifier
+        * Result (true if funds were available, false if not)
+        * Timestamp of the confirmation
+        * Account reference
+        * Amount and currency checked
+        * Reference information
+
+        ### Historical Context
+        * Funds confirmation records are historical point-in-time checks
+        * The result reflects the account balance at the time of the original check
+        * Current account balance may differ from the time of the check
+
+        ### Error Scenarios
+        * If the funds confirmation doesn't exist, returns a 404 Not Found response
+        * If the funds confirmation exists but is not covered by the consent, returns a 403 Forbidden response
+        * If the consent is invalid or expired, returns a 401 Unauthorized response
+
+        ### Regulatory Compliance
+        * This endpoint implements the Funds Confirmation Service as defined in PSD2/PSD3
+        * Access is logged for regulatory reporting and audit purposes
+        * Explicit consent is required for accessing funds confirmation records
+
+        ### Security Considerations
+        * All requests must include a valid consent ID
+        * Consent validation includes checking expiration and revocation status
+        * Funds confirmation results are considered sensitive financial information
+        * Access to historical records may be time-limited for security reasons
+      operationId: getFundsConfirmation
+      parameters:
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: fundsConfirmationId
+          in: path
+          description: ID of the funds confirmation
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+      responses:
+        '200':
+          description: Funds confirmation found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDFundsConfirmationDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDFundsConfirmationDTO'
+        '404':
+          description: Funds confirmation not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDFundsConfirmationDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDFundsConfirmationDTO'
+  /api/v1/consents/{consentId}:
+    get:
+      tags:
+        - Consent Management
+      summary: Get a consent
+      description: |
+        ## Retrieve a Specific Consent
+
+        This endpoint retrieves detailed information about a specific consent by its unique identifier.
+
+        ### Description
+        This operation allows TPPs and authorized users to access the complete details of a consent record.
+        It's used to check the status, scope, and validity of a consent that was previously created.
+
+        ### Path Parameters
+        * `consentId` - The unique identifier of the consent to retrieve
+
+        ### Processing
+        The system will:
+        1. Validate the provided consent ID
+        2. Check if the consent exists in the system
+        3. Verify that the requester has permission to view the consent
+           (either the TPP that created it or an authorized administrator)
+        4. Retrieve the consent details
+
+        ### Response
+        Returns the complete consent record including:
+        * Consent ID and status
+        * Customer information
+        * TPP information
+        * Scope of access granted
+        * Validity period
+        * Creation and last updated timestamps
+        * Authentication status
+
+        ### Access Control
+        * TPPs can only access consents they created
+        * Customers can access their own consents
+        * Administrators can access all consents
+
+        ### Security Considerations
+        * Access to consent information should be strictly controlled
+        * All access attempts should be logged for audit purposes
+        * Sensitive customer information should be appropriately protected
+      operationId: getConsent
+      parameters:
+        - name: consentId
+          in: path
+          description: ID of the consent
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent for the operation
+          schema:
+            type: string
+          example: '12345'
+      responses:
+        '200':
+          description: Consent found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDConsentDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDConsentDTO'
+        '404':
+          description: Consent not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDConsentDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDConsentDTO'
+    delete:
+      tags:
+        - Consent Management
+      summary: Revoke a consent
+      description: |
+        ## Revoke a Customer Consent
+
+        This endpoint revokes an existing consent, immediately terminating a TPP's access to customer data.
+
+        ### Description
+        This operation allows customers or authorized administrators to revoke a previously granted consent.
+        Revocation is an important right under PSD2/PSD3 regulations, allowing customers to withdraw
+        their permission for data access at any time.
+
+        ### Path Parameters
+        * `consentId` - The unique identifier of the consent to revoke
+
+        ### Processing
+        The system will:
+        1. Validate the provided consent ID
+        2. Check if the consent exists in the system
+        3. Verify that the requester has permission to revoke the consent
+           (either the customer who granted it or an authorized administrator)
+        4. Change the consent status to "REVOKED"
+        5. Invalidate any access tokens associated with the consent
+        6. Record the revocation in the audit log
+        7. Notify the TPP of the revocation
+
+        ### Response
+        Returns the updated consent record with status changed to "REVOKED".
+
+        ### Business Rules
+        * A revoked consent cannot be reactivated
+        * All access based on the revoked consent is immediately terminated
+        * The TPP must be notified of the revocation
+        * Revocation can be initiated by the customer or by an administrator
+        * Revocation reasons should be recorded for audit purposes
+
+        ### Regulatory Implications
+        * Customers have the right to revoke consent at any time under PSD2/PSD3
+        * Revocation must be processed without undue delay
+        * The revocation process must be simple and straightforward
+
+        ### Security Considerations
+        * Revocation should be strictly controlled but easily accessible to customers
+        * All revocations must be logged for audit purposes
+        * Systems should ensure that access is immediately terminated upon revocation
+      operationId: revokeConsent
+      parameters:
+        - name: consentId
+          in: path
+          description: ID of the consent
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent for the operation
+          schema:
+            type: string
+          example: '12345'
+      responses:
+        '200':
+          description: Consent revoked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDConsentDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDConsentDTO'
+        '404':
+          description: Consent not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDConsentDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDConsentDTO'
+  /api/v1/card-accounts/{cardId}/transactions/{transactionId}:
+    get:
+      tags:
+        - Card Account Information
+      summary: Get card transaction
+      description: |
+        ## Retrieve a Specific Card Transaction
+
+        This endpoint retrieves detailed information about a specific card transaction identified by its unique ID.
+
+        ### Description
+        This operation is part of the Card Account Information Service under PSD2/PSD3 regulations.
+        It allows Third Party Providers (TPPs) to access detailed information about a specific
+        card transaction after obtaining explicit consent.
+
+        ### Request Headers
+        * `X-Consent-ID` - The unique identifier of the consent that authorizes this access
+
+        ### Path Parameters
+        * `cardId` - The unique identifier of the card account that contains the transaction
+        * `transactionId` - The unique identifier of the transaction to retrieve
+
+        ### Processing
+        The system will:
+        1. Validate the consent ID provided in the header
+        2. Check that the consent is valid, active, and covers card transaction access
+        3. Verify that the specified card account is included in the consent's scope
+        4. Retrieve the detailed card transaction information
+        5. Apply any filtering required by the consent's scope
+
+        ### Response
+        Returns a single transaction object containing:
+        * Transaction identifier
+        * Status (booked, pending)
+        * Booking date and value date
+        * Amount and currency
+        * Merchant information
+        * Transaction type
+        * Card acceptor details (e.g., merchant name, terminal ID)
+        * Merchant category code (MCC)
+        * Terminal ID
+        * Point of sale details
+        * Original transaction references for refunds
+        * International transaction indicators
+        * Additional transaction details
+
+        ### Error Scenarios
+        * If the card account doesn't exist, returns a 404 Not Found response
+        * If the transaction doesn't exist, returns a 404 Not Found response
+        * If the card account exists but is not covered by the consent, returns a 403 Forbidden response
+        * If the consent is invalid or expired, returns a 401 Unauthorized response
+        * If the consent doesn't include transaction access, returns a 403 Forbidden response
+
+        ### Regulatory Compliance
+        * This endpoint implements the Card Account Information Service as defined in PSD2/PSD3
+        * Access is logged for regulatory reporting and audit purposes
+        * Transaction data is considered sensitive financial data
+
+        ### Security Considerations
+        * All requests must include a valid consent ID
+        * Consent validation includes checking expiration and revocation status
+        * Sensitive merchant or cardholder data may be masked
+        * Full card numbers are never exposed in transaction details
+      operationId: getCardTransaction
+      parameters:
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: cardId
+          in: path
+          description: ID of the card
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: transactionId
+          in: path
+          description: ID of the transaction
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: PSU-ID
+          in: header
+          description: ID of the customer
+          schema:
+            type: string
+          example: user@example.com
+        - name: PSU-IP-Address
+          in: header
+          description: IP address of the customer
+          schema:
+            type: string
+          example: 192.168.1.1
+      responses:
+        '200':
+          description: Card transaction found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDTransactionDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDTransactionDTO'
+        '404':
+          description: Card transaction not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDTransactionDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDTransactionDTO'
+  /api/v1/card-accounts/{cardId}/transactions:
+    get:
+      tags:
+        - Card Account Information
+      summary: Get card transactions
+      description: |
+        ## Retrieve Card Account Transactions
+
+        This endpoint retrieves transaction history for a specific card account within a specified date range.
+
+        ### Description
+        This operation is part of the Card Account Information Service under PSD2/PSD3 regulations.
+        It allows Third Party Providers (TPPs) to access transaction history for a specific
+        customer card account after obtaining explicit consent.
+
+        ### Request Headers
+        * `X-Consent-ID` - The unique identifier of the consent that authorizes this access
+
+        ### Path Parameters
+        * `cardId` - The unique identifier of the card account whose transactions are being retrieved
+
+        ### Query Parameters
+        * `fromDate` - Start date of the transaction period (ISO format: YYYY-MM-DD)
+        * `toDate` - End date of the transaction period (ISO format: YYYY-MM-DD)
+
+        ### Processing
+        The system will:
+        1. Validate the consent ID provided in the header
+        2. Check that the consent is valid, active, and covers card transaction access
+        3. Verify that the specified card account is included in the consent's scope
+        4. Validate the date range (e.g., ensure fromDate is not after toDate)
+        5. Retrieve card transactions that occurred within the specified date range
+        6. Apply any filtering required by the consent's scope
+
+        ### Response
+        Returns an array of transaction objects, each containing:
+        * Transaction identifier
+        * Status (booked, pending)
+        * Booking date and value date
+        * Amount and currency
+        * Merchant information
+        * Transaction type
+        * Card acceptor details (e.g., merchant name, terminal ID)
+        * Additional transaction details
+
+        ### Card Transaction Specifics
+        Card transactions may include additional information not present in regular account transactions:
+        * Merchant category code (MCC)
+        * Terminal ID
+        * Point of sale details
+        * Original transaction references for refunds
+        * International transaction indicators
+
+        ### Date Range Limitations
+        * The maximum date range may be limited (e.g., 90 days) to prevent excessive data retrieval
+        * Historical data beyond a certain point may not be available through this API
+
+        ### Error Scenarios
+        * If the card account doesn't exist, returns a 404 Not Found response
+        * If the card account exists but is not covered by the consent, returns a 403 Forbidden response
+        * If the consent is invalid or expired, returns a 401 Unauthorized response
+        * If the consent doesn't include transaction access, returns a 403 Forbidden response
+        * If the date range is invalid, returns a 400 Bad Request response
+
+        ### Regulatory Compliance
+        * This endpoint implements the Card Account Information Service as defined in PSD2/PSD3
+        * Access is logged for regulatory reporting and audit purposes
+        * Transaction data is considered sensitive financial data
+
+        ### Security Considerations
+        * All requests must include a valid consent ID
+        * Consent validation includes checking expiration and revocation status
+        * Sensitive merchant or cardholder data may be masked
+      operationId: getCardTransactions
+      parameters:
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: cardId
+          in: path
+          description: ID of the card
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: fromDate
+          in: query
+          description: Start date of the range
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          description: End date of the range
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: PSU-ID
+          in: header
+          description: ID of the customer
+          schema:
+            type: string
+          example: user@example.com
+        - name: PSU-IP-Address
+          in: header
+          description: IP address of the customer
+          schema:
+            type: string
+          example: 192.168.1.1
+      responses:
+        '200':
+          description: Card transactions found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDTransactionDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDTransactionDTO'
+        '404':
+          description: Card account not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDTransactionDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDTransactionDTO'
+  /api/v1/card-accounts/{cardId}/balances:
+    get:
+      tags:
+        - Card Account Information
+      summary: Get card balances
+      description: |
+        ## Retrieve Card Account Balances
+
+        This endpoint retrieves the various balance types for a specific card account.
+
+        ### Description
+        This operation is part of the Card Account Information Service under PSD2/PSD3 regulations.
+        It allows Third Party Providers (TPPs) to access balance information for a specific
+        customer card account after obtaining explicit consent.
+
+        ### Request Headers
+        * `X-Consent-ID` - The unique identifier of the consent that authorizes this access
+
+        ### Path Parameters
+        * `cardId` - The unique identifier of the card account whose balances are being retrieved
+
+        ### Processing
+        The system will:
+        1. Validate the consent ID provided in the header
+        2. Check that the consent is valid, active, and covers card balance information access
+        3. Verify that the specified card account is included in the consent's scope
+        4. Retrieve the various balance types for the card account
+
+        ### Response
+        Returns an array of balance objects, each containing:
+        * Balance type (e.g., closing booked, expected, available)
+        * Amount and currency
+        * Reference date and time of the balance
+        * Credit/debit indicator
+        * Status
+
+        ### Balance Types for Card Accounts
+        The response may include multiple balance types:
+        * **Outstanding** - Current outstanding balance on the card
+        * **Available** - Available credit limit
+        * **Credit Limit** - Total credit limit of the card
+        * **Current** - Current balance including pending transactions
+        * **Authorized** - Sum of authorized but not yet booked transactions
+
+        ### Error Scenarios
+        * If the card account doesn't exist, returns a 404 Not Found response
+        * If the card account exists but is not covered by the consent, returns a 403 Forbidden response
+        * If the consent is invalid or expired, returns a 401 Unauthorized response
+        * If the consent doesn't include balance access, returns a 403 Forbidden response
+
+        ### Regulatory Compliance
+        * This endpoint implements the Card Account Information Service as defined in PSD2/PSD3
+        * Access is logged for regulatory reporting and audit purposes
+        * Balance information is considered sensitive financial data
+
+        ### Security Considerations
+        * All requests must include a valid consent ID
+        * Consent validation includes checking expiration and revocation status
+        * Access frequency may be limited to prevent excessive requests
+      operationId: getCardBalances
+      parameters:
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: cardId
+          in: path
+          description: ID of the card
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: PSU-ID
+          in: header
+          description: ID of the customer
+          schema:
+            type: string
+          example: user@example.com
+        - name: PSU-IP-Address
+          in: header
+          description: IP address of the customer
+          schema:
+            type: string
+          example: 192.168.1.1
+      responses:
+        '200':
+          description: Card balances found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDBalanceDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDBalanceDTO'
+        '404':
+          description: Card account not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDBalanceDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDBalanceDTO'
+  /api/v1/card-accounts/{cardId}:
+    get:
+      tags:
+        - Card Account Information
+      summary: Get card account
+      description: |
+        ## Retrieve a Specific Card Account
+
+        This endpoint retrieves detailed information about a specific card account identified by its unique ID.
+
+        ### Description
+        This operation is part of the Card Account Information Service under PSD2/PSD3 regulations.
+        It allows Third Party Providers (TPPs) to access detailed information about a specific
+        customer card account after obtaining explicit consent.
+
+        ### Request Headers
+        * `X-Consent-ID` - The unique identifier of the consent that authorizes this access
+
+        ### Path Parameters
+        * `cardId` - The unique identifier of the card account to retrieve
+
+        ### Processing
+        The system will:
+        1. Validate the consent ID provided in the header
+        2. Check that the consent is valid, active, and covers card account information access
+        3. Verify that the specified card account is included in the consent's scope
+        4. Retrieve the detailed card account information
+        5. Apply any filtering required by the consent's scope
+
+        ### Response
+        Returns a single card account object containing:
+        * Card account identifier
+        * Card type (e.g., credit, debit, prepaid)
+        * Card product name
+        * Card number (masked)
+        * Currency
+        * Card holder name
+        * Status
+        * Expiry date
+        * Credit limit (for credit cards)
+        * Detailed card account information
+
+        ### Error Scenarios
+        * If the card account doesn't exist, returns a 404 Not Found response
+        * If the card account exists but is not covered by the consent, returns a 403 Forbidden response
+        * If the consent is invalid or expired, returns a 401 Unauthorized response
+
+        ### Regulatory Compliance
+        * This endpoint implements the Card Account Information Service as defined in PSD2/PSD3
+        * Access is logged for regulatory reporting and audit purposes
+        * Data minimization principles are applied (only necessary data is returned)
+        * Sensitive card details are masked according to security standards
+
+        ### Security Considerations
+        * All requests must include a valid consent ID
+        * Consent validation includes checking expiration and revocation status
+        * Full card numbers are never exposed through the API
+        * Access is monitored for suspicious patterns
+      operationId: getCardAccount
+      parameters:
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: cardId
+          in: path
+          description: ID of the card
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: PSU-ID
+          in: header
+          description: ID of the customer
+          schema:
+            type: string
+          example: user@example.com
+        - name: PSU-IP-Address
+          in: header
+          description: IP address of the customer
+          schema:
+            type: string
+          example: 192.168.1.1
+      responses:
+        '200':
+          description: Card account found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDCardAccountDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDCardAccountDTO'
+        '404':
+          description: Card account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDCardAccountDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDCardAccountDTO'
+  /api/v1/card-accounts:
+    get:
+      tags:
+        - Card Account Information
+      summary: Get card accounts
+      description: |
+        ## Retrieve All Customer Card Accounts
+
+        This endpoint retrieves all card accounts owned by a specific customer that are accessible under the provided consent.
+
+        ### Description
+        This operation is part of the Card Account Information Service under PSD2/PSD3 regulations. It allows
+        Third Party Providers (TPPs) to access a customer's card account information after obtaining explicit
+        consent from the customer.
+
+        ### Request Headers
+        * `X-Consent-ID` - The unique identifier of the consent that authorizes this access
+
+        ### Query Parameters
+        * `partyId` - The unique identifier of the customer whose card accounts are being retrieved
+
+        ### Processing
+        The system will:
+        1. Validate the consent ID provided in the header
+        2. Check that the consent is valid, active, and covers card account information access
+        3. Verify that the consent is associated with the specified customer (partyId)
+        4. Retrieve all card accounts that the customer owns and that are covered by the consent
+        5. Filter out any card accounts that are not included in the consent's scope
+
+        ### Response
+        Returns an array of card account objects, each containing:
+        * Card account identifier
+        * Card type (e.g., credit, debit, prepaid)
+        * Card product name
+        * Card number (masked)
+        * Currency
+        * Card holder name
+        * Status
+        * Expiry date
+        * Credit limit (for credit cards)
+
+        ### Access Control
+        * Access is only granted if a valid consent exists
+        * Only card accounts specified in the consent scope are returned
+        * The TPP must be authenticated and authorized
+
+        ### Regulatory Compliance
+        * This endpoint implements the Card Account Information Service as defined in PSD2/PSD3
+        * Access is logged for regulatory reporting and audit purposes
+        * Data minimization principles are applied (only necessary data is returned)
+        * Sensitive card details are masked according to security standards
+
+        ### Security Considerations
+        * All requests must include a valid consent ID
+        * Consent validation includes checking expiration and revocation status
+        * Full card numbers are never exposed through the API
+        * Access is monitored for suspicious patterns
+      operationId: getCardAccounts
+      parameters:
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: partyId
+          in: query
+          description: ID of the customer
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: PSU-ID
+          in: header
+          description: ID of the customer
+          schema:
+            type: string
+          example: user@example.com
+        - name: PSU-IP-Address
+          in: header
+          description: IP address of the customer
+          schema:
+            type: string
+          example: 192.168.1.1
+      responses:
+        '200':
+          description: Card accounts found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDCardAccountDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDCardAccountDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDCardAccountDTO'
+  /api/v1/accounts/{accountId}/transactions/{transactionId}:
+    get:
+      tags:
+        - Account Information Services
+      summary: Get transaction
+      description: |
+        ## Retrieve a Specific Transaction
+
+        This endpoint retrieves detailed information about a specific transaction identified by its unique ID.
+
+        ### Description
+        This operation is part of the Account Information Service (AIS) under PSD2/PSD3 regulations.
+        It allows Third Party Providers (TPPs) to access detailed information about a specific
+        transaction after obtaining explicit consent.
+
+        ### Request Headers
+        * `X-Consent-ID` - The unique identifier of the consent that authorizes this access
+
+        ### Path Parameters
+        * `accountId` - The unique identifier of the account that contains the transaction
+        * `transactionId` - The unique identifier of the transaction to retrieve
+
+        ### Processing
+        The system will:
+        1. Validate the consent ID provided in the header
+        2. Check that the consent is valid, active, and covers transaction access
+        3. Verify that the specified account is included in the consent's scope
+        4. Retrieve the detailed transaction information
+        5. Apply any filtering required by the consent's scope
+
+        ### Response
+        Returns a single transaction object containing:
+        * Transaction identifier
+        * Status (booked, pending)
+        * Booking date and value date
+        * Amount and currency
+        * Creditor/debtor information (as permitted by consent)
+        * Transaction type
+        * Remittance information
+        * Additional transaction details
+        * Related references (e.g., end-to-end ID, mandate ID)
+        * Purpose code
+        * Bank transaction code
+
+        ### Error Scenarios
+        * If the account doesn't exist, returns a 404 Not Found response
+        * If the transaction doesn't exist, returns a 404 Not Found response
+        * If the account exists but is not covered by the consent, returns a 403 Forbidden response
+        * If the consent is invalid or expired, returns a 401 Unauthorized response
+        * If the consent doesn't include transaction access, returns a 403 Forbidden response
+
+        ### Regulatory Compliance
+        * This endpoint implements the Account Information Service as defined in PSD2/PSD3
+        * Access is logged for regulatory reporting and audit purposes
+        * Transaction data is considered sensitive financial data
+
+        ### Security Considerations
+        * All requests must include a valid consent ID
+        * Consent validation includes checking expiration and revocation status
+        * Sensitive transaction details may be masked or filtered based on consent scope
+      operationId: getTransaction
+      parameters:
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: accountId
+          in: path
+          description: ID of the account
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: transactionId
+          in: path
+          description: ID of the transaction
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: PSU-ID
+          in: header
+          description: ID of the customer
+          schema:
+            type: string
+          example: user@example.com
+        - name: PSU-IP-Address
+          in: header
+          description: IP address of the customer
+          schema:
+            type: string
+          example: 192.168.1.1
+      responses:
+        '200':
+          description: Transaction found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDTransactionDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDTransactionDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDTransactionDTO'
+        '404':
+          description: Transaction not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDTransactionDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDTransactionDTO'
+  /api/v1/accounts/{accountId}/transactions:
+    get:
+      tags:
+        - Account Information Services
+      summary: Get transactions
+      description: |
+        ## Retrieve Account Transactions
+
+        This endpoint retrieves transaction history for a specific account within a specified date range.
+
+        ### Description
+        This operation is part of the Account Information Service (AIS) under PSD2/PSD3 regulations.
+        It allows Third Party Providers (TPPs) to access transaction history for a specific
+        customer account after obtaining explicit consent.
+
+        ### Request Headers
+        * `X-Consent-ID` - The unique identifier of the consent that authorizes this access
+
+        ### Path Parameters
+        * `accountId` - The unique identifier of the account whose transactions are being retrieved
+
+        ### Query Parameters
+        * `fromDate` - Start date of the transaction period (ISO format: YYYY-MM-DD)
+        * `toDate` - End date of the transaction period (ISO format: YYYY-MM-DD)
+
+        ### Processing
+        The system will:
+        1. Validate the consent ID provided in the header
+        2. Check that the consent is valid, active, and covers transaction access
+        3. Verify that the specified account is included in the consent's scope
+        4. Validate the date range (e.g., ensure fromDate is not after toDate)
+        5. Retrieve transactions that occurred within the specified date range
+        6. Apply any filtering required by the consent's scope
+
+        ### Response
+        Returns an array of transaction objects, each containing:
+        * Transaction identifier
+        * Status (booked, pending)
+        * Booking date and value date
+        * Amount and currency
+        * Creditor/debtor information (as permitted by consent)
+        * Transaction type
+        * Remittance information
+        * Additional transaction details
+
+        ### Date Range Limitations
+        * The maximum date range may be limited (e.g., 90 days) to prevent excessive data retrieval
+        * Historical data beyond a certain point may not be available through this API
+        * Future-dated transactions may be included if they are already known
+
+        ### Error Scenarios
+        * If the account doesn't exist, returns a 404 Not Found response
+        * If the account exists but is not covered by the consent, returns a 403 Forbidden response
+        * If the consent is invalid or expired, returns a 401 Unauthorized response
+        * If the consent doesn't include transaction access, returns a 403 Forbidden response
+        * If the date range is invalid, returns a 400 Bad Request response
+
+        ### Regulatory Compliance
+        * This endpoint implements the Account Information Service as defined in PSD2/PSD3
+        * Access is logged for regulatory reporting and audit purposes
+        * Transaction data is considered sensitive financial data
+
+        ### Performance Considerations
+        * For large date ranges, consider implementing pagination
+        * Response times may vary based on the number of transactions
+        * Consider using more specific date ranges for better performance
+      operationId: getTransactions
+      parameters:
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: accountId
+          in: path
+          description: ID of the account
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: fromDate
+          in: query
+          description: Start date of the range
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          description: End date of the range
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: PSU-ID
+          in: header
+          description: ID of the customer
+          schema:
+            type: string
+          example: user@example.com
+        - name: PSU-IP-Address
+          in: header
+          description: IP address of the customer
+          schema:
+            type: string
+          example: 192.168.1.1
+      responses:
+        '200':
+          description: Transactions found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDTransactionDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDTransactionDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDTransactionDTO'
+        '404':
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDTransactionDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDTransactionDTO'
+  /api/v1/accounts/{accountId}/balances:
+    get:
+      tags:
+        - Account Information Services
+      summary: Get balances
+      description: |
+        ## Retrieve Account Balances
+
+        This endpoint retrieves the various balance types for a specific account.
+
+        ### Description
+        This operation is part of the Account Information Service (AIS) under PSD2/PSD3 regulations.
+        It allows Third Party Providers (TPPs) to access balance information for a specific
+        customer account after obtaining explicit consent.
+
+        ### Request Headers
+        * `X-Consent-ID` - The unique identifier of the consent that authorizes this access
+
+        ### Path Parameters
+        * `accountId` - The unique identifier of the account whose balances are being retrieved
+
+        ### Processing
+        The system will:
+        1. Validate the consent ID provided in the header
+        2. Check that the consent is valid, active, and covers balance information access
+        3. Verify that the specified account is included in the consent's scope
+        4. Retrieve the various balance types for the account
+
+        ### Response
+        Returns an array of balance objects, each containing:
+        * Balance type (e.g., closing booked, expected, available)
+        * Amount and currency
+        * Reference date and time of the balance
+        * Credit/debit indicator
+        * Status
+
+        ### Balance Types
+        The response may include multiple balance types:
+        * **Closing Booked**: End-of-day balance from the previous banking business day
+        * **Expected**: Balance including all pending transactions
+        * **Available**: Balance available for immediate use
+        * **Interim Available**: Provisional available balance
+        * **Forward Available**: Future available balance based on scheduled transactions
+
+        ### Error Scenarios
+        * If the account doesn't exist, returns a 404 Not Found response
+        * If the account exists but is not covered by the consent, returns a 403 Forbidden response
+        * If the consent is invalid or expired, returns a 401 Unauthorized response
+        * If the consent doesn't include balance access, returns a 403 Forbidden response
+
+        ### Regulatory Compliance
+        * This endpoint implements the Account Information Service as defined in PSD2/PSD3
+        * Access is logged for regulatory reporting and audit purposes
+        * Balance information is considered sensitive financial data
+
+        ### Security Considerations
+        * All requests must include a valid consent ID
+        * Consent validation includes checking expiration and revocation status
+        * Access frequency may be limited to prevent excessive requests
+      operationId: getBalances
+      parameters:
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: accountId
+          in: path
+          description: ID of the account
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: PSU-ID
+          in: header
+          description: ID of the customer
+          schema:
+            type: string
+          example: user@example.com
+        - name: PSU-IP-Address
+          in: header
+          description: IP address of the customer
+          schema:
+            type: string
+          example: 192.168.1.1
+      responses:
+        '200':
+          description: Balances found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDBalanceDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDBalanceDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDBalanceDTO'
+        '404':
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDBalanceDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDBalanceDTO'
+  /api/v1/accounts/{accountId}:
+    get:
+      tags:
+        - Account Information Services
+      summary: Get account
+      description: |
+        ## Retrieve a Specific Account
+
+        This endpoint retrieves detailed information about a specific account identified by its unique ID.
+
+        ### Description
+        This operation is part of the Account Information Service (AIS) under PSD2/PSD3 regulations.
+        It allows Third Party Providers (TPPs) to access detailed information about a specific
+        customer account after obtaining explicit consent.
+
+        ### Request Headers
+        * `X-Consent-ID` - The unique identifier of the consent that authorizes this access
+
+        ### Path Parameters
+        * `accountId` - The unique identifier of the account to retrieve
+
+        ### Processing
+        The system will:
+        1. Validate the consent ID provided in the header
+        2. Check that the consent is valid, active, and covers account information access
+        3. Verify that the specified account is included in the consent's scope
+        4. Retrieve the detailed account information
+        5. Apply any filtering required by the consent's scope
+
+        ### Response
+        Returns a single account object containing:
+        * Account identifier
+        * Account type (e.g., current, savings, credit card)
+        * Currency
+        * Account name/description
+        * Status
+        * Opening date
+        * Detailed account information
+        * Account holder information (as permitted by consent)
+
+        ### Error Scenarios
+        * If the account doesn't exist, returns a 404 Not Found response
+        * If the account exists but is not covered by the consent, returns a 403 Forbidden response
+        * If the consent is invalid or expired, returns a 401 Unauthorized response
+
+        ### Regulatory Compliance
+        * This endpoint implements the Account Information Service as defined in PSD2/PSD3
+        * Access is logged for regulatory reporting and audit purposes
+        * Data minimization principles are applied (only necessary data is returned)
+
+        ### Security Considerations
+        * All requests must include a valid consent ID
+        * Consent validation includes checking expiration and revocation status
+        * Access is monitored for suspicious patterns
+      operationId: getAccount
+      parameters:
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: accountId
+          in: path
+          description: ID of the account
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: PSU-ID
+          in: header
+          description: ID of the customer
+          schema:
+            type: string
+          example: user@example.com
+        - name: PSU-IP-Address
+          in: header
+          description: IP address of the customer
+          schema:
+            type: string
+          example: 192.168.1.1
+      responses:
+        '200':
+          description: Account found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDAccountDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDAccountDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDAccountDTO'
+        '404':
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDAccountDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDAccountDTO'
+  /api/v1/accounts:
+    get:
+      tags:
+        - Account Information Services
+      summary: Get accounts
+      description: |
+        ## Retrieve All Customer Accounts
+
+        This endpoint retrieves all accounts owned by a specific customer that are accessible under the provided consent.
+
+        ### Description
+        This operation is a core Account Information Service (AIS) under PSD2/PSD3 regulations. It allows
+        Third Party Providers (TPPs) to access a customer's account information after obtaining explicit
+        consent from the customer.
+
+        ### Request Headers
+        * `X-Consent-ID` - The unique identifier of the consent that authorizes this access
+
+        ### Query Parameters
+        * `partyId` - The unique identifier of the customer whose accounts are being retrieved
+
+        ### Processing
+        The system will:
+        1. Validate the consent ID provided in the header
+        2. Check that the consent is valid, active, and covers account information access
+        3. Verify that the consent is associated with the specified customer (partyId)
+        4. Retrieve all accounts that the customer owns and that are covered by the consent
+        5. Filter out any accounts that are not included in the consent's scope
+
+        ### Response
+        Returns an array of account objects, each containing:
+        * Account identifier
+        * Account type (e.g., current, savings, credit card)
+        * Currency
+        * Account name/description
+        * Status
+        * Basic account details
+
+        ### Access Control
+        * Access is only granted if a valid consent exists
+        * Only accounts specified in the consent scope are returned
+        * The TPP must be authenticated and authorized
+
+        ### Regulatory Compliance
+        * This endpoint implements the Account Information Service as defined in PSD2/PSD3
+        * Access is logged for regulatory reporting and audit purposes
+        * Data minimization principles are applied (only necessary data is returned)
+
+        ### Security Considerations
+        * All requests must include a valid consent ID
+        * Consent validation includes checking expiration and revocation status
+        * Access is monitored for suspicious patterns
+      operationId: getAccounts
+      parameters:
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: partyId
+          in: query
+          description: ID of the customer
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: PSU-ID
+          in: header
+          description: ID of the customer
+          schema:
+            type: string
+          example: user@example.com
+        - name: PSU-IP-Address
+          in: header
+          description: IP address of the customer
+          schema:
+            type: string
+          example: 192.168.1.1
+      responses:
+        '200':
+          description: Accounts found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDAccountDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDAccountDTO'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDAccountDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PSDAccountDTO'
+  /api/v1/access-logs/{logId}:
+    get:
+      tags:
+        - Access Logging
+      summary: Get access log
+      description: Gets an access log by its ID
+      operationId: getAccessLog
+      parameters:
+        - name: logId
+          in: path
+          description: ID of the access log
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-Request-ID
+          in: header
+          description: Unique ID for the request
+          schema:
+            type: string
+          example: 99391c7e-ad88-49ec-a2ad-99ddcb1f7721
+        - name: X-Consent-ID
+          in: header
+          description: ID of the consent for the operation
+          schema:
+            type: string
+          example: '12345'
+      responses:
+        '200':
+          description: Access log found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDAccessLogDTO'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDAccessLogDTO'
+        '404':
+          description: Access log not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDAccessLogDTO'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSDAccessLogDTO'
+components:
+  schemas:
+    PSDCertificateDTO:
+      type: object
+      properties:
+        serialNumber:
+          type: string
+          description: Certificate serial number
+          example: '12345678'
+        subject:
+          type: string
+          description: Certificate subject
+          example: CN=FinTech Solutions Ltd,O=FinTech Solutions,C=DE
+        issuer:
+          type: string
+          description: Certificate issuer
+          example: CN=PSD2 CA,O=European Banking Authority,C=EU
+        content:
+          type: string
+          description: Certificate content (Base64 encoded)
+          example: MIIEpAIBAAKCAQEA...
+        validFrom:
+          type: string
+          description: Certificate validity from
+          format: date-time
+        validUntil:
+          type: string
+          description: Certificate validity until
+          format: date-time
+      description: Certificate information
+    PSDLinkDTO:
+      type: object
+      properties:
+        href:
+          pattern: ^https?://[\w\-._~:/?#\[\]@!$&'()*+,;=%]+$
+          type: string
+          description: URL of the link
+          example: https://api.bank.com/v1/accounts/12345
+      description: Additional custom links
+    PSDLinksDTO:
+      type: object
+      properties:
+        self:
+          $ref: '#/components/schemas/PSDLinkDTO'
+        first:
+          $ref: '#/components/schemas/PSDLinkDTO'
+        prev:
+          $ref: '#/components/schemas/PSDLinkDTO'
+        next:
+          $ref: '#/components/schemas/PSDLinkDTO'
+        last:
+          $ref: '#/components/schemas/PSDLinkDTO'
+        status:
+          $ref: '#/components/schemas/PSDLinkDTO'
+        account:
+          $ref: '#/components/schemas/PSDLinkDTO'
+        balances:
+          $ref: '#/components/schemas/PSDLinkDTO'
+        transactions:
+          $ref: '#/components/schemas/PSDLinkDTO'
+        scaRedirect:
+          $ref: '#/components/schemas/PSDLinkDTO'
+        scaStatus:
+          $ref: '#/components/schemas/PSDLinkDTO'
+        confirmation:
+          $ref: '#/components/schemas/PSDLinkDTO'
+        authorization:
+          $ref: '#/components/schemas/PSDLinkDTO'
+        additionalLinks:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/PSDLinkDTO'
+          description: Additional custom links
+      description: PSD Links information
+    PSDThirdPartyProviderDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the TPP
+          format: uuid
+        name:
+          type: string
+          description: Name of the TPP
+          example: FinTech Solutions Ltd
+        registrationNumber:
+          type: string
+          description: Registration number of the TPP
+          example: TPP123456
+        nationalCompetentAuthority:
+          type: string
+          description: National competent authority ID
+          example: DE-BAFIN
+        nationalCompetentAuthorityCountry:
+          type: string
+          description: National competent authority ID
+          example: DE
+        redirectUri:
+          type: string
+          description: Redirect URI for the TPP
+          example: https://fintech-solutions.com/callback
+        status:
+          type: string
+          description: Status of the TPP
+          example: ACTIVE
+        providerType:
+          type: string
+          description: Type of the TPP
+          example: AISP
+        roles:
+          type: array
+          description: Roles of the TPP
+          items:
+            type: string
+            description: Roles of the TPP
+        certificate:
+          $ref: '#/components/schemas/PSDCertificateDTO'
+        get_links:
+          $ref: '#/components/schemas/PSDLinksDTO'
+        createdAt:
+          type: string
+          description: Date and time when the TPP was created
+          format: date-time
+        updatedAt:
+          type: string
+          description: Date and time when the TPP was last updated
+          format: date-time
+      description: PSD Third Party Provider information
+    PSDConsentStatusDTO:
+      required:
+        - consentStatus
+      type: object
+      properties:
+        consentStatus:
+          pattern: ^(received|valid|rejected|expired|revoked|terminated)$
+          type: string
+          description: Status of the consent
+          example: valid
+        status:
+          pattern: ^(received|valid|rejected|expired|revoked|terminated)$
+          type: string
+          description: Status of the consent (alias for consentStatus)
+          example: valid
+        psuMessage:
+          maxLength: 500
+          minLength: 0
+          type: string
+          description: PSU message
+          example: Consent accepted
+        get_links:
+          $ref: '#/components/schemas/PSDLinksDTO'
+        statusUpdateDateTime:
+          type: string
+          description: Date and time when the status was last updated
+          format: date-time
+      description: PSD Consent status information
+    PSDAccessDTO:
+      type: object
+      properties:
+        resourceId:
+          type: string
+          description: Resource ID
+          example: account-123
+        type:
+          type: string
+          description: Type of access
+          example: account
+        accounts:
+          type: array
+          description: Accounts that can be accessed
+          items:
+            $ref: '#/components/schemas/PSDAccountReferenceDTO'
+        balances:
+          type: array
+          description: Balances that can be accessed
+          items:
+            $ref: '#/components/schemas/PSDAccountReferenceDTO'
+        transactions:
+          type: array
+          description: Transactions that can be accessed
+          items:
+            $ref: '#/components/schemas/PSDAccountReferenceDTO'
+        availableAccounts:
+          type: string
+          description: Available accounts consent
+          example: allAccounts
+        availableAccountsWithBalances:
+          type: string
+          description: Available accounts with balances consent
+          example: allAccounts
+        allPsd2:
+          type: string
+          description: All PSD2 consent
+          example: allAccounts
+      description: Access permissions
+    PSDAccountReferenceDTO:
+      type: object
+      properties:
+        iban:
+          type: string
+          description: IBAN of the account
+          example: DE89370400440532013000
+        bban:
+          type: string
+          description: BBAN of the account
+          example: BARC12345612345678
+        pan:
+          type: string
+          description: PAN of the card
+          example: '5409050000000000'
+        maskedPan:
+          type: string
+          description: Masked PAN of the card
+          example: 540905******0000
+        msisdn:
+          type: string
+          description: MSISDN of the account
+          example: +49 170 1234567
+        currency:
+          type: string
+          description: Currency of the account
+          example: EUR
+      description: Transactions that can be accessed
+    PSDConsentDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the consent
+          format: uuid
+        partyId:
+          type: string
+          description: ID of the customer who gave the consent
+          format: uuid
+        consentType:
+          type: string
+          description: Type of consent
+          example: account
+        consentStatus:
+          type: string
+          description: Status of the consent
+          example: valid
+        validFrom:
+          type: string
+          description: Date and time from which the consent is valid
+          format: date-time
+        validUntil:
+          type: string
+          description: Date and time until which the consent is valid
+          format: date-time
+        frequencyPerDay:
+          type: integer
+          description: Frequency of access per day
+          format: int32
+          example: 4
+        accessFrequency:
+          type: integer
+          description: Access frequency (alias for frequencyPerDay)
+          format: int32
+          example: 4
+        accessScope:
+          type: string
+          description: Access scope
+          example: all-accounts
+        lastActionDate:
+          type: string
+          description: Last date of usage
+          format: date-time
+        access:
+          type: array
+          description: Access permissions
+          items:
+            $ref: '#/components/schemas/PSDAccessDTO'
+        combinedServiceIndicator:
+          type: boolean
+          description: Flag indicating if combined service is allowed
+          example: false
+        recurringIndicator:
+          type: boolean
+          description: Flag indicating if recurring indicator
+          example: true
+        get_links:
+          $ref: '#/components/schemas/PSDLinksDTO'
+        createdAt:
+          type: string
+          description: Date and time when the consent was created
+          format: date-time
+        updatedAt:
+          type: string
+          description: Date and time when the consent was last updated
+          format: date-time
+      description: PSD Consent information
+    PSDSCAValidationRequestDTO:
+      required:
+        - authenticationCode
+        - challengeId
+      type: object
+      properties:
+        challengeId:
+          maxLength: 50
+          minLength: 0
+          pattern: ^[A-Za-z0-9\-_]+$
+          type: string
+          description: ID of the SCA challenge
+          example: sca-123456
+        authenticationCode:
+          maxLength: 10
+          minLength: 4
+          pattern: ^[0-9]+$
+          type: string
+          description: Authentication code provided by the customer
+          example: '123456'
+      description: SCA validation request
+    PSDSCAValidationResponseDTO:
+      required:
+        - success
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the validation was successful
+          example: true
+        authenticationToken:
+          maxLength: 2048
+          minLength: 10
+          pattern: ^[A-Za-z0-9\-._~+/]+=*$
+          type: string
+          description: Authentication token for the validated session
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        expiresIn:
+          type: integer
+          description: Expiry time of the token in seconds
+          format: int32
+          example: 3600
+        errorMessage:
+          maxLength: 500
+          minLength: 0
+          type: string
+          description: Error message if validation failed
+          example: Invalid authentication code
+      description: PSD SCA Validation response
+    PSDSCAAuthenticationRequestDTO:
+      required:
+        - partyId
+        - resourceId
+        - resourceType
+      type: object
+      properties:
+        partyId:
+          type: string
+          description: ID of the customer
+          format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
+        resourceId:
+          maxLength: 100
+          minLength: 0
+          pattern: ^[A-Za-z0-9\-_]+$
+          type: string
+          description: ID of the resource being accessed
+          example: payment-123456
+        resourceType:
+          pattern: ^(PAYMENT|ACCOUNT|CONSENT|FUNDS_CONFIRMATION)$
+          type: string
+          description: Type of the resource being accessed
+          example: PAYMENT
+        amount:
+          type: number
+          description: Amount of the transaction
+          format: double
+          example: 100
+        currency:
+          type: string
+          description: Currency of the transaction
+          example: EUR
+        preferredMethod:
+          type: string
+          description: Preferred authentication method
+          example: SMS
+      description: SCA authentication request
+    PSDSCAAuthenticationResponseDTO:
+      required:
+        - challengeId
+        - method
+      type: object
+      properties:
+        challengeId:
+          maxLength: 50
+          minLength: 0
+          pattern: ^[A-Za-z0-9\-_]+$
+          type: string
+          description: ID of the SCA challenge
+          example: sca-123456
+        method:
+          pattern: ^(SMS|EMAIL|PUSH|BIOMETRIC|HARDWARE_TOKEN|SOFTWARE_TOKEN)$
+          type: string
+          description: Authentication method used
+          example: SMS
+        maskedTarget:
+          maxLength: 100
+          minLength: 0
+          type: string
+          description: Masked target of the authentication
+          example: +49 *** *** 789
+        expiresIn:
+          type: integer
+          description: Expiry time of the challenge in seconds
+          format: int32
+          example: 300
+        additionalInfo:
+          maxLength: 500
+          minLength: 0
+          type: string
+          description: Additional information about the challenge
+          example: An SMS has been sent to your registered mobile number
+      description: PSD SCA Authentication response
+    PSDThirdPartyProviderRegistrationDTO:
+      required:
+        - name
+        - nationalCompetentAuthority
+        - nationalCompetentAuthorityCountry
+        - providerType
+        - redirectUri
+        - registrationNumber
+        - roles
+      type: object
+      properties:
+        name:
+          maxLength: 200
+          minLength: 0
+          type: string
+          description: Name of the TPP
+          example: FinTech Solutions Ltd
+        registrationNumber:
+          maxLength: 50
+          minLength: 0
+          pattern: ^[A-Za-z0-9\-_]+$
+          type: string
+          description: Registration number of the TPP
+          example: TPP123456
+        nationalCompetentAuthority:
+          maxLength: 20
+          minLength: 0
+          pattern: ^[A-Z]{2}-[A-Z]+$
+          type: string
+          description: National competent authority ID
+          example: DE-BAFIN
+        nationalCompetentAuthorityCountry:
+          pattern: ^[A-Z]{2}$
+          type: string
+          description: National competent authority country
+          example: DE
+        redirectUri:
+          maxLength: 500
+          minLength: 0
+          pattern: ^https://[\w\-._~:/?#\[\]@!$&'()*+,;=%]+$
+          type: string
+          description: Redirect URI for the TPP
+          example: https://fintech-solutions.com/callback
+        providerType:
+          pattern: ^(AISP|PISP|CBPII|ASPSP)$
+          type: string
+          description: Type of the TPP
+          example: AISP
+        roles:
+          maxItems: 10
+          minItems: 0
+          type: array
+          description: Roles of the TPP
+          items:
+            pattern: ^(PSP_AS|PSP_PI|PSP_AI|PSP_IC)$
+            type: string
+            description: Roles of the TPP
+        certificate:
+          $ref: '#/components/schemas/PSDCertificateDTO'
+      description: PSD Third Party Provider registration request
+    PSDAddressDTO:
+      type: object
+      properties:
+        street:
+          type: string
+          description: Street name
+          example: Main Street
+        buildingNumber:
+          type: string
+          description: Building number
+          example: '123'
+        city:
+          type: string
+          description: City
+          example: Berlin
+        postalCode:
+          type: string
+          description: Postal code
+          example: '10115'
+        country:
+          type: string
+          description: Country
+          example: DE
+      description: Creditor address
+    PSDAmountDTO:
+      required:
+        - amount
+        - currency
+      type: object
+      properties:
+        currency:
+          type: string
+          description: Currency of the amount
+          example: EUR
+        amount:
+          type: number
+          description: Amount value
+      description: Payment amount information
+    PSDPaymentDTO:
+      required:
+        - consentId
+        - instructedAmount
+        - paymentId
+      type: object
+      properties:
+        paymentId:
+          type: string
+          description: Unique identifier of the payment
+          format: uuid
+        endToEndIdentification:
+          maxLength: 35
+          minLength: 0
+          pattern: ^[A-Za-z0-9/\-?:().,'+\s]*$
+          type: string
+          description: End-to-end identifier
+          example: E2E-ID-123
+        consentId:
+          type: string
+          description: ID of the consent used for the payment
+          format: uuid
+        paymentType:
+          pattern: ^(sepa-credit-transfers|instant-sepa-credit-transfers|target-2-payments|cross-border-credit-transfers)$
+          type: string
+          description: Type of the payment
+          example: sepa-credit-transfers
+        transactionStatus:
+          pattern: ^(ACCP|ACSC|ACSP|ACTC|ACWC|ACWP|PDNG|RJCT|CANC)$
+          type: string
+          description: Status of the payment
+          example: ACCP
+        debtorAccount:
+          $ref: '#/components/schemas/PSDAccountReferenceDTO'
+        creditorName:
+          maxLength: 70
+          minLength: 0
+          type: string
+          description: Creditor name
+          example: John Doe
+        creditorAccount:
+          $ref: '#/components/schemas/PSDAccountReferenceDTO'
+        creditorAddress:
+          $ref: '#/components/schemas/PSDAddressDTO'
+        instructedAmount:
+          $ref: '#/components/schemas/PSDAmountDTO'
+        remittanceInformationUnstructured:
+          type: string
+          description: Remittance information unstructured
+          example: Invoice 123
+        remittanceInformationStructured:
+          $ref: '#/components/schemas/PSDRemittanceDTO'
+        requestedExecutionDate:
+          type: string
+          description: Requested execution date
+          format: date
+        get_links:
+          $ref: '#/components/schemas/PSDLinksDTO'
+        createdAt:
+          type: string
+          description: Date and time when the payment was created
+          format: date-time
+        updatedAt:
+          type: string
+          description: Date and time when the payment was last updated
+          format: date-time
+      description: PSD Payment information
+    PSDRemittanceDTO:
+      type: object
+      properties:
+        reference:
+          type: string
+          description: Reference type
+          example: SCOR
+        referenceIssuer:
+          type: string
+          description: Reference issuer
+          example: CUR
+        referenceDate:
+          type: string
+          description: Reference date
+          format: date
+          example: '2023-10-01'
+      description: Remittance information structured
+    PSDPaymentInitiationRequestDTO:
+      required:
+        - creditorAccount
+        - creditorName
+        - debtorAccount
+        - instructedAmount
+        - paymentType
+      type: object
+      properties:
+        paymentType:
+          pattern: ^(sepa-credit-transfers|instant-sepa-credit-transfers|target-2-payments|cross-border-credit-transfers)$
+          type: string
+          description: Type of the payment
+          example: sepa-credit-transfers
+        endToEndIdentification:
+          maxLength: 35
+          minLength: 0
+          pattern: ^[A-Za-z0-9/\-?:().,'+\s]*$
+          type: string
+          description: End-to-end identifier
+          example: E2E-ID-123
+        debtorAccount:
+          $ref: '#/components/schemas/PSDAccountReferenceDTO'
+        creditorName:
+          maxLength: 70
+          minLength: 0
+          type: string
+          description: Creditor name
+          example: John Doe
+        creditorAccount:
+          $ref: '#/components/schemas/PSDAccountReferenceDTO'
+        creditorAddress:
+          $ref: '#/components/schemas/PSDAddressDTO'
+        instructedAmount:
+          $ref: '#/components/schemas/PSDAmountDTO'
+        remittanceInformationUnstructured:
+          type: string
+          description: Remittance information unstructured
+          example: Invoice 123
+        remittanceInformationStructured:
+          $ref: '#/components/schemas/PSDRemittanceDTO'
+        requestedExecutionDate:
+          type: string
+          description: Requested execution date
+          format: date
+      description: PSD Payment initiation request
+    PSDFundsConfirmationDTO:
+      required:
+        - account
+        - instructedAmount
+      type: object
+      properties:
+        fundsConfirmationId:
+          type: string
+          description: Unique identifier of the funds confirmation request
+          format: uuid
+        consentId:
+          type: string
+          description: ID of the consent used for the funds confirmation
+          format: uuid
+        account:
+          $ref: '#/components/schemas/PSDAccountReferenceDTO'
+        instructedAmount:
+          $ref: '#/components/schemas/PSDAmountDTO'
+        creditorName:
+          maxLength: 70
+          minLength: 0
+          type: string
+          description: Creditor name
+          example: John Doe
+        creditorAccount:
+          $ref: '#/components/schemas/PSDAccountReferenceDTO'
+        cardNumber:
+          type: string
+          description: Card number
+          example: '5409050000000000'
+        psuName:
+          maxLength: 70
+          minLength: 0
+          type: string
+          description: PSU name
+          example: Jane Smith
+        fundsAvailable:
+          type: boolean
+          description: Result of the funds confirmation
+          example: true
+        confirmationDateTime:
+          type: string
+          description: Date and time of the funds confirmation
+          format: date-time
+        get_links:
+          $ref: '#/components/schemas/PSDLinksDTO'
+      description: PSD Funds Confirmation information
+    PSDConsentRequestDTO:
+      required:
+        - access
+        - consentType
+        - partyId
+        - validUntil
+      type: object
+      properties:
+        partyId:
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+          type: string
+          description: ID of the customer who gives the consent
+        consentType:
+          pattern: ^(account|payment|funds-confirmation)$
+          type: string
+          description: Type of consent
+          example: account
+        validFrom:
+          type: string
+          description: Date and time from which the consent is valid
+          format: date-time
+        validUntil:
+          type: string
+          description: Date and time until which the consent is valid
+          format: date-time
+        frequencyPerDay:
+          maximum: 1000
+          type: integer
+          description: Frequency of access per day
+          format: int32
+          example: 4
+        accessFrequency:
+          maximum: 1000
+          type: integer
+          description: Access frequency (alias for frequencyPerDay)
+          format: int32
+          example: 4
+        accessScope:
+          maxLength: 100
+          minLength: 0
+          pattern: ^(all-accounts|specific-accounts|balances|transactions)$
+          type: string
+          description: Access scope
+          example: all-accounts
+        access:
+          type: array
+          description: Access permissions
+          items:
+            $ref: '#/components/schemas/PSDAccessDTO'
+        combinedServiceIndicator:
+          type: boolean
+          description: Flag indicating if combined service is allowed
+          example: false
+        recurringIndicator:
+          type: boolean
+          description: Flag indicating if recurring indicator
+          example: true
+      description: PSD Consent request
+    PSDAccessLogRequestDTO:
+      required:
+        - accessType
+        - consentId
+        - partyId
+        - resourceId
+        - resourceType
+        - status
+        - thirdPartyId
+      type: object
+      properties:
+        consentId:
+          type: string
+          description: ID of the consent used for the access
+          format: uuid
+        partyId:
+          type: string
+          description: ID of the customer
+          format: uuid
+        thirdPartyId:
+          maxLength: 100
+          minLength: 0
+          pattern: ^[A-Za-z0-9\-_]+$
+          type: string
+          description: ID of the third party provider
+        accessType:
+          pattern: ^(READ|WRITE|DELETE)$
+          type: string
+          description: Type of access
+          example: READ
+        resourceType:
+          pattern: ^(ACCOUNT|PAYMENT|CONSENT|BALANCE|TRANSACTION|FUNDS_CONFIRMATION)$
+          type: string
+          description: Type of resource being accessed
+          example: ACCOUNT
+        resourceId:
+          maxLength: 100
+          minLength: 0
+          pattern: ^[A-Za-z0-9\-_]+$
+          type: string
+          description: ID of the resource being accessed
+          example: ACC123456
+        ipAddress:
+          pattern: ^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$|^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$
+          type: string
+          description: IP address of the requester
+          example: 192.168.1.1
+        userAgent:
+          type: string
+          description: User agent of the requester
+          example: Mozilla/5.0
+        status:
+          type: string
+          description: Status of the access
+          example: SUCCESS
+        errorMessage:
+          type: string
+          description: Error message if the access failed
+          example: Unauthorized access
+        tppRequestId:
+          type: string
+          description: TPP-Request-ID header value
+          example: TPP-123456
+        psuId:
+          type: string
+          description: PSU-ID header value
+          example: PSU-123456
+        psuIdType:
+          type: string
+          description: PSU-ID-Type header value
+          example: email
+        psuCorporateId:
+          type: string
+          description: PSU-Corporate-ID header value
+          example: CORP-123456
+        psuCorporateIdType:
+          type: string
+          description: PSU-Corporate-ID-Type header value
+          example: email
+        tppRedirectUri:
+          type: string
+          description: TPP-Redirect-URI header value
+          example: https://tpp.com/callback
+        xrequestId:
+          type: string
+      description: PSD Access log request
+    PSDAccessLogDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the access log
+          format: uuid
+        consentId:
+          type: string
+          description: ID of the consent used for the access
+          format: uuid
+        partyId:
+          type: string
+          description: ID of the customer
+          format: uuid
+        thirdPartyId:
+          type: string
+          description: ID of the third party provider
+        accessType:
+          type: string
+          description: Type of access
+          example: READ
+        resourceType:
+          type: string
+          description: Type of resource being accessed
+          example: ACCOUNT
+        resourceId:
+          type: string
+          description: ID of the resource being accessed
+          example: ACC123456
+        ipAddress:
+          type: string
+          description: IP address of the requester
+          example: 192.168.1.1
+        userAgent:
+          type: string
+          description: User agent of the requester
+          example: Mozilla/5.0
+        status:
+          type: string
+          description: Status of the access
+          example: SUCCESS
+        errorMessage:
+          type: string
+          description: Error message if the access failed
+          example: Unauthorized access
+        tppRequestId:
+          type: string
+          description: TPP-Request-ID header value
+          example: TPP-123456
+        psuId:
+          type: string
+          description: PSU-ID header value
+          example: PSU-123456
+        psuIdType:
+          type: string
+          description: PSU-ID-Type header value
+          example: email
+        psuCorporateId:
+          type: string
+          description: PSU-Corporate-ID header value
+          example: CORP-123456
+        psuCorporateIdType:
+          type: string
+          description: PSU-Corporate-ID-Type header value
+          example: email
+        tppRedirectUri:
+          type: string
+          description: TPP-Redirect-URI header value
+          example: https://tpp.com/callback
+        createdAt:
+          type: string
+          description: Date and time when the access was logged
+          format: date-time
+        xrequestId:
+          type: string
+      description: PSD Access log information
+    PSDAuthenticationRequestDTO:
+      required:
+        - password
+        - username
+      type: object
+      properties:
+        username:
+          maxLength: 100
+          minLength: 0
+          type: string
+          description: Username
+          example: user@example.com
+        password:
+          maxLength: 128
+          minLength: 8
+          type: string
+          description: Password
+          example: password
+      description: Authentication request
+    PSDAuthenticationResponseDTO:
+      required:
+        - accessToken
+        - tokenType
+      type: object
+      properties:
+        accessToken:
+          maxLength: 2048
+          minLength: 10
+          pattern: ^[A-Za-z0-9\-._~+/]+=*$
+          type: string
+          description: Access token
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        refreshToken:
+          maxLength: 2048
+          minLength: 10
+          pattern: ^[A-Za-z0-9\-._~+/]+=*$
+          type: string
+          description: Refresh token
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        tokenType:
+          pattern: ^(Bearer|Basic)$
+          type: string
+          description: Token type
+          example: Bearer
+        expiresIn:
+          type: integer
+          description: Expires in (seconds)
+          format: int64
+          example: 3600
+      description: PSD Authentication response
+    PSDRefreshTokenRequestDTO:
+      required:
+        - refreshToken
+      type: object
+      properties:
+        refreshToken:
+          maxLength: 2048
+          minLength: 10
+          pattern: ^[A-Za-z0-9\-._~+/]+=*$
+          type: string
+          description: Refresh token
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      description: Refresh token request
+    PSDPaymentStatusDTO:
+      required:
+        - paymentId
+      type: object
+      properties:
+        paymentId:
+          type: string
+          description: Unique identifier of the payment
+          format: uuid
+        transactionStatus:
+          pattern: ^(ACCP|ACSC|ACSP|ACTC|ACWC|ACWP|PDNG|RJCT|CANC)$
+          type: string
+          description: Status of the payment
+          example: ACCP
+        status:
+          pattern: ^(ACCP|ACSC|ACSP|ACTC|ACWC|ACWP|PDNG|RJCT|CANC)$
+          type: string
+          description: Status of the payment (alias for transactionStatus)
+          example: ACCP
+        fundsAvailable:
+          type: boolean
+          description: Funds availability
+          example: true
+        psuMessage:
+          maxLength: 500
+          minLength: 0
+          type: string
+          description: PSU message
+          example: Payment accepted
+        statusReasonInformation:
+          maxLength: 500
+          minLength: 0
+          type: string
+          description: Additional status information
+          example: Payment accepted
+        get_links:
+          $ref: '#/components/schemas/PSDLinksDTO'
+        statusUpdateDateTime:
+          type: string
+          description: Date and time when the status was last updated
+          format: date-time
+      description: PSD Payment status information
+    PSDTransactionDTO:
+      required:
+        - transactionId
+      type: object
+      properties:
+        transactionId:
+          type: string
+          description: Unique identifier of the transaction
+          format: uuid
+        endToEndId:
+          maxLength: 35
+          minLength: 0
+          pattern: ^[A-Za-z0-9/\-?:().,'+\s]*$
+          type: string
+          description: End-to-end identifier
+          example: E2E-ID-123
+        mandateId:
+          maxLength: 35
+          minLength: 0
+          pattern: ^[A-Za-z0-9/\-?:().,'+\s]*$
+          type: string
+          description: Mandate identifier
+          example: MANDATE-2023-10-01
+        creditorReference:
+          maxLength: 35
+          minLength: 0
+          pattern: ^[A-Za-z0-9/\-?:().,'+\s]*$
+          type: string
+          description: Creditor reference
+          example: RF18539007547034
+        transactionStatus:
+          pattern: ^(booked|pending|rejected|cancelled)$
+          type: string
+          description: Status of the transaction
+          example: booked
+        bookingDate:
+          type: string
+          description: Booking date of the transaction
+          format: date
+        valueDate:
+          type: string
+          description: Value date of the transaction
+          format: date
+        transactionAmount:
+          $ref: '#/components/schemas/PSDAmountDTO'
+        exchangeRate:
+          pattern: ^[0-9]+(\.[0-9]+)?$
+          type: string
+          description: Exchange rate if applicable
+        creditorName:
+          maxLength: 70
+          minLength: 0
+          type: string
+          description: Creditor name
+          example: John Doe
+        creditorAccount:
+          $ref: '#/components/schemas/PSDAccountReferenceDTO'
+        creditorAgent:
+          type: string
+          description: Creditor agent (BIC)
+          example: DEUTDEFF
+        debtorName:
+          type: string
+          description: Debtor name
+          example: Jane Smith
+        debtorAccount:
+          $ref: '#/components/schemas/PSDAccountReferenceDTO'
+        debtorAgent:
+          type: string
+          description: Debtor agent (BIC)
+          example: SOGEFRPP
+        remittanceInformationUnstructured:
+          type: string
+          description: Remittance information unstructured
+          example: Invoice 123
+        remittanceInformationStructured:
+          $ref: '#/components/schemas/PSDRemittanceDTO'
+        purposeCode:
+          type: string
+          description: Purpose code
+          example: OTHR
+        bankTransactionCode:
+          type: string
+          description: Bank transaction code
+          example: PMNT-RCDT-ESCT
+        proprietaryBankTransactionCode:
+          type: string
+          description: Proprietary bank transaction code
+          example: ABCD+EF-123
+        get_links:
+          $ref: '#/components/schemas/PSDLinksDTO'
+      description: PSD Transaction information
+    PSDBalanceDTO:
+      required:
+        - balanceAmount
+      type: object
+      properties:
+        balanceType:
+          pattern: ^(closingBooked|expected|forwardAvailable|interimAvailable|interimBooked|openingBooked|previouslyClosedBooked)$
+          type: string
+          description: Type of balance
+          example: closingBooked
+        balanceAmount:
+          $ref: '#/components/schemas/PSDAmountDTO'
+        creditDebitIndicator:
+          pattern: ^(CRDT|DBIT)$
+          type: string
+          description: Credit/Debit indicator
+          example: CRDT
+        referenceDate:
+          type: string
+          description: Date and time of the balance
+          format: date-time
+        lastCommittedTransaction:
+          maxLength: 100
+          minLength: 0
+          type: string
+          description: Last committed transaction included in this balance
+      description: PSD Balance information
+    PSDCardAccountDTO:
+      required:
+        - ownerPartyId
+        - resourceId
+      type: object
+      properties:
+        resourceId:
+          type: string
+          description: Unique identifier of the card account (resource ID)
+          format: uuid
+        maskedPan:
+          pattern: ^[0-9*]{12,19}$
+          type: string
+          description: Masked PAN of the card
+          example: 540905******0000
+        currency:
+          type: string
+          description: Currency of the card account
+          example: EUR
+        name:
+          maxLength: 100
+          minLength: 0
+          type: string
+          description: Name of the card account as defined by the PSU
+          example: Main Card
+        product:
+          maxLength: 100
+          minLength: 0
+          type: string
+          description: Product name of the bank for this card account
+          example: Premium Card
+        status:
+          pattern: ^(enabled|disabled|deleted|blocked)$
+          type: string
+          description: Status of the card account
+          example: enabled
+        creditLimit:
+          pattern: ^[0-9]+(\.[0-9]{1,2})?$
+          type: string
+          description: Credit limit of the card
+          example: '5000.0'
+        ownerPartyId:
+          type: string
+          description: ID of the card holder (PSU)
+          format: uuid
+        cardType:
+          pattern: ^(debit|credit|prepaid)$
+          type: string
+          description: Card type
+          example: debit
+        cardNetwork:
+          pattern: ^(visa|mastercard|amex|discover|jcb|diners|unionpay)$
+          type: string
+          description: Card network
+          example: visa
+        cardIssuerName:
+          maxLength: 100
+          minLength: 0
+          type: string
+          description: Card issuer name
+          example: Example Bank
+        cardIssuerId:
+          maxLength: 50
+          minLength: 0
+          type: string
+          description: Card issuer ID
+          example: EXAMPLEBANK
+        expiryDate:
+          type: string
+          description: Card expiry date
+          format: date
+        balances:
+          type: array
+          description: List of balances for the card account
+          items:
+            $ref: '#/components/schemas/PSDBalanceDTO'
+        get_links:
+          $ref: '#/components/schemas/PSDLinksDTO'
+        lastAccessedAt:
+          type: string
+          description: Date and time when the card account was last accessed
+          format: date-time
+        createdAt:
+          type: string
+          description: Date and time when the card account was created
+          format: date-time
+        updatedAt:
+          type: string
+          description: Date and time when the card account was last updated
+          format: date-time
+      description: PSD Card Account information
+    PSDAccountDTO:
+      required:
+        - ownerPartyId
+        - resourceId
+      type: object
+      properties:
+        resourceId:
+          type: string
+          description: Unique identifier of the account (resource ID)
+          format: uuid
+        iban:
+          type: string
+          description: IBAN of the account
+          example: DE89370400440532013000
+        bban:
+          pattern: ^[A-Z0-9]{1,30}$
+          type: string
+          description: BBAN of the account
+          example: BARC12345612345678
+        currency:
+          type: string
+          description: Currency of the account
+          example: EUR
+        name:
+          maxLength: 100
+          minLength: 0
+          type: string
+          description: Name of the account as defined by the PSU
+          example: Main Account
+        product:
+          maxLength: 100
+          minLength: 0
+          type: string
+          description: Product name of the bank for this account
+          example: Premium Account
+        cashAccountType:
+          pattern: ^(CACC|CARD|CASH|CHAR|CISH|COMM|CPAC|LLSV|LOAN|MGLD|MOMA|NREX|ODFT|ONDP|OTHR|SACC|SLRY|SVGS|TAXE|TRAD|TRAN|TRAS)$
+          type: string
+          description: Type of the account
+          example: CACC
+        status:
+          pattern: ^(enabled|disabled|deleted|blocked)$
+          type: string
+          description: Status of the account
+          example: enabled
+        bic:
+          type: string
+          description: BIC associated with the account
+          example: DEUTDEFF
+        ownerPartyId:
+          type: string
+          description: ID of the account holder (PSU)
+          format: uuid
+        balances:
+          type: array
+          description: List of balances for the account
+          items:
+            $ref: '#/components/schemas/PSDBalanceDTO'
+        get_links:
+          $ref: '#/components/schemas/PSDLinksDTO'
+        lastAccessedAt:
+          type: string
+          description: Date and time when the account was last accessed
+          format: date-time
+        createdAt:
+          type: string
+          description: Date and time when the account was created
+          format: date-time
+        updatedAt:
+          type: string
+          description: Date and time when the account was last updated
+          format: date-time
+      description: PSD Account information
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      description: API key for TPP authentication
+      name: X-API-KEY
+      in: header
+    bearer:
+      type: http
+      description: JWT token for user authentication
+      scheme: bearer
+      bearerFormat: JWT

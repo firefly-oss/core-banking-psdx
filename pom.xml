@@ -18,6 +18,7 @@
         <module>core-banking-psdx-interfaces</module>
         <module>core-banking-psdx-models</module>
         <module>core-banking-psdx-web</module>
+        <module>core-banking-psdx-sdk</module>
     </modules>
 
     <properties>
@@ -37,6 +38,11 @@
             <dependency>
                 <groupId>com.firefly</groupId>
                 <artifactId>core-banking-psdx-models</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.firefly</groupId>
+                <artifactId>core-banking-psdx-sdk</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
