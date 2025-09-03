@@ -22,6 +22,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 
 /**
@@ -64,7 +65,7 @@ public class AccessLogController {
     })
     public Mono<PSDAccessLogDTO> getAccessLog(
             @Parameter(description = "ID of the access log", required = true)
-            @PathVariable Long logId) {
+            @PathVariable UUID logId) {
         log.debug("REST request to get access log: {}", logId);
         return accessLogService.getAccessLog(logId);
     }
@@ -79,9 +80,9 @@ public class AccessLogController {
     })
     public Flux<PSDAccessLogDTO> getAccessLogs(
             @Parameter(description = "ID of the customer")
-            @RequestParam(required = false) Long partyId,
+            @RequestParam(required = false) UUID partyId,
             @Parameter(description = "ID of the consent")
-            @RequestParam(required = false) Long consentId,
+            @RequestParam(required = false) UUID consentId,
             @Parameter(description = "ID of the third party provider")
             @RequestParam(required = false) String thirdPartyId,
             @Parameter(description = "Start date of the range")

@@ -20,6 +20,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 /**
  * REST controller for card account information.
@@ -98,9 +99,9 @@ public class CardAccountController {
     })
     public Flux<PSDCardAccountDTO> getCardAccounts(
             @Parameter(description = "ID of the consent", required = true)
-            @RequestHeader("X-Consent-ID") Long consentId,
+            @RequestHeader("X-Consent-ID") UUID consentId,
             @Parameter(description = "ID of the customer", required = true)
-            @RequestParam Long partyId) {
+            @RequestParam UUID partyId) {
         log.debug("REST request to get card accounts for party ID: {} with consent ID: {}", partyId, consentId);
         return cardAccountService.getCardAccounts(consentId, partyId);
     }
@@ -172,9 +173,9 @@ public class CardAccountController {
     })
     public Mono<PSDCardAccountDTO> getCardAccount(
             @Parameter(description = "ID of the consent", required = true)
-            @RequestHeader("X-Consent-ID") Long consentId,
+            @RequestHeader("X-Consent-ID") UUID consentId,
             @Parameter(description = "ID of the card", required = true)
-            @PathVariable Long cardId) {
+            @PathVariable UUID cardId) {
         log.debug("REST request to get card account: {} with consent ID: {}", cardId, consentId);
         return cardAccountService.getCardAccount(consentId, cardId);
     }
@@ -247,9 +248,9 @@ public class CardAccountController {
     })
     public Flux<PSDBalanceDTO> getCardBalances(
             @Parameter(description = "ID of the consent", required = true)
-            @RequestHeader("X-Consent-ID") Long consentId,
+            @RequestHeader("X-Consent-ID") UUID consentId,
             @Parameter(description = "ID of the card", required = true)
-            @PathVariable Long cardId) {
+            @PathVariable UUID cardId) {
         log.debug("REST request to get balances for card ID: {} with consent ID: {}", cardId, consentId);
         return cardAccountService.getCardBalances(consentId, cardId);
     }
@@ -336,9 +337,9 @@ public class CardAccountController {
     })
     public Flux<PSDTransactionDTO> getCardTransactions(
             @Parameter(description = "ID of the consent", required = true)
-            @RequestHeader("X-Consent-ID") Long consentId,
+            @RequestHeader("X-Consent-ID") UUID consentId,
             @Parameter(description = "ID of the card", required = true)
-            @PathVariable Long cardId,
+            @PathVariable UUID cardId,
             @Parameter(description = "Start date of the range", required = true)
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @Parameter(description = "End date of the range", required = true)
@@ -420,11 +421,11 @@ public class CardAccountController {
     })
     public Mono<PSDTransactionDTO> getCardTransaction(
             @Parameter(description = "ID of the consent", required = true)
-            @RequestHeader("X-Consent-ID") Long consentId,
+            @RequestHeader("X-Consent-ID") UUID consentId,
             @Parameter(description = "ID of the card", required = true)
-            @PathVariable Long cardId,
+            @PathVariable UUID cardId,
             @Parameter(description = "ID of the transaction", required = true)
-            @PathVariable Long transactionId) {
+            @PathVariable UUID transactionId) {
         log.debug("REST request to get transaction: {} for card ID: {} with consent ID: {}",
                 transactionId, cardId, consentId);
         return cardAccountService.getCardTransaction(consentId, cardId, transactionId);

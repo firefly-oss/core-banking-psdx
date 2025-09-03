@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 
 
 /**
@@ -118,7 +120,7 @@ public class ThirdPartyProviderController {
     })
     public Mono<PSDThirdPartyProviderDTO> getProvider(
             @Parameter(description = "ID of the provider", required = true)
-            @PathVariable Long providerId) {
+            @PathVariable UUID providerId) {
         log.debug("REST request to get provider: {}", providerId);
         return thirdPartyProviderService.getProvider(providerId);
     }
@@ -223,7 +225,7 @@ public class ThirdPartyProviderController {
     })
     public Mono<PSDThirdPartyProviderDTO> updateProvider(
             @Parameter(description = "ID of the provider", required = true)
-            @PathVariable Long providerId,
+            @PathVariable UUID providerId,
             @Valid @RequestBody PSDThirdPartyProviderDTO providerUpdate) {
         log.debug("REST request to update provider: {}", providerId);
         return thirdPartyProviderService.updateProvider(providerId, providerUpdate);
@@ -276,7 +278,7 @@ public class ThirdPartyProviderController {
     })
     public Mono<PSDThirdPartyProviderDTO> suspendProvider(
             @Parameter(description = "ID of the provider", required = true)
-            @PathVariable Long providerId) {
+            @PathVariable UUID providerId) {
         log.debug("REST request to suspend provider: {}", providerId);
         return thirdPartyProviderService.suspendProvider(providerId);
     }
@@ -328,7 +330,7 @@ public class ThirdPartyProviderController {
     })
     public Mono<PSDThirdPartyProviderDTO> activateProvider(
             @Parameter(description = "ID of the provider", required = true)
-            @PathVariable Long providerId) {
+            @PathVariable UUID providerId) {
         log.debug("REST request to activate provider: {}", providerId);
         return thirdPartyProviderService.activateProvider(providerId);
     }
@@ -382,7 +384,7 @@ public class ThirdPartyProviderController {
     })
     public Mono<Boolean> revokeProvider(
             @Parameter(description = "ID of the provider", required = true)
-            @PathVariable Long providerId) {
+            @PathVariable UUID providerId) {
         log.debug("REST request to revoke provider: {}", providerId);
         return thirdPartyProviderService.revokeProvider(providerId);
     }

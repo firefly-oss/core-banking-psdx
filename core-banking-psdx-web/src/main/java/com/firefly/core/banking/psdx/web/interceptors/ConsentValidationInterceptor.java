@@ -6,10 +6,8 @@ import com.firefly.core.banking.psdx.interfaces.exceptions.PSDConsentInvalidExce
 import com.firefly.core.banking.psdx.interfaces.exceptions.PSDFormatException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
@@ -17,6 +15,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Interceptor for validating consents in requests.
@@ -67,16 +66,16 @@ public class ConsentValidationInterceptor implements WebFilter {
             return Mono.error(new PSDFormatException("Missing X-Consent-ID header", "Please provide a valid consent ID in the X-Consent-ID header"));
         }
 
-        Long consentId;
+        UUID consentId;
         try {
-            consentId = Long.parseLong(consentIdHeader);
-        } catch (NumberFormatException e) {
+            consentId = UUID.fromString(consentIdHeader);
+        } catch (IllegalArgumentException e) {
             log.warn("Invalid X-Consent-ID header: {} for path: {}", consentIdHeader, path);
-            return Mono.error(new PSDFormatException("Invalid X-Consent-ID header", "The consent ID must be a valid number"));
+            return Mono.error(new PSDFormatException("Invalid X-Consent-ID header", "The consent ID must be a valid UUID"));
         }
 
         // Get party ID from request parameter or header
-        Long partyId = getPartyId(exchange.getRequest());
+        UUID partyId = getPartyId(exchange.getRequest());
         if (partyId == null) {
             log.warn("Missing party ID for path: {}", path);
             return Mono.error(new PSDFormatException("Missing party ID", "Please provide a valid party ID in the request parameters or PSU-ID header"));
@@ -136,13 +135,13 @@ public class ConsentValidationInterceptor implements WebFilter {
      * @param request The request
      * @return The party ID, or null if not found
      */
-    private Long getPartyId(ServerHttpRequest request) {
+    private UUID getPartyId(ServerHttpRequest request) {
         // Try to get from query parameter
         String partyIdParam = request.getQueryParams().getFirst("partyId");
         if (partyIdParam != null && !partyIdParam.isEmpty()) {
             try {
-                return Long.parseLong(partyIdParam);
-            } catch (NumberFormatException e) {
+                return UUID.fromString(partyIdParam);
+            } catch (IllegalArgumentException e) {
                 log.warn("Invalid party ID parameter: {}", partyIdParam);
                 return null;
             }
@@ -153,7 +152,7 @@ public class ConsentValidationInterceptor implements WebFilter {
         if (psuId != null && !psuId.isEmpty()) {
             // In a real implementation, this would look up the party ID from the PSU ID
             // For now, we'll just return a dummy value
-            return 123456L;
+            return UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
         }
 
         return null;

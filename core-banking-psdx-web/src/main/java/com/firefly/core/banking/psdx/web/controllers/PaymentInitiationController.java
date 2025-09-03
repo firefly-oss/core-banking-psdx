@@ -19,6 +19,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 
 
 /**
@@ -107,7 +109,7 @@ public class PaymentInitiationController {
     })
     public Mono<PSDPaymentDTO> initiatePayment(
             @Parameter(description = "ID of the consent", required = true)
-            @RequestHeader("X-Consent-ID") Long consentId,
+            @RequestHeader("X-Consent-ID") UUID consentId,
             @Valid @RequestBody PSDPaymentInitiationRequestDTO paymentRequest) {
         log.debug("REST request to initiate payment with consent ID: {}", consentId);
         return paymentInitiationService.initiatePayment(consentId, paymentRequest);
@@ -180,9 +182,9 @@ public class PaymentInitiationController {
     })
     public Mono<PSDPaymentStatusDTO> getPaymentStatus(
             @Parameter(description = "ID of the consent", required = true)
-            @RequestHeader("X-Consent-ID") Long consentId,
+            @RequestHeader("X-Consent-ID") UUID consentId,
             @Parameter(description = "ID of the payment", required = true)
-            @PathVariable Long paymentId) {
+            @PathVariable UUID paymentId) {
         log.debug("REST request to get status for payment: {} with consent ID: {}", paymentId, consentId);
         return paymentInitiationService.getPaymentStatus(consentId, paymentId);
     }
@@ -258,9 +260,9 @@ public class PaymentInitiationController {
     })
     public Mono<PSDPaymentDTO> getPayment(
             @Parameter(description = "ID of the consent", required = true)
-            @RequestHeader("X-Consent-ID") Long consentId,
+            @RequestHeader("X-Consent-ID") UUID consentId,
             @Parameter(description = "ID of the payment", required = true)
-            @PathVariable Long paymentId) {
+            @PathVariable UUID paymentId) {
         log.debug("REST request to get payment: {} with consent ID: {}", paymentId, consentId);
         return paymentInitiationService.getPayment(consentId, paymentId);
     }
@@ -335,9 +337,9 @@ public class PaymentInitiationController {
     })
     public Mono<PSDPaymentDTO> cancelPayment(
             @Parameter(description = "ID of the consent", required = true)
-            @RequestHeader("X-Consent-ID") Long consentId,
+            @RequestHeader("X-Consent-ID") UUID consentId,
             @Parameter(description = "ID of the payment", required = true)
-            @PathVariable Long paymentId) {
+            @PathVariable UUID paymentId) {
         log.debug("REST request to cancel payment: {} with consent ID: {}", paymentId, consentId);
         return paymentInitiationService.cancelPayment(consentId, paymentId);
     }
@@ -420,9 +422,9 @@ public class PaymentInitiationController {
     })
     public Mono<PSDPaymentDTO> authorizePayment(
             @Parameter(description = "ID of the consent", required = true)
-            @RequestHeader("X-Consent-ID") Long consentId,
+            @RequestHeader("X-Consent-ID") UUID consentId,
             @Parameter(description = "ID of the payment", required = true)
-            @PathVariable Long paymentId,
+            @PathVariable UUID paymentId,
             @Parameter(description = "Authorization code from SCA", required = true)
             @RequestBody String authorizationCode) {
         log.debug("REST request to authorize payment: {} with consent ID: {}", paymentId, consentId);

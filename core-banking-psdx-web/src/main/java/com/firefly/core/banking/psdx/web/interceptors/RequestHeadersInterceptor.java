@@ -2,9 +2,7 @@ package com.firefly.core.banking.psdx.web.interceptors;
 
 import com.firefly.core.banking.psdx.interfaces.exceptions.PSDFormatException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
@@ -27,6 +25,8 @@ public class RequestHeadersInterceptor implements WebFilter {
             "/api/v1/providers/validate",
             "/v3/api-docs",
             "/swagger-ui",
+            "/swagger-ui.html",
+            "/webjars/swagger-ui",
             "/actuator/health",
             "/actuator/info"
     );

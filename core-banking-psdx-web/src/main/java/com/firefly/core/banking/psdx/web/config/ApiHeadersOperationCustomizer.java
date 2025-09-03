@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Customizer for OpenAPI operations to add common headers.

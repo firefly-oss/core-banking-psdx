@@ -20,6 +20,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 
 /**
@@ -95,9 +96,9 @@ public class AccountInformationController {
     })
     public Flux<PSDAccountDTO> getAccounts(
             @Parameter(description = "ID of the consent", required = true)
-            @RequestHeader("X-Consent-ID") Long consentId,
+            @RequestHeader("X-Consent-ID") UUID consentId,
             @Parameter(description = "ID of the customer", required = true)
-            @RequestParam Long partyId) {
+            @RequestParam UUID partyId) {
         log.debug("REST request to get accounts for party ID: {} with consent ID: {}", partyId, consentId);
         return accountInformationService.getAccounts(consentId, partyId);
     }
@@ -166,9 +167,9 @@ public class AccountInformationController {
     })
     public Mono<PSDAccountDTO> getAccount(
             @Parameter(description = "ID of the consent", required = true)
-            @RequestHeader("X-Consent-ID") Long consentId,
+            @RequestHeader("X-Consent-ID") UUID consentId,
             @Parameter(description = "ID of the account", required = true)
-            @PathVariable Long accountId) {
+            @PathVariable UUID accountId) {
         log.debug("REST request to get account: {} with consent ID: {}", accountId, consentId);
         return accountInformationService.getAccount(consentId, accountId);
     }
@@ -242,9 +243,9 @@ public class AccountInformationController {
     })
     public Flux<PSDBalanceDTO> getBalances(
             @Parameter(description = "ID of the consent", required = true)
-            @RequestHeader("X-Consent-ID") Long consentId,
+            @RequestHeader("X-Consent-ID") UUID consentId,
             @Parameter(description = "ID of the account", required = true)
-            @PathVariable Long accountId) {
+            @PathVariable UUID accountId) {
         log.debug("REST request to get balances for account: {} with consent ID: {}", accountId, consentId);
         return accountInformationService.getBalances(consentId, accountId);
     }
@@ -325,9 +326,9 @@ public class AccountInformationController {
     })
     public Flux<PSDTransactionDTO> getTransactions(
             @Parameter(description = "ID of the consent", required = true)
-            @RequestHeader("X-Consent-ID") Long consentId,
+            @RequestHeader("X-Consent-ID") UUID consentId,
             @Parameter(description = "ID of the account", required = true)
-            @PathVariable Long accountId,
+            @PathVariable UUID accountId,
             @Parameter(description = "Start date of the range", required = true)
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @Parameter(description = "End date of the range", required = true)
@@ -407,11 +408,11 @@ public class AccountInformationController {
     })
     public Mono<PSDTransactionDTO> getTransaction(
             @Parameter(description = "ID of the consent", required = true)
-            @RequestHeader("X-Consent-ID") Long consentId,
+            @RequestHeader("X-Consent-ID") UUID consentId,
             @Parameter(description = "ID of the account", required = true)
-            @PathVariable Long accountId,
+            @PathVariable UUID accountId,
             @Parameter(description = "ID of the transaction", required = true)
-            @PathVariable Long transactionId) {
+            @PathVariable UUID transactionId) {
         log.debug("REST request to get transaction: {} for account: {} with consent ID: {}",
                 transactionId, accountId, consentId);
         return accountInformationService.getTransaction(consentId, accountId, transactionId);

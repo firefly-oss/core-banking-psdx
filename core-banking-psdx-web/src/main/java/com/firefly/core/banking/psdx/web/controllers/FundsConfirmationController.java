@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,7 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import jakarta.validation.Valid;
+import java.util.UUID;
 
 /**
  * REST controller for funds confirmation.
@@ -102,7 +103,7 @@ public class FundsConfirmationController {
     })
     public Mono<PSDFundsConfirmationDTO> confirmFunds(
             @Parameter(description = "ID of the consent", required = true)
-            @RequestHeader("X-Consent-ID") Long consentId,
+            @RequestHeader("X-Consent-ID") UUID consentId,
             @Valid @RequestBody PSDFundsConfirmationDTO fundsConfirmationRequest) {
         log.debug("REST request to confirm funds for consent ID: {}", consentId);
         return fundsConfirmationService.confirmFunds(consentId, fundsConfirmationRequest);
@@ -174,9 +175,9 @@ public class FundsConfirmationController {
     })
     public Mono<PSDFundsConfirmationDTO> getFundsConfirmation(
             @Parameter(description = "ID of the consent", required = true)
-            @RequestHeader("X-Consent-ID") Long consentId,
+            @RequestHeader("X-Consent-ID") UUID consentId,
             @Parameter(description = "ID of the funds confirmation", required = true)
-            @PathVariable Long fundsConfirmationId) {
+            @PathVariable UUID fundsConfirmationId) {
         log.debug("REST request to get funds confirmation: {} for consent ID: {}", fundsConfirmationId, consentId);
         return fundsConfirmationService.getFundsConfirmation(consentId, fundsConfirmationId);
     }

@@ -1,9 +1,9 @@
 package com.firefly.core.banking.psdx.web.aspects;
 
-import com.firefly.core.banking.psdx.core.services.AccessLogService;
 import com.firefly.core.banking.psdx.interfaces.enums.AccessStatus;
 import com.firefly.core.banking.psdx.interfaces.enums.AccessType;
 import com.firefly.core.banking.psdx.interfaces.enums.ResourceType;
+import com.firefly.core.banking.psdx.interfaces.services.AccessLogServiceInterface;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -14,10 +14,9 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerWebExchange;
-import reactor.core.publisher.Mono;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
+import java.util.UUID;
 
 /**
  * Aspect for logging all API accesses.
@@ -28,7 +27,7 @@ import java.util.Arrays;
 @Slf4j
 public class AccessLoggingAspect {
 
-    private final AccessLogService accessLogService;
+    private final AccessLogServiceInterface accessLogService;
 
     /**
      * Around advice for logging all controller method calls.
@@ -123,22 +122,22 @@ public class AccessLoggingAspect {
         
         // Get consent ID from header
         String consentIdHeader = request.getHeaders().getFirst("X-Consent-ID");
-        Long consentId = null;
+        UUID consentId = null;
         if (consentIdHeader != null && !consentIdHeader.isEmpty()) {
             try {
-                consentId = Long.parseLong(consentIdHeader);
-            } catch (NumberFormatException e) {
+                consentId = UUID.fromString(consentIdHeader);
+            } catch (IllegalArgumentException e) {
                 log.warn("Invalid X-Consent-ID header: {}", consentIdHeader);
             }
         }
-        
+
         // Get party ID from request parameter or header
-        Long partyId = null;
+        UUID partyId = null;
         String partyIdParam = request.getQueryParams().getFirst("partyId");
         if (partyIdParam != null && !partyIdParam.isEmpty()) {
             try {
-                partyId = Long.parseLong(partyIdParam);
-            } catch (NumberFormatException e) {
+                partyId = UUID.fromString(partyIdParam);
+            } catch (IllegalArgumentException e) {
                 log.warn("Invalid party ID parameter: {}", partyIdParam);
             }
         }

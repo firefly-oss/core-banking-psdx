@@ -13,7 +13,6 @@ import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.HttpStatusServerEntryPoint;
-import reactor.core.publisher.Mono;
 
 /**
  * Security configuration for the PSD2/PSD3 and FIDA Regulatory Compliance Service.

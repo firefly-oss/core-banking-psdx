@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 
 
 /**
@@ -150,7 +152,7 @@ public class ConsentController {
     })
     public Mono<PSDConsentDTO> getConsent(
             @Parameter(description = "ID of the consent", required = true)
-            @PathVariable Long consentId) {
+            @PathVariable UUID consentId) {
         log.debug("REST request to get consent: {}", consentId);
         return consentService.getConsent(consentId);
     }
@@ -210,7 +212,7 @@ public class ConsentController {
     })
     public Flux<PSDConsentDTO> getConsentsForCustomer(
             @Parameter(description = "ID of the customer", required = true)
-            @RequestParam Long partyId) {
+            @RequestParam UUID partyId) {
         log.debug("REST request to get consents for customer: {}", partyId);
         return consentService.getConsentsForCustomer(partyId);
     }
@@ -274,7 +276,7 @@ public class ConsentController {
     })
     public Mono<PSDConsentDTO> updateConsentStatus(
             @Parameter(description = "ID of the consent", required = true)
-            @PathVariable Long consentId,
+            @PathVariable UUID consentId,
             @Valid @RequestBody PSDConsentStatusDTO statusUpdate) {
         log.debug("REST request to update consent status: {} to {}", consentId, statusUpdate.getStatus());
         return consentService.updateConsentStatus(consentId, statusUpdate);
@@ -337,7 +339,7 @@ public class ConsentController {
     })
     public Mono<PSDConsentDTO> revokeConsent(
             @Parameter(description = "ID of the consent", required = true)
-            @PathVariable Long consentId) {
+            @PathVariable UUID consentId) {
         log.debug("REST request to revoke consent: {}", consentId);
         return consentService.revokeConsent(consentId);
     }
