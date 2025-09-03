@@ -2,7 +2,6 @@ package com.firefly.core.banking.psdx.core.mappers;
 
 import com.firefly.core.banking.psdx.interfaces.dtos.PSDThirdPartyProviderDTO;
 import com.firefly.core.banking.psdx.interfaces.dtos.PSDThirdPartyProviderRegistrationDTO;
-import com.firefly.core.banking.psdx.interfaces.enums.ProviderStatus;
 import com.firefly.core.banking.psdx.models.entities.ThirdPartyProvider;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

@@ -1,8 +1,6 @@
 package com.firefly.core.banking.psdx.core.mappers;
 
 import com.firefly.core.banking.psdx.interfaces.dtos.PSDConsentDTO;
-import com.firefly.core.banking.psdx.interfaces.enums.ConsentStatus;
-import com.firefly.core.banking.psdx.interfaces.enums.ConsentType;
 import com.firefly.core.banking.psdx.models.entities.Consent;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Service for validating consents.
@@ -33,10 +34,10 @@ public class ConsentValidationService {
      * @param thirdPartyId The ID of the third party provider
      * @return A Mono of Boolean indicating if the consent is valid
      */
-    public Mono<Boolean> validateConsent(Long consentId, ResourceType resourceType, Long partyId, String thirdPartyId) {
-        log.debug("Validating consent ID: {} for resource type: {}, party ID: {}, third party ID: {}", 
+    public Mono<Boolean> validateConsent(UUID consentId, ResourceType resourceType, UUID partyId, String thirdPartyId) {
+        log.debug("Validating consent ID: {} for resource type: {}, party ID: {}, third party ID: {}",
                 consentId, resourceType, partyId, thirdPartyId);
-        
+
         return consentRepository.findById(consentId)
                 .flatMap(consent -> validateConsent(consent, resourceType, partyId, thirdPartyId));
     }
@@ -50,7 +51,7 @@ public class ConsentValidationService {
      * @param thirdPartyId The ID of the third party provider
      * @return A Mono of Boolean indicating if the consent is valid
      */
-    private Mono<Boolean> validateConsent(Consent consent, ResourceType resourceType, Long partyId, String thirdPartyId) {
+    private Mono<Boolean> validateConsent(Consent consent, ResourceType resourceType, UUID partyId, String thirdPartyId) {
         // Check if the consent is valid
         if (consent.getStatus() != ConsentStatus.VALID) {
             log.warn("Consent ID: {} has invalid status: {}", consent.getId(), consent.getStatus());

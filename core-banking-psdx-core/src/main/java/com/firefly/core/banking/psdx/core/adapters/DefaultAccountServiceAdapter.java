@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 /**
  * Default implementation of the AccountServicePort.
  * This implementation throws exceptions as "not yet implemented".
@@ -15,17 +17,17 @@ import reactor.core.publisher.Mono;
 public class DefaultAccountServiceAdapter implements AccountServicePort {
 
     @Override
-    public Flux<PSDAccountDTO> getAccountsByPartyId(Long partyId) {
+    public Flux<PSDAccountDTO> getAccountsByPartyId(UUID partyId) {
         return Flux.error(new UnsupportedOperationException("Method getAccountsByPartyId not yet implemented"));
     }
 
     @Override
-    public Mono<PSDAccountDTO> getAccountById(Long accountId) {
+    public Mono<PSDAccountDTO> getAccountById(UUID accountId) {
         return Mono.error(new UnsupportedOperationException("Method getAccountById not yet implemented"));
     }
 
     @Override
-    public Flux<PSDBalanceDTO> getBalancesByAccountId(Long accountId) {
+    public Flux<PSDBalanceDTO> getBalancesByAccountId(UUID accountId) {
         return Flux.error(new UnsupportedOperationException("Method getBalancesByAccountId not yet implemented"));
     }
 }

@@ -16,6 +16,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Implementation of the AccessLogService interface.
@@ -54,7 +55,7 @@ public class AccessLogServiceImpl implements AccessLogService {
     }
 
     @Override
-    public Mono<PSDAccessLogDTO> getAccessLog(Long logId) {
+    public Mono<PSDAccessLogDTO> getAccessLog(UUID logId) {
         log.debug("Getting access log with ID: {}", logId);
 
         return accessLogRepository.findById(logId)
@@ -69,7 +70,7 @@ public class AccessLogServiceImpl implements AccessLogService {
     }
 
     @Override
-    public Flux<PSDAccessLogDTO> getAccessLogsForCustomer(Long partyId) {
+    public Flux<PSDAccessLogDTO> getAccessLogsForCustomer(UUID partyId) {
         log.debug("Getting access logs for party ID: {}", partyId);
 
         return accessLogRepository.findByPartyId(partyId)
@@ -78,7 +79,7 @@ public class AccessLogServiceImpl implements AccessLogService {
     }
 
     @Override
-    public Flux<PSDAccessLogDTO> getAccessLogsForCustomerInDateRange(Long partyId, LocalDateTime fromDate, LocalDateTime toDate) {
+    public Flux<PSDAccessLogDTO> getAccessLogsForCustomerInDateRange(UUID partyId, LocalDateTime fromDate, LocalDateTime toDate) {
         log.debug("Getting access logs for party ID: {} between {} and {}",
                 partyId, fromDate, toDate);
 
@@ -88,7 +89,7 @@ public class AccessLogServiceImpl implements AccessLogService {
     }
 
     @Override
-    public Flux<PSDAccessLogDTO> getAccessLogsForConsent(Long consentId) {
+    public Flux<PSDAccessLogDTO> getAccessLogsForConsent(UUID consentId) {
         log.debug("Getting access logs for consent ID: {}", consentId);
 
         return accessLogRepository.findByConsentId(consentId)
@@ -106,7 +107,7 @@ public class AccessLogServiceImpl implements AccessLogService {
     }
 
     @Override
-    public Mono<Long> countAccessLogsForConsent(Long consentId) {
+    public Mono<Long> countAccessLogsForConsent(UUID consentId) {
         log.debug("Counting access logs for consent ID: {}", consentId);
 
         return accessLogRepository.countByConsentId(consentId)

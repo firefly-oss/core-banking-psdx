@@ -5,6 +5,8 @@ import com.firefly.core.banking.psdx.interfaces.dtos.PSDPaymentInitiationRequest
 import com.firefly.core.banking.psdx.interfaces.dtos.PSDPaymentStatusDTO;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 /**
  * Port for interacting with the payment service.
  */
@@ -24,7 +26,7 @@ public interface PaymentServicePort {
      * @param paymentId The ID of the payment
      * @return A Mono of the payment status
      */
-    Mono<PSDPaymentStatusDTO> getPaymentStatus(Long paymentId);
+    Mono<PSDPaymentStatusDTO> getPaymentStatus(UUID paymentId);
 
     /**
      * Get the details of a payment.
@@ -32,7 +34,7 @@ public interface PaymentServicePort {
      * @param paymentId The ID of the payment
      * @return A Mono of the payment
      */
-    Mono<PSDPaymentDTO> getPayment(Long paymentId);
+    Mono<PSDPaymentDTO> getPayment(UUID paymentId);
 
     /**
      * Cancel a payment.
@@ -40,7 +42,7 @@ public interface PaymentServicePort {
      * @param paymentId The ID of the payment
      * @return A Mono of Boolean indicating if the payment was cancelled
      */
-    Mono<Boolean> cancelPayment(Long paymentId);
+    Mono<Boolean> cancelPayment(UUID paymentId);
 
     /**
      * Authorize a payment.
@@ -49,5 +51,5 @@ public interface PaymentServicePort {
      * @param authorizationCode The authorization code
      * @return A Mono of the payment
      */
-    Mono<PSDPaymentDTO> authorizePayment(Long paymentId, String authorizationCode);
+    Mono<PSDPaymentDTO> authorizePayment(UUID paymentId, String authorizationCode);
 }

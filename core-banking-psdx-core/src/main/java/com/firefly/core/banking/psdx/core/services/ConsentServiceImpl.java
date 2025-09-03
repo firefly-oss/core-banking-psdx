@@ -16,6 +16,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Implementation of the ConsentService interface.
@@ -33,7 +34,7 @@ public class ConsentServiceImpl implements ConsentService {
         log.debug("Creating consent for party ID: {}", consentRequest.getPartyId());
 
         Consent consent = Consent.builder()
-                .partyId(consentRequest.getPartyId())
+                .partyId(UUID.fromString(consentRequest.getPartyId()))
                 .consentType(ConsentType.valueOf(consentRequest.getConsentType()))
                 .status(ConsentStatus.RECEIVED)
                 .validFrom(consentRequest.getValidFrom() != null ? consentRequest.getValidFrom() : LocalDateTime.now())
@@ -48,7 +49,7 @@ public class ConsentServiceImpl implements ConsentService {
     }
 
     @Override
-    public Mono<PSDConsentDTO> getConsent(Long consentId) {
+    public Mono<PSDConsentDTO> getConsent(UUID consentId) {
         log.debug("Getting consent with ID: {}", consentId);
 
         return consentRepository.findById(consentId)
@@ -63,7 +64,7 @@ public class ConsentServiceImpl implements ConsentService {
     }
 
     @Override
-    public Flux<PSDConsentDTO> getConsentsForCustomer(Long partyId) {
+    public Flux<PSDConsentDTO> getConsentsForCustomer(UUID partyId) {
         log.debug("Getting consents for party ID: {}", partyId);
 
         return consentRepository.findByPartyId(partyId)
@@ -72,7 +73,7 @@ public class ConsentServiceImpl implements ConsentService {
     }
 
     @Override
-    public Mono<PSDConsentDTO> updateConsentStatus(Long consentId, PSDConsentStatusDTO statusUpdate) {
+    public Mono<PSDConsentDTO> updateConsentStatus(UUID consentId, PSDConsentStatusDTO statusUpdate) {
         log.debug("Updating consent status for ID: {} to {}", consentId, statusUpdate.getStatus());
 
         return consentRepository.findById(consentId)
@@ -86,7 +87,7 @@ public class ConsentServiceImpl implements ConsentService {
     }
 
     @Override
-    public Mono<PSDConsentDTO> revokeConsent(Long consentId) {
+    public Mono<PSDConsentDTO> revokeConsent(UUID consentId) {
         log.debug("Revoking consent with ID: {}", consentId);
 
         return consentRepository.findById(consentId)
@@ -100,7 +101,7 @@ public class ConsentServiceImpl implements ConsentService {
     }
 
     @Override
-    public Mono<Boolean> validateConsent(Long consentId, String resourceType, String accessType) {
+    public Mono<Boolean> validateConsent(UUID consentId, String resourceType, String accessType) {
         log.debug("Validating consent with ID: {} for resource type: {} and access type: {}",
                 consentId, resourceType, accessType);
 
@@ -119,7 +120,7 @@ public class ConsentServiceImpl implements ConsentService {
     }
 
     @Override
-    public Mono<PSDConsentStatusDTO> getConsentStatus(Long consentId) {
+    public Mono<PSDConsentStatusDTO> getConsentStatus(UUID consentId) {
         log.debug("Getting status for consent with ID: {}", consentId);
 
         return consentRepository.findById(consentId)

@@ -5,6 +5,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 /**
  * Port for interacting with the transaction service.
@@ -19,7 +20,7 @@ public interface TransactionServicePort {
      * @param toDate The end date of the range
      * @return A Flux of transactions
      */
-    Flux<PSDTransactionDTO> getTransactionsByAccountId(Long accountId, LocalDate fromDate, LocalDate toDate);
+    Flux<PSDTransactionDTO> getTransactionsByAccountId(UUID accountId, LocalDate fromDate, LocalDate toDate);
 
     /**
      * Get a specific transaction.
@@ -27,5 +28,5 @@ public interface TransactionServicePort {
      * @param transactionId The ID of the transaction
      * @return A Mono of the transaction
      */
-    Mono<PSDTransactionDTO> getTransactionById(Long transactionId);
+    Mono<PSDTransactionDTO> getTransactionById(UUID transactionId);
 }

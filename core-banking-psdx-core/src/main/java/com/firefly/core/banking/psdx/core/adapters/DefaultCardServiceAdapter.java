@@ -9,6 +9,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 /**
  * Default implementation of the CardServicePort.
@@ -18,27 +19,27 @@ import java.time.LocalDate;
 public class DefaultCardServiceAdapter implements CardServicePort {
 
     @Override
-    public Flux<PSDCardAccountDTO> getCardAccountsByPartyId(Long partyId) {
+    public Flux<PSDCardAccountDTO> getCardAccountsByPartyId(UUID partyId) {
         return Flux.error(new UnsupportedOperationException("Method getCardAccountsByPartyId not yet implemented"));
     }
 
     @Override
-    public Mono<PSDCardAccountDTO> getCardAccountById(Long cardId) {
+    public Mono<PSDCardAccountDTO> getCardAccountById(UUID cardId) {
         return Mono.error(new UnsupportedOperationException("Method getCardAccountById not yet implemented"));
     }
 
     @Override
-    public Flux<PSDBalanceDTO> getBalancesByCardId(Long cardId) {
+    public Flux<PSDBalanceDTO> getBalancesByCardId(UUID cardId) {
         return Flux.error(new UnsupportedOperationException("Method getBalancesByCardId not yet implemented"));
     }
 
     @Override
-    public Flux<PSDTransactionDTO> getTransactionsByCardId(Long cardId, LocalDate fromDate, LocalDate toDate) {
+    public Flux<PSDTransactionDTO> getTransactionsByCardId(UUID cardId, LocalDate fromDate, LocalDate toDate) {
         return Flux.error(new UnsupportedOperationException("Method getTransactionsByCardId not yet implemented"));
     }
 
     @Override
-    public Mono<PSDTransactionDTO> getTransactionByCardIdAndTransactionId(Long cardId, Long transactionId) {
+    public Mono<PSDTransactionDTO> getTransactionByCardIdAndTransactionId(UUID cardId, UUID transactionId) {
         return Mono.error(new UnsupportedOperationException("Method getTransactionByCardIdAndTransactionId not yet implemented"));
     }
 }

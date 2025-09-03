@@ -14,6 +14,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 /**
  * Implementation of the AccountInformationService interface.
@@ -28,7 +29,7 @@ public class AccountInformationServiceImpl implements AccountInformationService 
     private final ConsentService consentService;
 
     @Override
-    public Flux<PSDAccountDTO> getAccounts(Long consentId, Long partyId) {
+    public Flux<PSDAccountDTO> getAccounts(UUID consentId, UUID partyId) {
         log.debug("Getting accounts for party ID: {} with consent ID: {}", partyId, consentId);
 
         return consentService.validateConsent(consentId, "ACCOUNT", "READ")
@@ -43,7 +44,7 @@ public class AccountInformationServiceImpl implements AccountInformationService 
     }
 
     @Override
-    public Mono<PSDAccountDTO> getAccount(Long consentId, Long accountId) {
+    public Mono<PSDAccountDTO> getAccount(UUID consentId, UUID accountId) {
         log.debug("Getting account with ID: {} using consent ID: {}", accountId, consentId);
 
         return consentService.validateConsent(consentId, "ACCOUNT", "READ")
@@ -58,7 +59,7 @@ public class AccountInformationServiceImpl implements AccountInformationService 
     }
 
     @Override
-    public Flux<PSDBalanceDTO> getBalances(Long consentId, Long accountId) {
+    public Flux<PSDBalanceDTO> getBalances(UUID consentId, UUID accountId) {
         log.debug("Getting balances for account ID: {} using consent ID: {}", accountId, consentId);
 
         return consentService.validateConsent(consentId, "BALANCE", "READ")
@@ -73,7 +74,7 @@ public class AccountInformationServiceImpl implements AccountInformationService 
     }
 
     @Override
-    public Flux<PSDTransactionDTO> getTransactions(Long consentId, Long accountId, LocalDate fromDate, LocalDate toDate) {
+    public Flux<PSDTransactionDTO> getTransactions(UUID consentId, UUID accountId, LocalDate fromDate, LocalDate toDate) {
         log.debug("Getting transactions for account ID: {} between {} and {} using consent ID: {}",
                 accountId, fromDate, toDate, consentId);
 
@@ -89,7 +90,7 @@ public class AccountInformationServiceImpl implements AccountInformationService 
     }
 
     @Override
-    public Mono<PSDTransactionDTO> getTransaction(Long consentId, Long accountId, Long transactionId) {
+    public Mono<PSDTransactionDTO> getTransaction(UUID consentId, UUID accountId, UUID transactionId) {
         log.debug("Getting transaction with ID: {} for account ID: {} using consent ID: {}",
                 transactionId, accountId, consentId);
 

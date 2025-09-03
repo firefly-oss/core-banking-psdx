@@ -2,9 +2,6 @@ package com.firefly.core.banking.psdx.core.mappers;
 
 import com.firefly.core.banking.psdx.interfaces.dtos.PSDAccessLogDTO;
 import com.firefly.core.banking.psdx.interfaces.dtos.PSDAccessLogRequestDTO;
-import com.firefly.core.banking.psdx.interfaces.enums.AccessStatus;
-import com.firefly.core.banking.psdx.interfaces.enums.AccessType;
-import com.firefly.core.banking.psdx.interfaces.enums.ResourceType;
 import com.firefly.core.banking.psdx.models.entities.AccessLog;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

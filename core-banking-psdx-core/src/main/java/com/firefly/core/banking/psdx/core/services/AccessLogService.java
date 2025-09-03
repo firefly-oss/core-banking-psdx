@@ -15,6 +15,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * Service for managing access logs.
@@ -46,8 +47,8 @@ public class AccessLogService implements AccessLogServiceInterface {
      */
     @Override
     public Mono<PSDAccessLogDTO> logAccess(
-            Long consentId,
-            Long partyId,
+            UUID consentId,
+            UUID partyId,
             String thirdPartyId,
             AccessType accessType,
             ResourceType resourceType,
@@ -58,10 +59,10 @@ public class AccessLogService implements AccessLogServiceInterface {
             String xRequestId,
             String tppRequestId,
             String psuId) {
-        
+
         log.debug("Logging access: consentId={}, partyId={}, thirdPartyId={}, accessType={}, resourceType={}, resourceId={}, status={}",
                 consentId, partyId, thirdPartyId, accessType, resourceType, resourceId, status);
-        
+
         AccessLog accessLog = AccessLog.builder()
                 .consentId(consentId)
                 .partyId(partyId)
@@ -77,7 +78,7 @@ public class AccessLogService implements AccessLogServiceInterface {
                 .psuId(psuId)
                 .timestamp(LocalDateTime.now())
                 .build();
-        
+
         return accessLogRepository.save(accessLog)
                 .map(accessLogMapper::toDto)
                 .doOnSuccess(dto -> log.info("Access logged with ID: {}", dto.getId()));
@@ -90,9 +91,9 @@ public class AccessLogService implements AccessLogServiceInterface {
      * @return A Flux of access logs
      */
     @Override
-    public Flux<PSDAccessLogDTO> getAccessLogsForParty(Long partyId) {
+    public Flux<PSDAccessLogDTO> getAccessLogsForParty(UUID partyId) {
         log.debug("Getting access logs for party ID: {}", partyId);
-        
+
         return accessLogRepository.findByPartyIdOrderByTimestampDesc(partyId)
                 .map(accessLogMapper::toDto)
                 .doOnComplete(() -> log.debug("Retrieved access logs for party ID: {}", partyId));
@@ -105,7 +106,7 @@ public class AccessLogService implements AccessLogServiceInterface {
      * @return A Flux of access logs
      */
     @Override
-    public Flux<PSDAccessLogDTO> getAccessLogsForConsent(Long consentId) {
+    public Flux<PSDAccessLogDTO> getAccessLogsForConsent(UUID consentId) {
         log.debug("Getting access logs for consent ID: {}", consentId);
         
         return accessLogRepository.findByConsentIdOrderByTimestampDesc(consentId)
@@ -134,9 +135,9 @@ public class AccessLogService implements AccessLogServiceInterface {
      * @param consentId The ID of the consent
      * @return A Mono of the count
      */
-    public Mono<Long> countAccessLogsForConsent(Long consentId) {
+    public Mono<Long> countAccessLogsForConsent(UUID consentId) {
         log.debug("Counting access logs for consent ID: {}", consentId);
-        
+
         return accessLogRepository.countByConsentId(consentId)
                 .doOnSuccess(count -> log.debug("Counted {} access logs for consent ID: {}", count, consentId));
     }

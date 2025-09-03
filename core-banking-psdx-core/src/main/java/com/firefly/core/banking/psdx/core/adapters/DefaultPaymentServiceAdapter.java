@@ -7,6 +7,8 @@ import com.firefly.core.banking.psdx.interfaces.dtos.PSDPaymentStatusDTO;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 /**
  * Default implementation of the PaymentServicePort.
  * This implementation throws exceptions as "not yet implemented".
@@ -20,22 +22,22 @@ public class DefaultPaymentServiceAdapter implements PaymentServicePort {
     }
 
     @Override
-    public Mono<PSDPaymentStatusDTO> getPaymentStatus(Long paymentId) {
+    public Mono<PSDPaymentStatusDTO> getPaymentStatus(UUID paymentId) {
         return Mono.error(new UnsupportedOperationException("Method getPaymentStatus not yet implemented"));
     }
 
     @Override
-    public Mono<PSDPaymentDTO> getPayment(Long paymentId) {
+    public Mono<PSDPaymentDTO> getPayment(UUID paymentId) {
         return Mono.error(new UnsupportedOperationException("Method getPayment not yet implemented"));
     }
 
     @Override
-    public Mono<Boolean> cancelPayment(Long paymentId) {
+    public Mono<Boolean> cancelPayment(UUID paymentId) {
         return Mono.error(new UnsupportedOperationException("Method cancelPayment not yet implemented"));
     }
 
     @Override
-    public Mono<PSDPaymentDTO> authorizePayment(Long paymentId, String authorizationCode) {
+    public Mono<PSDPaymentDTO> authorizePayment(UUID paymentId, String authorizationCode) {
         return Mono.error(new UnsupportedOperationException("Method authorizePayment not yet implemented"));
     }
 }

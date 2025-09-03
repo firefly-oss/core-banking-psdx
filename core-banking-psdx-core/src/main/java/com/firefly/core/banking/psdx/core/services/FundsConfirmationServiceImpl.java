@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 
 /**
@@ -24,7 +25,7 @@ public class FundsConfirmationServiceImpl implements FundsConfirmationService {
     private final ConsentService consentService;
 
     @Override
-    public Mono<PSDFundsConfirmationDTO> confirmFunds(Long consentId, PSDFundsConfirmationDTO fundsConfirmationRequest) {
+    public Mono<PSDFundsConfirmationDTO> confirmFunds(UUID consentId, PSDFundsConfirmationDTO fundsConfirmationRequest) {
         log.debug("Confirming funds using consent ID: {}", consentId);
 
         return consentService.validateConsent(consentId, "FUNDS_CONFIRMATION", "READ")
@@ -35,7 +36,7 @@ public class FundsConfirmationServiceImpl implements FundsConfirmationService {
 
                     // In a real implementation, this would check the account balance
                     // For now, we'll just return a mock response
-                    fundsConfirmationRequest.setFundsConfirmationId(System.currentTimeMillis());
+                    fundsConfirmationRequest.setFundsConfirmationId(UUID.randomUUID());
                     fundsConfirmationRequest.setConsentId(consentId);
                     fundsConfirmationRequest.setFundsAvailable(true);
                     fundsConfirmationRequest.setConfirmationDateTime(LocalDateTime.now());
@@ -46,7 +47,7 @@ public class FundsConfirmationServiceImpl implements FundsConfirmationService {
     }
 
     @Override
-    public Mono<PSDFundsConfirmationDTO> getFundsConfirmation(Long consentId, Long fundsConfirmationId) {
+    public Mono<PSDFundsConfirmationDTO> getFundsConfirmation(UUID consentId, UUID fundsConfirmationId) {
         log.debug("Getting funds confirmation with ID: {} using consent ID: {}", fundsConfirmationId, consentId);
 
         return consentService.validateConsent(consentId, "FUNDS_CONFIRMATION", "READ")

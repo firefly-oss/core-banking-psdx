@@ -5,6 +5,8 @@ import com.firefly.core.banking.psdx.interfaces.dtos.PSDBalanceDTO;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 /**
  * Port for interacting with the account service.
  */
@@ -16,7 +18,7 @@ public interface AccountServicePort {
      * @param partyId The ID of the customer
      * @return A Flux of accounts
      */
-    Flux<PSDAccountDTO> getAccountsByPartyId(Long partyId);
+    Flux<PSDAccountDTO> getAccountsByPartyId(UUID partyId);
 
     /**
      * Get a specific account.
@@ -24,7 +26,7 @@ public interface AccountServicePort {
      * @param accountId The ID of the account
      * @return A Mono of the account
      */
-    Mono<PSDAccountDTO> getAccountById(Long accountId);
+    Mono<PSDAccountDTO> getAccountById(UUID accountId);
 
     /**
      * Get balances for a specific account.
@@ -32,5 +34,5 @@ public interface AccountServicePort {
      * @param accountId The ID of the account
      * @return A Flux of balances
      */
-    Flux<PSDBalanceDTO> getBalancesByAccountId(Long accountId);
+    Flux<PSDBalanceDTO> getBalancesByAccountId(UUID accountId);
 }

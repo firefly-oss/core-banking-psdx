@@ -5,7 +5,6 @@ import com.firefly.core.banking.psdx.core.security.CertificateValidationService;
 import com.firefly.core.banking.psdx.interfaces.dtos.PSDThirdPartyProviderDTO;
 import com.firefly.core.banking.psdx.interfaces.dtos.PSDThirdPartyProviderRegistrationDTO;
 import com.firefly.core.banking.psdx.interfaces.enums.ProviderStatus;
-import com.firefly.core.banking.psdx.interfaces.enums.ProviderType;
 import com.firefly.core.banking.psdx.interfaces.services.ThirdPartyProviderService;
 import com.firefly.core.banking.psdx.models.entities.ThirdPartyProvider;
 import com.firefly.core.banking.psdx.models.repositories.ThirdPartyProviderRepository;
@@ -69,7 +68,7 @@ public class ThirdPartyProviderServiceImpl implements ThirdPartyProviderService 
     }
 
     @Override
-    public Mono<PSDThirdPartyProviderDTO> getProvider(Long providerId) {
+    public Mono<PSDThirdPartyProviderDTO> getProvider(UUID providerId) {
         log.debug("Getting third party provider with ID: {}", providerId);
 
         return thirdPartyProviderRepository.findById(providerId)
@@ -93,7 +92,7 @@ public class ThirdPartyProviderServiceImpl implements ThirdPartyProviderService 
     }
 
     @Override
-    public Mono<PSDThirdPartyProviderDTO> updateProvider(Long providerId, PSDThirdPartyProviderDTO providerUpdate) {
+    public Mono<PSDThirdPartyProviderDTO> updateProvider(UUID providerId, PSDThirdPartyProviderDTO providerUpdate) {
         log.debug("Updating third party provider with ID: {}", providerId);
 
         return thirdPartyProviderRepository.findById(providerId)
@@ -111,7 +110,7 @@ public class ThirdPartyProviderServiceImpl implements ThirdPartyProviderService 
     }
 
     @Override
-    public Mono<PSDThirdPartyProviderDTO> suspendProvider(Long providerId) {
+    public Mono<PSDThirdPartyProviderDTO> suspendProvider(UUID providerId) {
         log.debug("Suspending third party provider with ID: {}", providerId);
 
         return thirdPartyProviderRepository.findById(providerId)
@@ -125,7 +124,7 @@ public class ThirdPartyProviderServiceImpl implements ThirdPartyProviderService 
     }
 
     @Override
-    public Mono<PSDThirdPartyProviderDTO> activateProvider(Long providerId) {
+    public Mono<PSDThirdPartyProviderDTO> activateProvider(UUID providerId) {
         log.debug("Activating third party provider with ID: {}", providerId);
 
         return thirdPartyProviderRepository.findById(providerId)
@@ -139,7 +138,7 @@ public class ThirdPartyProviderServiceImpl implements ThirdPartyProviderService 
     }
 
     @Override
-    public Mono<Boolean> revokeProvider(Long providerId) {
+    public Mono<Boolean> revokeProvider(UUID providerId) {
         log.debug("Revoking third party provider with ID: {}", providerId);
 
         return thirdPartyProviderRepository.findById(providerId)

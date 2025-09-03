@@ -13,6 +13,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 /**
  * Implementation of the CardAccountService interface.
@@ -26,7 +27,7 @@ public class CardAccountServiceImpl implements CardAccountService {
     private final ConsentService consentService;
 
     @Override
-    public Flux<PSDCardAccountDTO> getCardAccounts(Long consentId, Long partyId) {
+    public Flux<PSDCardAccountDTO> getCardAccounts(UUID consentId, UUID partyId) {
         log.debug("Getting card accounts for party ID: {} with consent ID: {}", partyId, consentId);
 
         return consentService.validateConsent(consentId, "CARD", "READ")
@@ -41,7 +42,7 @@ public class CardAccountServiceImpl implements CardAccountService {
     }
 
     @Override
-    public Mono<PSDCardAccountDTO> getCardAccount(Long consentId, Long cardId) {
+    public Mono<PSDCardAccountDTO> getCardAccount(UUID consentId, UUID cardId) {
         log.debug("Getting card account with ID: {} using consent ID: {}", cardId, consentId);
 
         return consentService.validateConsent(consentId, "CARD", "READ")
@@ -56,7 +57,7 @@ public class CardAccountServiceImpl implements CardAccountService {
     }
 
     @Override
-    public Flux<PSDBalanceDTO> getCardBalances(Long consentId, Long cardId) {
+    public Flux<PSDBalanceDTO> getCardBalances(UUID consentId, UUID cardId) {
         log.debug("Getting balances for card ID: {} using consent ID: {}", cardId, consentId);
 
         return consentService.validateConsent(consentId, "CARD_BALANCE", "READ")
@@ -71,7 +72,7 @@ public class CardAccountServiceImpl implements CardAccountService {
     }
 
     @Override
-    public Flux<PSDTransactionDTO> getCardTransactions(Long consentId, Long cardId, LocalDate fromDate, LocalDate toDate) {
+    public Flux<PSDTransactionDTO> getCardTransactions(UUID consentId, UUID cardId, LocalDate fromDate, LocalDate toDate) {
         log.debug("Getting transactions for card ID: {} between {} and {} using consent ID: {}",
                 cardId, fromDate, toDate, consentId);
 
@@ -87,7 +88,7 @@ public class CardAccountServiceImpl implements CardAccountService {
     }
 
     @Override
-    public Mono<PSDTransactionDTO> getCardTransaction(Long consentId, Long cardId, Long transactionId) {
+    public Mono<PSDTransactionDTO> getCardTransaction(UUID consentId, UUID cardId, UUID transactionId) {
         log.debug("Getting transaction with ID: {} for card ID: {} using consent ID: {}",
                 transactionId, cardId, consentId);
 

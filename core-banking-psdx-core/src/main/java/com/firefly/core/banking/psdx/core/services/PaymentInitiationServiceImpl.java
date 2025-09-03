@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 /**
  * Implementation of the PaymentInitiationService interface.
  */
@@ -23,7 +25,7 @@ public class PaymentInitiationServiceImpl implements PaymentInitiationService {
     private final ConsentService consentService;
 
     @Override
-    public Mono<PSDPaymentDTO> initiatePayment(Long consentId, PSDPaymentInitiationRequestDTO paymentRequest) {
+    public Mono<PSDPaymentDTO> initiatePayment(UUID consentId, PSDPaymentInitiationRequestDTO paymentRequest) {
         log.debug("Initiating payment using consent ID: {}", consentId);
 
         return consentService.validateConsent(consentId, "PAYMENT", "WRITE")
@@ -38,7 +40,7 @@ public class PaymentInitiationServiceImpl implements PaymentInitiationService {
     }
 
     @Override
-    public Mono<PSDPaymentStatusDTO> getPaymentStatus(Long consentId, Long paymentId) {
+    public Mono<PSDPaymentStatusDTO> getPaymentStatus(UUID consentId, UUID paymentId) {
         log.debug("Getting status for payment ID: {} using consent ID: {}", paymentId, consentId);
 
         return consentService.validateConsent(consentId, "PAYMENT", "READ")
@@ -54,7 +56,7 @@ public class PaymentInitiationServiceImpl implements PaymentInitiationService {
     }
 
     @Override
-    public Mono<PSDPaymentDTO> getPayment(Long consentId, Long paymentId) {
+    public Mono<PSDPaymentDTO> getPayment(UUID consentId, UUID paymentId) {
         log.debug("Getting payment with ID: {} using consent ID: {}", paymentId, consentId);
 
         return consentService.validateConsent(consentId, "PAYMENT", "READ")
@@ -69,7 +71,7 @@ public class PaymentInitiationServiceImpl implements PaymentInitiationService {
     }
 
     @Override
-    public Mono<PSDPaymentDTO> cancelPayment(Long consentId, Long paymentId) {
+    public Mono<PSDPaymentDTO> cancelPayment(UUID consentId, UUID paymentId) {
         log.debug("Cancelling payment with ID: {} using consent ID: {}", paymentId, consentId);
 
         return consentService.validateConsent(consentId, "PAYMENT", "WRITE")
@@ -98,7 +100,7 @@ public class PaymentInitiationServiceImpl implements PaymentInitiationService {
     }
 
     @Override
-    public Mono<PSDPaymentDTO> authorizePayment(Long consentId, Long paymentId, String authorizationCode) {
+    public Mono<PSDPaymentDTO> authorizePayment(UUID consentId, UUID paymentId, String authorizationCode) {
         log.debug("Authorizing payment with ID: {} using consent ID: {}", paymentId, consentId);
 
         return consentService.validateConsent(consentId, "PAYMENT", "WRITE")
