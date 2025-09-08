@@ -66,7 +66,7 @@ import org.springframework.web.reactive.config.EnableWebFlux;
         ),
         servers = {
                 @Server(
-                        url = "http://core.catalis.vc/psdx",
+                        url = "http://core.getfirefly.io/psdx",
                         description = "Development Environment"
                 ),
                 @Server(
