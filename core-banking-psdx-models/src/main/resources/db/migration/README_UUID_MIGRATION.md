@@ -8,7 +8,7 @@ This document describes the comprehensive database migration from Long/BIGSERIAL
 
 ### V3__convert_long_ids_to_uuid.sql
 **Purpose**: Main migration script that converts all Long ID fields to UUID
-**Status**: ✅ Production Ready
+**Status**: Production Ready
 
 **What it does**:
 1. Enables UUID extension (`uuid-ossp`)
@@ -30,47 +30,46 @@ This document describes the comprehensive database migration from Long/BIGSERIAL
 
 ### V4__verify_uuid_migration.sql
 **Purpose**: Comprehensive verification script to validate migration success
-**Status**: ✅ Production Ready
+**Status**: Production Ready
 
 **Verification checks**:
-1. ✅ Primary key UUID type validation
-2. ✅ Foreign key UUID type validation
-3. ✅ Party ID UUID type validation
-4. ✅ Foreign key constraint existence
-5. ✅ Data preservation validation
-6. ✅ Referential integrity checks
-7. ✅ Index existence validation
-8. ✅ UUID format validation
+1. Primary key UUID type validation
+2. Foreign key UUID type validation
+3. Party ID UUID type validation
+4. Foreign key constraint existence
+5. Data preservation validation
+6. Referential integrity checks
+7. Index existence validation
+8. UUID format validation
 
 ### V5__optimize_uuid_performance.sql
 **Purpose**: Basic performance optimization for UUID-based operations (Transactional)
-**Status**: ✅ Production Ready
+**Status**: Production Ready
 
 **Optimizations**:
-1. 🚀 B-tree indexes for UUID columns
-2. 🚀 Composite indexes for common query patterns
-3. 🚀 Optimized UUID generation function
-4. 🚀 Performance monitoring view
-5. 🚀 Table and column documentation
-6. 🚀 Statistics updates for query planning
+1. B-tree indexes for UUID columns
+2. Composite indexes for common query patterns
+3. Optimized UUID generation function
+4. Performance monitoring view
+5. Table and column documentation
+6. Statistics updates for query planning
 
-### V6__create_concurrent_uuid_indexes.sql
-**Purpose**: High-performance concurrent indexes for UUID columns (Non-transactional)
-**Status**: ✅ Production Ready
+### V6__create_uuid_indexes.sql
+**Purpose**: High-performance indexes for UUID columns
+**Status**: Production Ready
 
 **Optimizations**:
-1. 🚀 Hash indexes for UUID equality lookups (CONCURRENT)
-2. 🚀 Partial indexes for filtered queries (CONCURRENT)
-3. 🚀 Additional performance indexes (CONCURRENT)
-4. 🚀 Zero-downtime index creation
+1. Hash indexes for UUID equality lookups
+2. Partial indexes for filtered queries
+3. Additional performance indexes
 
-**Note**: Separated from V5 to avoid mixing transactional and non-transactional statements.
+**Note**: Separated from V5 to keep index creation in a dedicated migration script.
 
 ## Rollback Strategy
 
 ### R3__rollback_uuid_migration_fixed.sql
 **Purpose**: Complete rollback from UUID to BIGINT
-**Status**: ✅ Fixed version available (R3__rollback_uuid_migration_fixed.sql)
+**Status**: Fixed version available (R3__rollback_uuid_migration_fixed.sql)
 
 **Rollback process**:
 1. Creates backup tables for all UUID data
@@ -80,14 +79,14 @@ This document describes the comprehensive database migration from Long/BIGSERIAL
 5. Drops UUID columns and recreates BIGINT structure
 6. Restores all constraints and indexes
 
-**⚠️ Important Notes**:
+**Important Notes**:
 - Rollback may cause data loss if UUIDs cannot be mapped to sequential integers
 - Use only in development or with proper backup strategy
 - Test thoroughly before using in production
 
 ## Entity Model Compatibility
 
-### Current Entity Models (✅ Compatible)
+### Current Entity Models (Compatible)
 
 All entity models have been updated to use UUID:
 
@@ -128,7 +127,7 @@ private UUID id;
 private UUID consentId;
 ```
 
-### Repository Interfaces (✅ Compatible)
+### Repository Interfaces (Compatible)
 
 All repositories extend `ReactiveCrudRepository<Entity, UUID>`:
 
@@ -179,13 +178,13 @@ psql -d your_database -f test_uuid_migration.sql
 
 ### Test Coverage
 The test script validates:
-- ✅ UUID data insertion and relationships
-- ✅ Foreign key integrity
-- ✅ UUID lookup performance
-- ✅ UUID format validation
-- ✅ Index usage
-- ✅ Constraint validation
-- ✅ Data type validation
+- UUID data insertion and relationships
+- Foreign key integrity
+- UUID lookup performance
+- UUID format validation
+- Index usage
+- Constraint validation
+- Data type validation
 
 ## Performance Considerations
 
@@ -211,23 +210,23 @@ SELECT * FROM uuid_performance_metrics;
 ## Production Deployment Checklist
 
 ### Pre-Migration
-- [ ] ✅ Backup database
-- [ ] ✅ Test migration on staging environment
-- [ ] ✅ Verify application compatibility
-- [ ] ✅ Plan maintenance window
-- [ ] ✅ Prepare rollback strategy
+- [ ] Backup database
+- [ ] Test migration on staging environment
+- [ ] Verify application compatibility
+- [ ] Plan maintenance window
+- [ ] Prepare rollback strategy
 
 ### During Migration
-- [ ] ✅ Monitor migration progress
-- [ ] ✅ Check for errors in logs
-- [ ] ✅ Validate data integrity
-- [ ] ✅ Test application functionality
+- [ ] Monitor migration progress
+- [ ] Check for errors in logs
+- [ ] Validate data integrity
+- [ ] Test application functionality
 
 ### Post-Migration
-- [ ] ✅ Run verification script
-- [ ] ✅ Monitor performance metrics
-- [ ] ✅ Update documentation
-- [ ] ✅ Clean up backup data (after validation)
+- [ ] Run verification script
+- [ ] Monitor performance metrics
+- [ ] Update documentation
+- [ ] Clean up backup data (after validation)
 
 ## Troubleshooting
 

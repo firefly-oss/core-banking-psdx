@@ -1,7 +1,7 @@
 # Firefly Core Banking PSDX - PSD2/PSD3 Regulatory Compliance Service
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.org/projects/jdk/21/)
+[![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://openjdk.org/projects/jdk/25/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-green.svg)](https://spring.io/projects/spring-boot)
 [![Spring WebFlux](https://img.shields.io/badge/Spring%20WebFlux-Reactive-blue.svg)](https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html)
 
@@ -9,8 +9,8 @@ A comprehensive reactive microservice for PSD2/PSD3 and FIDA regulatory complian
 
 Part of the **Firefly OpenCore Banking Platform** developed by **Firefly Software Solutions Inc** under the Apache 2.0 license.
 
-🌐 **Organization Website**: [getfirefly.io](https://getfirefly.io)
-🐙 **GitHub Organization**: [firefly-oss](https://github.com/firefly-oss)
+**Organization Website**: [getfirefly.io](https://getfirefly.io)
+**GitHub Organization**: [firefly-oss](https://github.com/firefly-oss)
 
 ## Table of Contents
 
@@ -68,21 +68,21 @@ FIDA represents secure, consent-based access to financial data beyond PSD2 scope
 ## Key Features
 
 ### Core PSD2/PSD3 Services
-- **🔐 Consent Management**: Complete lifecycle management of customer consents with granular permissions
-- **🛡️ Strong Customer Authentication (SCA)**: Multi-factor authentication with SMS, app notifications, and biometrics
-- **🏢 Third Party Provider (TPP) Management**: Registration, validation, and lifecycle management of TPPs
-- **📊 Account Information Services (AIS)**: Secure access to account details, balances, and transaction history
-- **💳 Payment Initiation Services (PIS)**: Secure payment initiation with real-time status tracking
-- **💰 Funds Confirmation Services**: Real-time verification of fund availability
-- **🃏 Card Account Services**: Support for card-based payment instruments and transactions
+- **Consent Management**: Complete lifecycle management of customer consents with granular permissions
+- **Strong Customer Authentication (SCA)**: Multi-factor authentication with SMS, app notifications, and biometrics
+- **Third Party Provider (TPP) Management**: Registration, validation, and lifecycle management of TPPs
+- **Account Information Services (AIS)**: Secure access to account details, balances, and transaction history
+- **Payment Initiation Services (PIS)**: Secure payment initiation with real-time status tracking
+- **Funds Confirmation Services**: Real-time verification of fund availability
+- **Card Account Services**: Support for card-based payment instruments and transactions
 
 ### Technical Features
-- **⚡ Reactive Architecture**: Built with Spring WebFlux for high performance and non-blocking I/O
-- **🔍 Comprehensive Audit Logging**: Complete access trails for regulatory compliance and monitoring
-- **🔒 Enterprise Security**: Certificate validation, API key management, and encryption
-- **📈 Scalable Design**: Microservice architecture with horizontal scaling capabilities
-- **🌐 RESTful APIs**: OpenAPI 3.0 compliant with comprehensive documentation
-- **🗄️ UUID-based Entities**: Modern UUID primary keys for better distributed system support
+- **Reactive Architecture**: Built with Spring WebFlux for high performance and non-blocking I/O
+- **Comprehensive Audit Logging**: Complete access trails for regulatory compliance and monitoring
+- **Enterprise Security**: Certificate validation, API key management, and encryption
+- **Scalable Design**: Microservice architecture with horizontal scaling capabilities
+- **RESTful APIs**: OpenAPI 3.0 compliant with comprehensive documentation
+- **UUID-based Entities**: Modern UUID primary keys for better distributed system support
 
 ## Architecture
 
@@ -136,11 +136,11 @@ graph TB
 
 ### Key Architectural Components
 
-- **🌐 Reactive Web Layer**: Spring WebFlux controllers with non-blocking I/O
-- **🔧 Service Layer**: Business logic with hexagonal architecture ports and adapters
-- **💾 Data Access Layer**: R2DBC for reactive database operations
-- **🔒 Security Layer**: JWT authentication, API key validation, and consent management
-- **📝 Audit Layer**: Comprehensive logging for regulatory compliance and monitoring
+- **Reactive Web Layer**: Spring WebFlux controllers with non-blocking I/O
+- **Service Layer**: Business logic with hexagonal architecture ports and adapters
+- **Data Access Layer**: R2DBC for reactive database operations
+- **Security Layer**: JWT authentication, API key validation, and consent management
+- **Audit Layer**: Comprehensive logging for regulatory compliance and monitoring
 
 ## Project Structure
 
@@ -148,25 +148,25 @@ The project follows a **multi-module Maven structure** with clear separation of 
 
 ```
 core-banking-psdx/
-├── core-banking-psdx-interfaces/     # 📋 API contracts and DTOs
+├── core-banking-psdx-interfaces/     # API contracts and DTOs
 │   ├── dtos/                         # Data Transfer Objects
 │   ├── enums/                        # Enumerations (ConsentType, ProviderStatus, etc.)
 │   └── services/                     # Service interfaces
-├── core-banking-psdx-models/         # 🗄️ Data models and repositories
+├── core-banking-psdx-models/         # Data models and repositories
 │   ├── entities/                     # JPA entities with UUID primary keys
 │   ├── repositories/                 # R2DBC reactive repositories
 │   └── resources/db/migration/       # Flyway database migrations
-├── core-banking-psdx-core/           # 🧠 Business logic and services
+├── core-banking-psdx-core/           # Business logic and services
 │   ├── services/                     # Service implementations
 │   ├── ports/                        # Hexagonal architecture ports
 │   ├── adapters/                     # External service adapters
 │   └── mappers/                      # Entity-DTO mappers
-├── core-banking-psdx-web/            # 🌐 Web layer and configuration
+├── core-banking-psdx-web/            # Web layer and configuration
 │   ├── controllers/                  # REST API controllers
 │   ├── security/                     # Security configuration
 │   ├── aspects/                      # AOP aspects for logging
 │   └── interceptors/                 # Request/response interceptors
-└── core-banking-psdx-sdk/            # 📚 Client SDK and OpenAPI spec
+└── core-banking-psdx-sdk/            # Client SDK and OpenAPI spec
     └── resources/api-spec/           # OpenAPI 3.0 specification
 ```
 
@@ -304,7 +304,7 @@ erDiagram
 
 ### Prerequisites
 
-- **Java 21** or higher
+- **Java 25** or higher
 - **Maven 3.8** or higher
 - **PostgreSQL 14** or higher (with R2DBC support)
 - **Docker** (optional, for containerized deployment)
@@ -604,23 +604,23 @@ All responses follow **consistent JSON structure** with:
 The service implements **enterprise-grade security** with multiple layers of protection:
 
 ### Authentication & Authorization
-- **🔑 API Key Management**: Secure TPP identification and access control
-- **🎫 JWT Tokens**: Stateless authentication with configurable expiration
-- **✅ Consent Validation**: Granular permission checking for all data access
-- **🔒 Certificate Validation**: X.509 certificate verification for TPPs
-- **🛡️ Strong Customer Authentication (SCA)**: Multi-factor authentication compliance
+- **API Key Management**: Secure TPP identification and access control
+- **JWT Tokens**: Stateless authentication with configurable expiration
+- **Consent Validation**: Granular permission checking for all data access
+- **Certificate Validation**: X.509 certificate verification for TPPs
+- **Strong Customer Authentication (SCA)**: Multi-factor authentication compliance
 
 ### Data Protection
-- **🔐 Encryption at Rest**: AES-256 encryption for sensitive data
-- **🌐 TLS 1.3**: End-to-end encryption for all communications
-- **🎭 Data Masking**: PII protection in logs and responses
-- **🗑️ Data Minimization**: Only necessary data is collected and stored
+- **Encryption at Rest**: AES-256 encryption for sensitive data
+- **TLS 1.3**: End-to-end encryption for all communications
+- **Data Masking**: PII protection in logs and responses
+- **Data Minimization**: Only necessary data is collected and stored
 
 ### Compliance & Monitoring
-- **📋 Comprehensive Audit Logging**: All API access tracked for regulatory compliance
-- **🚨 Real-time Monitoring**: Suspicious activity detection and alerting
-- **⏱️ Rate Limiting**: Protection against abuse and DoS attacks
-- **🔍 Request Validation**: Input sanitization and validation
+- **Comprehensive Audit Logging**: All API access tracked for regulatory compliance
+- **Real-time Monitoring**: Suspicious activity detection and alerting
+- **Rate Limiting**: Protection against abuse and DoS attacks
+- **Request Validation**: Input sanitization and validation
 
 ### Security Headers
 ```yaml
@@ -661,7 +661,7 @@ We welcome contributions to the Firefly Core Banking PSDX service!
 
 2. **Set up development environment**
    ```bash
-   # Install Java 21
+   # Install Java 25
    # Install PostgreSQL 14+
    # Set environment variables
    cp .env.example .env
@@ -679,15 +679,15 @@ We welcome contributions to the Firefly Core Banking PSDX service!
 
 ### Contribution Guidelines
 
-- **🔀 Create feature branches**: `git checkout -b feature/amazing-feature`
-- **✅ Write tests**: Ensure good test coverage for new features
-- **📝 Update documentation**: Keep README and API docs current
-- **🎯 Follow code style**: Use the provided checkstyle configuration
-- **📋 Create detailed PRs**: Include description, testing notes, and screenshots
+- **Create feature branches**: `git checkout -b feature/amazing-feature`
+- **Write tests**: Ensure good test coverage for new features
+- **Update documentation**: Keep README and API docs current
+- **Follow code style**: Use the provided checkstyle configuration
+- **Create detailed PRs**: Include description, testing notes, and screenshots
 
 ### Code Standards
 
-- **Java 21** features and best practices
+- **Java 25** features and best practices
 - **Reactive programming** with Spring WebFlux
 - **Comprehensive testing** with JUnit 5 and TestContainers
 - **Clean architecture** with hexagonal pattern
@@ -696,9 +696,9 @@ We welcome contributions to the Firefly Core Banking PSDX service!
 ### Reporting Issues
 
 Please use GitHub Issues to report bugs or request features:
-- **🐛 Bug reports**: Include steps to reproduce, expected vs actual behavior
-- **💡 Feature requests**: Describe the use case and proposed solution
-- **🔒 Security issues**: Email security@getfirefly.io for sensitive issues
+- **Bug reports**: Include steps to reproduce, expected vs actual behavior
+- **Feature requests**: Describe the use case and proposed solution
+- **Security issues**: Email security@getfirefly.io for sensitive issues
 
 ## License
 
@@ -724,6 +724,6 @@ limitations under the License.
 
 **Firefly OpenCore Banking Platform** - Building the future of open banking infrastructure.
 
-🌐 **Website**: [getfirefly.io](https://getfirefly.io)
-🐙 **GitHub**: [github.com/firefly-oss](https://github.com/firefly-oss)
-📧 **Contact**: [dev@getfirefly.io](mailto:dev@getfirefly.io)
+**Website**: [getfirefly.io](https://getfirefly.io)
+**GitHub**: [github.com/firefly-oss](https://github.com/firefly-oss)
+**Contact**: [dev@getfirefly.io](mailto:dev@getfirefly.io)
