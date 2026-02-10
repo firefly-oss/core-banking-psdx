@@ -17,11 +17,11 @@
 
 package com.firefly.core.banking.psdx.interfaces.dtos;
 
-import com.firefly.annotations.ValidBic;
-import com.firefly.annotations.ValidCreditCard;
-import com.firefly.annotations.ValidCurrencyCode;
-import com.firefly.annotations.ValidIban;
-import com.firefly.annotations.ValidPhoneNumber;
+import org.fireflyframework.annotations.ValidBic;
+import org.fireflyframework.annotations.ValidCreditCard;
+import org.fireflyframework.annotations.ValidCurrencyCode;
+import org.fireflyframework.annotations.ValidIban;
+import org.fireflyframework.annotations.ValidPhoneNumber;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;

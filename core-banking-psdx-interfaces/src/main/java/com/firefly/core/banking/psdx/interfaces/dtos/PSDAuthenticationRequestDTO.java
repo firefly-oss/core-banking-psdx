@@ -17,7 +17,7 @@
 
 package com.firefly.core.banking.psdx.interfaces.dtos;
 
-import com.firefly.annotations.ValidPasswordStrength;
+import org.fireflyframework.annotations.ValidPasswordStrength;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

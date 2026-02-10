@@ -18,7 +18,7 @@
 package com.firefly.core.banking.psdx.interfaces.dtos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.firefly.annotations.ValidCreditCard;
+import org.fireflyframework.annotations.ValidCreditCard;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;

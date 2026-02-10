@@ -18,9 +18,9 @@
 package com.firefly.core.banking.psdx.interfaces.dtos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.firefly.annotations.ValidBic;
-import com.firefly.annotations.ValidCurrencyCode;
-import com.firefly.annotations.ValidIban;
+import org.fireflyframework.annotations.ValidBic;
+import org.fireflyframework.annotations.ValidCurrencyCode;
+import org.fireflyframework.annotations.ValidIban;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
