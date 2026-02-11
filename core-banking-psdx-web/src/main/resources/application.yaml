@@ -71,11 +71,11 @@ logging:
 integration:
   customer-mgmt:
     enabled: ${CUSTOMER_MGMT_ENABLED:false}
-    base-url: "${CUSTOMER_MGMT_URL:http://common-platform-customer-mgmt:8080}"
+    base-url: "${CUSTOMER_MGMT_URL:http://core-common-customer-mgmt:8080}"
     timeout: 5000
   contract-mgmt:
     enabled: ${CONTRACT_MGMT_ENABLED:false}
-    base-url: "${CONTRACT_MGMT_URL:http://common-platform-contract-mgmt:8080}"
+    base-url: "${CONTRACT_MGMT_URL:http://core-common-contract-mgmt:8080}"
     timeout: 5000
   accounts:
     enabled: ${ACCOUNTS_ENABLED:false}
@@ -95,7 +95,7 @@ integration:
     timeout: 5000
   sca-mgmt:
     enabled: ${SCA_MGMT_ENABLED:false}
-    base-url: "${SCA_MGMT_URL:http://common-platform-sca-mgmt:8080}"
+    base-url: "${SCA_MGMT_URL:http://core-common-sca-mgmt:8080}"
     timeout: 5000
 
 # PSD2/PSD3 and FIDA Configuration

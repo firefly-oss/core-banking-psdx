@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Primary;
 /**
  * Configuration for the SCA service client.
  * This configuration provides a bean for the SCA service port.
- * In a real implementation, this would be replaced with a client for the common-platform-sca-mgmt service.
+ * In a real implementation, this would be replaced with a client for the core-common-sca-mgmt service.
  */
 @Configuration
 public class SCAServiceClientConfig {
@@ -46,7 +46,7 @@ public class SCAServiceClientConfig {
     @Bean
     @Primary
     public SCAServicePort scaServicePort(DefaultSCAServiceAdapter defaultAdapter) {
-        // In a real implementation, this would return a client for the common-platform-sca-mgmt service
+        // In a real implementation, this would return a client for the core-common-sca-mgmt service
         // if scaMgmtEnabled is true. For now, we'll just return the default adapter.
         return defaultAdapter;
     }
