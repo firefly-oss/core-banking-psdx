@@ -28,10 +28,12 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;
+import org.springframework.http.server.RequestPath;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
+import java.net.URI;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -105,7 +107,8 @@ class CustomErrorAttributesTest {
         ServerRequest.Headers mockHeaders = mock(ServerRequest.Headers.class);
         when(mockRequest.headers()).thenReturn(mockHeaders);
         when(mockHeaders.firstHeader("X-Request-ID")).thenReturn("request-id-123");
-        when(mockRequest.path()).thenReturn("/api/test");
+        RequestPath requestPath = RequestPath.parse(URI.create("/api/test"), "");
+        when(mockRequest.requestPath()).thenReturn(requestPath);
 
         // When
         Map<String, Object> result = customErrorAttributes.getErrorAttributes(mockRequest, ErrorAttributeOptions.defaults());
