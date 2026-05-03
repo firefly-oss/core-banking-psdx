@@ -7,7 +7,7 @@
 
 A comprehensive reactive microservice for PSD2/PSD3 and FIDA regulatory compliance in banking applications. This service provides a centralized point for handling open banking requirements, enabling secure third-party access to account information and payment services with explicit customer consent and strong authentication.
 
-Part of the **Firefly OpenCore Banking Platform** developed by **Firefly Software Solutions Inc** under the Apache 2.0 license.
+Part of the **Firefly OpenCore Banking Platform** developed by **Firefly Software Foundation** under the Apache 2.0 license.
 
 **Organization Website**: [getfirefly.io](https://getfirefly.io)
 **GitHub Organization**: [firefly-oss](https://github.com/firefly-oss)
@@ -705,7 +705,7 @@ Please use GitHub Issues to report bugs or request features:
 This project is licensed under the **Apache License 2.0** - see the [LICENSE](LICENSE) file for details.
 
 ```
-Copyright 2024 Firefly Software Solutions Inc
+Copyright 2024 Firefly Software Foundation
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

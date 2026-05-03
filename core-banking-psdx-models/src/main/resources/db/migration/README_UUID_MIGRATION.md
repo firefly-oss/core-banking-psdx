@@ -285,6 +285,6 @@ AND data_type != 'uuid';
 ## Contact Information
 
 For questions or issues related to the UUID migration:
-- **Team**: Firefly Software Solutions Inc
+- **Team**: Firefly Software Foundation
 - **Email**: dev@getfirefly.io
 - **Documentation**: This README and inline SQL comments
